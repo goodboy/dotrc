@@ -1,0 +1,241 @@
+"file       ~/.vimrc "author:    Tyler Goodlet
+"--------------------------------------------------------------------
+syntax enable
+set t_Co=256
+filetype on
+set autoread
+set backspace=indent,eol,start
+
+"----------------------------------------
+" COLOR SCHEME
+" ----------------------------------------
+colorscheme diablo3
+let g:diablo4_longline = 2 
+"default lenth of a line setting (default: 121) note: set value to length
+"wanted + 1
+"let g:diablo3_len = 79 
+
+if &term =~ "xterm\\|rxvt"
+    " use an orange cursor in insert mode
+    let &t_SI = "\<Esc>]12;orange\x7"
+    " use a red cursor otherwise
+    let &t_EI = "\<Esc>]12;red\x7"
+    silent !echo -ne "\033]12;red\007"
+    " reset cursor when vim exits
+    autocmd VimLeave * silent !echo -ne "\033]112\007"
+    " use \003]12;gray\007 for gnome-terminal
+endif
+
+"------------------------------------------
+" HANDLING TABS
+"------------------------------------------
+" replace tab character with spaces
+"set expandtab
+" set number of spaces that a <Tab> in the file counts for (recommend leaving at default=8)
+"set tabstop=4
+" how many columns is indented with the reindent operations and auto "smart tabbing" 
+set shiftwidth=4
+" adds tabs where it thinks you'll need them on new lines (not needed as
+" filetype indentation is used later on)
+"set smartindent
+" how many columns are put in when you hit tab in insert mode
+set softtabstop=4
+setl autoindent
+
+set whichwrap+=<,>,h,l
+set nowrap    
+set lbr
+
+set mouse=a
+set mouses=i-r:beam,s:updown,sd:udsizing,vs:leftright,vd:lrsizing,m:no,ml:up-arrow,v:rightup-arrow
+set mousehide
+
+set ignorecase
+set smartcase
+
+set guioptions-=m
+set guioptions-=T
+set sidescroll=1
+
+" highlights all occurences of your search
+setl hlsearch
+" search AS you type
+set incsearch 
+" shows line numbers
+set number
+"set bg=dark
+set spellfile=~/.vim/dict.add
+
+"-----------------------------
+" AUTOCOMMANDS
+"-----------------------------
+filetype indent on
+filetype plugin on
+filetype on
+
+if has("autocmd")
+    augroup filetype
+        autocmd BufNewFile,BufRead *french*   set spelllang=fr
+        autocmd BufNewFile,BufRead *francais* set spelllang=fr
+        autocmd BufNewFile,BufRead *français* set spelllang=fr
+        autocmd BufNewFile,BufRead *.ly       setf lilypond
+        autocmd BufNewFile,BufRead *.lily     setf lilypond
+        augroup END
+"override tab settings from section 'TAB SETTINGS'    
+    autocmd FileType html,xhtml,xml,ruby,eruby,yaml,python "set ai sw=4 sts=2 et
+    autocmd FileType latex,tex set spell wrap
+    "autocmd FileType c set cindent 
+end
+
+" these 2 lines will save things like folds and load them automatically
+" au BufWinLeave * mkview
+" au BufWinEnter * silent loadview
+
+"-----------------------------
+" Matlab Specific
+"-----------------------------
+source $VIMRUNTIME/macros/matchit.vim
+autocmd BufEnter *.m    compiler mlint
+au FileType matlab map <buffer> <silent> <F5> :w<CR>:!matlab -nodesktop -nosplash -r "try, run(which('%')), pause, end, quit" <CR>\\|<ESC><ESC>
+au FileType matlab set foldmethod=syntax foldcolumn=2 foldlevel=33
+set spell
+
+"-----------------------------
+" KEYBOARD NAVIGATION
+"-----------------------------
+nnoremap j gj
+nnoremap k gk
+vnoremap j gj
+vnoremap k gk
+nnoremap <Down> gj
+nnoremap <Up> gk
+vnoremap <Down> gj
+vnoremap <Up> gk
+inoremap <Down> <C-o>gj
+inoremap <Up> <C-o>gk
+
+"remaps 'move to window and maximize' commands to Ctrl-h,j,k,l
+map <C-H> <C-W>h<C-W>_
+map <C-J> <C-W>j
+"<C-W>_
+map <C-K> <C-W>k
+"<C-W>_
+map <C-L> <C-W>l<C-W>_
+set wmh=0
+
+map <A-1> 1gt
+map <A-2> 2gt
+map <A-3> 3gt
+map <A-4> 4gt
+map <A-5> 5gt
+map <A-6> 6gt
+map <A-7> 7gt
+map <A-8> 8gt
+map <A-9> 9gt
+
+map <C-A-1> :tabm0
+map <C-A-2> :tabm1
+map <C-A-3> :tabm2
+map <C-A-4> :tabm3
+map <C-A-5> :tabm4
+map <C-A-6> :tabm5
+map <C-A-7> :tabm6
+map <C-A-8> :tabm7
+map <C-A-9> :tabm8
+
+" for common typos
+command! Q quit
+command! W write
+command! Wq wq
+command! Wa wa
+
+" changing dictionaries
+command! Fr set spelllang=fr
+command! En set spelllang=en
+
+nmap <silent><Home> :call SmartHome("n")<CR>
+nmap <silent><End>  :call SmartEnd("n")<CR>
+imap <silent><Home> <C-r>=SmartHome("i")<CR>
+imap <silent><End>  <C-r>=SmartEnd("i")<CR>
+vmap <silent><Home> <Esc>:call SmartHome("v")<CR>
+vmap <silent><End>  <Esc>:call SmartEnd("v")<CR>
+
+" smart home function
+function SmartHome(mode)
+  let curcol = col(".")
+
+  if curcol > indent(".") + 2
+    call cursor(0, col(".") - 1)
+  endif
+
+  if curcol == 1 || curcol > indent(".") + 1
+    if &wrap
+      normal g^
+    else
+      normal ^
+    endif
+  else
+    if &wrap
+      normal g0
+    else
+      normal 0
+    endif
+  endif
+
+  if a:mode == "v"
+    normal msgv`s
+  endif
+
+  return ""
+endfunction
+
+" smart end function
+function SmartEnd(mode)
+  let curcol = col(".")
+  let lastcol = a:mode == "i" ? col("$") : col("$") - 1
+
+  if curcol < lastcol - 1
+    call cursor(0, col(".") + 1)
+  endif
+
+  if curcol < lastcol
+    if &wrap
+      normal g$
+    else
+      normal $
+    endif
+  else
+    normal g_
+  endif
+
+  if a:mode == "i"
+    call cursor(0, col(".") + 1)
+  endif
+
+  if a:mode == "v"
+    normal msgv`s
+  endif
+
+  return ""
+endfunction
+
+"----------------------------------------------
+" OPTIONS FOR RULER AT BOTTOM
+"----------------------------------------------
+set formatoptions+=roc 
+set laststatus=2 
+set ruler 
+set hls
+
+"----------------------------------------------
+" OPTIONS FOR FOLDING
+"----------------------------------------------
+set foldcolumn=0
+set foldmethod=manual
+set nofoldenable
+set foldlevel=1
+
+"----------------------------------------------
+" AUTOCOMPLETION STUFF
+"----------------------------------------------
+set complete=.,w,b,u,U,t,kmake.conf,i
