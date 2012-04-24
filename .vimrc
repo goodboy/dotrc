@@ -10,7 +10,7 @@ set backspace=indent,eol,start
 " COLOR SCHEME
 " ----------------------------------------
 colorscheme diablo3
-let g:diablo4_longline = 2 
+let g:diablo4_longline = 1 
 "default lenth of a line setting (default: 121) note: set value to length
 "wanted + 1
 "let g:diablo3_len = 79 
@@ -21,10 +21,18 @@ if &term =~ "xterm\\|rxvt"
     " use a red cursor otherwise
     let &t_EI = "\<Esc>]12;red\x7"
     silent !echo -ne "\033]12;red\007"
+    " keep cursor read when vim leaves
+    autocmd VimLeave * silent !echo -ne "\\033]12;red\007"
+
     " reset cursor when vim exits
-    autocmd VimLeave * silent !echo -ne "\033]112\007"
+    "autocmd VimLeave * silent !echo -ne "\033]112\007
     " use \003]12;gray\007 for gnome-terminal
 endif
+
+"------------------------------------------
+" CUSTOM COMMANDS 
+"------------------------------------------
+command -range=% Share :<line1>,<line2>write !curl -F "sprunge=<-" http://sprunge.us|xclip
 
 "------------------------------------------
 " HANDLING TABS

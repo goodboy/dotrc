@@ -16,6 +16,14 @@ setopt notify
 unsetopt beep
 bindkey -v
 
+#none of these effing work!
+bindkey "\e[1~" beginning-of-line # Home
+bindkey "\e[4~" end-of-line # End
+bindkey "\e[5~" beginning-of-history # PageUp
+bindkey "\e[6~" end-of-history # PageDown
+bindkey "\e[2~" quoted-insert # Ins
+bindkey "\e[3~" delete-char # Del
+
 # The following lines were added by compinstall
 zstyle :compinstall filename '/home/tyler/.zshrc'
 autoload -Uz compinit
@@ -29,16 +37,8 @@ alias ls='ls --classify --tabsize=0 --literal --color=auto --show-control-chars 
 alias grep='grep --color=auto'
 alias cower='cower --color=auto'
 alias tmux='tmux -2'
-#alias /usr/local/bin/matlab ='matlab -nodesktop -nosplash'
-
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
-
-# PROMPT SETTINGS
-# enables coloured prompt settings
-autoload -U colors && colors
-PROMPT="%{$fg[green]%}->%#%{$reset_color%}"
-RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
+alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
+#alias matlab ='matlab -nodesktop -nosplash'
 
 #
 # Zsh FUNCTIONS 
@@ -54,6 +54,15 @@ RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
 #        RPROMPT="%{$reset_color%}%{$fg[green]%}$cur_dir%{$reset_color%}"
 #}
 
+# If I am using vi keys, I want to know what mode I'm currently using.
+# zle-keymap-select is executed every time KEYMAP changes.
+# # From http://zshwiki.org/home/examples/zlewidgets
+function zle-keymap-select {
+    VIMODE="${${KEYMAP/vicmd/ M:command}/(main|viins)/}"
+    zle reset-prompt
+}
+zle -N zle-keymap-select
+
 # Coloured man page support using 'less' (code taken from arch wiki)
 function man {
     
@@ -68,6 +77,14 @@ function man {
             man "$@"
 }
 
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# PROMPT SETTINGS
+# enables coloured prompt settings
+autoload -U colors && colors
+PROMPT="%{$fg[green]%}->%#%{$reset_color%}"
+RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
 
 # Enable tmux at shell start
 #

@@ -228,8 +228,11 @@ if &t_Co > 255
 
   highlight Statement       cterm=bold                    ctermfg=68
   highlight htmlStatement                                 ctermfg=110
-  highlight StatusLine                                    ctermfg=240
-  highlight StatusLineNC                    ctermbg=232   ctermfg=244
+
+  "swapped ctermfg (two) values to keep the current status bar highlighted - TG
+  highlight StatusLine                                    ctermfg=244 
+  highlight StatusLineNC                    ctermbg=232   ctermfg=240
+  
   highlight StorageClass                                  ctermfg=208
   highlight Structure       cterm=bold                    ctermfg=81
   highlight Tag                                           ctermfg=161
