@@ -16,13 +16,32 @@ setopt notify
 unsetopt beep
 bindkey -v
 
-#none of these effing work!
-bindkey "\e[1~" beginning-of-line # Home
-bindkey "\e[4~" end-of-line # End
-bindkey "\e[5~" beginning-of-history # PageUp
-bindkey "\e[6~" end-of-history # PageDown
-bindkey "\e[2~" quoted-insert # Ins
-bindkey "\e[3~" delete-char # Del
+#none of these effing work!?!
+bindkey "^[[A" history-beginning-search-backward
+bindkey "^[[B" history-beginning-search-forward
+bindkey "\e[1~" beginning-of-line
+bindkey "\e[4~" end-of-line
+bindkey "\e[7~" beginning-of-line
+bindkey "\e[8~" end-of-line
+bindkey "\e[5~" beginning-of-history
+bindkey "\e[6~" end-of-history
+bindkey "\e[3~" delete-char
+bindkey "\e[2~" quoted-insert
+bindkey "\e\e[C" forward-word
+bindkey "\e\e[D" backward-word
+bindkey "\e[5C" forward-word
+bindkey "\e[5D" backward-word
+bindkey "\eOc" emacs-forward-word
+bindkey "\eOd" emacs-backward-word
+bindkey "^H" backward-delete-word
+bindkey '^R' history-incremental-search-backward
+
+# completion in the middle of a line
+bindkey '^i' expand-or-complete-prefix
+
+# buffer stack access
+bindkey '^w' push-line
+bindkey '^e' get-line
 
 # The following lines were added by compinstall
 zstyle :compinstall filename '/home/tyler/.zshrc'
@@ -35,10 +54,12 @@ compinit
 #
 alias ls='ls --classify --tabsize=0 --literal --color=auto --show-control-chars --human-readable --group-directories-first'
 alias grep='grep --color=auto'
+alias less='less -R'
 alias cower='cower --color=auto'
 alias tmux='tmux -2'
 alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
-#alias matlab ='matlab -nodesktop -nosplash'
+alias ll='ls -l --classify --color=always --human-readable --group-directories-first | less'
+#alias matlab ='/usr/local/bin/matlab -nodesktop -nosplash'
 
 #
 # Zsh FUNCTIONS 
@@ -54,14 +75,6 @@ alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
 #        RPROMPT="%{$reset_color%}%{$fg[green]%}$cur_dir%{$reset_color%}"
 #}
 
-# If I am using vi keys, I want to know what mode I'm currently using.
-# zle-keymap-select is executed every time KEYMAP changes.
-# # From http://zshwiki.org/home/examples/zlewidgets
-function zle-keymap-select {
-    VIMODE="${${KEYMAP/vicmd/ M:command}/(main|viins)/}"
-    zle reset-prompt
-}
-zle -N zle-keymap-select
 
 # Coloured man page support using 'less' (code taken from arch wiki)
 function man {
@@ -127,3 +140,32 @@ if which tmux 2>&1 >/dev/null; then
     fi
     [[ $TERM != "screen-256color" ]] && echo 'This is outside a tmux shell! Think of all the potential you waste...'
 fi
+
+# If I am using vi keys, I want to know what mode I'm currently using.
+# zle-keymap-select is executed every time KEYMAP changes.
+# # From http://zshwiki.org/home/examples/zlewidgets
+function zle-keymap-select {
+    VIMODE="${${KEYMAP/vicmd/ M:command}/(main|viins)/}"
+    zle reset-prompt
+}
+zle -N zle-keymap-select
+
+# change cursor to RED in vi normal mode
+zle-keymap-select () {
+    if [ $TERM = "screen-256color" ]; then
+	if [ $KEYMAP = vicmd ]; then
+	    echo -ne "\033]12;Red\007"
+	else
+	    echo -ne "\033]12;Grey\007"
+	fi
+    fi
+}
+zle -N zle-keymap-select
+zle-line-init () {
+    zle -K viins
+    if [ $TERM = "rxvt-256color" ]; then
+	echo -ne "\033]12;Grey\007"
+    fi
+}
+zle -N zle-line-init
+bindkey -v
