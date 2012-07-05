@@ -13,24 +13,24 @@ link() {
   [[ -e "$target" && ! -h "$target" ]] && die "$0: $target exists in filesystem"
   [[ -d "$target"                   ]] && rm "$target"
 
-  ln -fs "$dotfiles/$1" "$target"
+  ln -fs "$dotfiles/dotrc/$1" "$target"
 }
 
 # Deploy scriptlets {{{1
-dotfiles_cower()       { link cower .config/cower;                     }
-dotfiles_dircolors()   { link dircolors/dircolors;                     }
+#dotfiles_cower()       { link cower .config/cower;                     }
+#dotfiles_dircolors()   { link dircolors/dircolors;                     }
 dotfiles_git()         { link git/gitconfig;                           }
-dotfiles_htop()        { link htop/htoprc;                             }
-dotfiles_lxdm()        { link lxdm/dmrc;                               }
-dotfiles_ncmpcpp()     { link ncmpcpp;                                 }
-dotfiles_mutt()        { link mutt;                                    }
-dotfiles_nethack()     { link nethack/nethackrc;                       }
-dotfiles_pam()         { link pam/pam_environment;                     }
-dotfiles_pentadactyl() { link pentadactyl/pentadactylrc;               }
-dotfiles_termite()     { link termite/termite.cfg .config/termite.cfg; }
+#dotfiles_htop()        { link htop/htoprc;                             }
+#dotfiles_lxdm()        { link lxdm/dmrc;                               }
+#dotfiles_ncmpcpp()     { link ncmpcpp;                                 }
+#dotfiles_mutt()        { link mutt;                                    }
+#dotfiles_nethack()     { link nethack/nethackrc;                       }
+#dotfiles_pam()         { link pam/pam_environment;                     }
+#dotfiles_pentadactyl() { link pentadactyl/pentadactylrc;               }
+#dotfiles_termite()     { link termite/termite.cfg .config/termite.cfg; }
 dotfiles_tmux()        { link tmux/tmux.conf;                          }
-dotfiles_weechat()     { link weechat;                                 }
-dotfiles_xmonad()      { link xmonad;                                  }
+#dotfiles_weechat()     { link weechat;                                 }
+#dotfiles_xmonad()      { link xmonad;                                  }
 
 dotfiles_task() {
   link task/task
@@ -46,7 +46,8 @@ dotfiles_vim() {
 dotfiles_X() {
   link X/Xresources
   link X/xinitrc
-  link X/gtkrc-2.0 .gtkrc-2.0.mine
+  link X/Xmodmap
+  #link X/gtkrc-2.0 .gtkrc-2.0.mine
 }
 
 dotfiles_zsh() {

@@ -58,7 +58,7 @@ alias less='less -R'
 alias cower='cower --color=auto'
 alias tmux='tmux -2'
 alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
-alias ll='ls -l --classify --color=always --human-readable --group-directories-first | less'
+alias ll='ls -la --classify --color=always --human-readable --group-directories-first | less
 #alias matlab ='/usr/local/bin/matlab -nodesktop -nosplash'
 
 #
