@@ -5,6 +5,7 @@
 " Thanks To:    lilydjwg, Tomas Restrepo(author of molokai.vim), terremoto 
 " License:      MIT License
 " Options:
+" Edits - Tyler Goodlet
 "
 " If you want to set long line warning, copy this in your vimrc:
 "
@@ -229,7 +230,7 @@ if &t_Co > 255
   highlight Statement       cterm=bold                    ctermfg=68
   highlight htmlStatement                                 ctermfg=110
 
-  "swapped ctermfg (two) values to keep the current status bar highlighted - TG
+"swapped ctermfg values (following two) to keep the current status bar highlighted - TG
   highlight StatusLine                                    ctermfg=244 
   highlight StatusLineNC                    ctermbg=232   ctermfg=240
   
@@ -249,7 +250,9 @@ if &t_Co > 255
   highlight WarningMsg      cterm=bold      ctermbg=236   ctermfg=231
   highlight WildMenu                        ctermbg=16    ctermfg=81
 
-  highlight Normal                          ctermbg=235   ctermfg=231
+"originally ctermbg=235   ctermfg=231 changed to make bg transparent - TG
+  highlight Normal                          ctermbg=none   ctermfg=231
+
   highlight Comment                                       ctermfg=248
   highlight CursorLine      cterm=none      ctermbg=237
   highlight CursorColumn                    ctermbg=237

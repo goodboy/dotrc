@@ -1,3 +1,6 @@
 README - dotrc repo
 
 basically just a set of config files for common linux tools I use.
+
+Usage:
+./deploy to symlink all .files

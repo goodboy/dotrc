@@ -1,4 +1,5 @@
 #!/bin/bash
+# taken from simon's dotfiles repository and slightly modified
 
 dotfiles=$PWD
 

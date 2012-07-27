@@ -58,7 +58,7 @@ alias less='less -R'
 alias cower='cower --color=auto'
 alias tmux='tmux -2'
 alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
-alias ll='ls -la --classify --color=always --human-readable --group-directories-first | less
+alias ll='ls -l --classify --color=always --human-readable --group-directories-first'
 #alias matlab ='/usr/local/bin/matlab -nodesktop -nosplash'
 
 #
@@ -77,18 +77,13 @@ alias ll='ls -la --classify --color=always --human-readable --group-directories-
 
 
 # Coloured man page support using 'less' (code taken from arch wiki)
-function man {
-    
-    env \
-        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
-        LESS_TERMCAP_md=$(printf "\e[1;31m") \
-        LESS_TERMCAP_me=$(printf "\e[0m") \
-        LESS_TERMCAP_se=$(printf "\e[0m") \
-        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-        LESS_TERMCAP_ue=$(printf "\e[0m") \
-        LESS_TERMCAP_us=$(printf "\e[1;32m") \
-            man "$@"
-}
+export LESS_TERMCAP_mb=$(printf "\e[1;31m")
+export LESS_TERMCAP_md=$(printf "\e[1;31m")
+export LESS_TERMCAP_me=$(printf "\e[0m")
+export LESS_TERMCAP_se=$(printf "\e[0m")
+export LESS_TERMCAP_so=$(printf "\e[1;44;33m")
+export LESS_TERMCAP_ue=$(printf "\e[0m")
+export LESS_TERMCAP_us=$(printf "\e[1;32m")
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
