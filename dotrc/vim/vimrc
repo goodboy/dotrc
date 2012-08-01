@@ -1,4 +1,5 @@
-"file       ~/.vimrc "author:    Tyler Goodlet
+"file       ~/.vimrc 
+"author:    Tyler Goodlet
 "--------------------------------------------------------------------
 syntax enable
 set t_Co=256
