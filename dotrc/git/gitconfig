@@ -6,11 +6,10 @@
 	token = e2e771ddfcb20f4c28d8035549c424e3
 [merge]
 	tool = vimdiff
+	log = true
 [core]
 	editor = vim
-
 [color]
 	ui = true
-
 [alias]
 	last = log -1 HEAD
