@@ -1,5 +1,13 @@
 #!/bin/bash
 # from gist:2491147 (by barraponto)
+#
+# as a reminder the normal manual process is:
+# To remove a submodule you need to:
+# 1)Delete the relevant section from the .gitmodules file.
+# 2)Delete the relevant section from .git/config.
+# 3)Run git rm --cached path_to_submodule (no trailing slash).
+# 4)Commit and delete the now untracked submodule files.
+
 
 function actual_path() {
   if [ [ -z "$1" ] -a [ -d $1 ] ]; then
