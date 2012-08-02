@@ -2,3 +2,6 @@
 *.o
 *.swp
 *.swo
+vim/backups/*
+vim/tmp/*
+vim/undo/*

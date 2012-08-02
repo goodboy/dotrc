@@ -1,0 +1,15 @@
+#!/bin/bash
+# quickgen the vim back up dirs for vimrc:177
+VIMbackupdirs="./backups \
+./tmp \
+./undo"
+
+for dir in $VIMbackupdirs
+do
+  if [ -e $dir ]; then
+    echo $dir already exists...
+  else
+    mkdir $dir
+  fi
+done
+

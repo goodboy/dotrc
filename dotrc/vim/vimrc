@@ -1,6 +1,8 @@
 " File:     ~/.vimrc files
 " Author:   Simon Gomizelj
 " Edit:     Tyler Goodlet
+"      -> removed cursor line for my slow laptop
+"      -> added special commands
 " ----------------------------------------------------------------------------
 
 set nocompatible
@@ -56,7 +58,7 @@ set showcmd
 set title
 set ruler
 set number
-set cursorline
+"set cursorline
 set shortmess=at
 set hidden
 set laststatus=2
@@ -87,6 +89,10 @@ set undodir=~/.vim/undo
 au VimResized   * exe "normal! \<c-w>="
 au BufWritePre  * if ! &bin | silent! :call spaces#StripTrailing()<CR>
 au BufWritePost * if getline(1) =~ "^#!" | silent :!chmod +x <afile>
+
+" CUSTOM COMMANDS {{{1
+"                             
+command -range=% Share :<line1>,<line2>write !curl -F "sprunge=<-" http://sprunge.us|xclip
 
 " MAPPINGS {{{1
 " ----------------------------
@@ -144,8 +150,8 @@ let g:netrw_http_cmd  = "curl"
 let g:netrw_http_xcmd = "-so"
 
 " snippets config
-let snips_author = 'Simon Gomizelj'
-let snips_email  = 'simongmzlj@gmail.com'
+let snips_author = 'Tyler Goodlet'
+let snips_email  = 'tgoodlet@gmail.com'
 
 " NERDTree config
 let g:NERDTreeChDirMode     = 2

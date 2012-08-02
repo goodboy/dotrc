@@ -9,6 +9,3 @@ ranger/tagged
 xmonad/xmonad-*-linux
 xmonad/xmonad.errors
 xmonad/history
-vim/backups/*
-vim/tmp/*
-vim/undo/*
