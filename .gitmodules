@@ -1,0 +1,3 @@
+[submodule "dotrc/vim/bundle/pathogen"]
+	path = dotrc/vim/bundle/pathogen
+	url = https://github.com/tpope/vim-pathogen.git
