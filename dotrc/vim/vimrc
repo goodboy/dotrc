@@ -2,7 +2,7 @@
 " Author:   Simon Gomizelj
 " Edit:     Tyler Goodlet
 "      -> removed cursor line for my slow laptop
-"      -> added special commands
+"      -> added custom command 'Share'
 " ----------------------------------------------------------------------------
 
 set nocompatible
