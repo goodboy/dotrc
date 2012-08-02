@@ -1,250 +1,172 @@
-"file       ~/.vimrc 
-"author:    Tyler Goodlet
-"--------------------------------------------------------------------
-syntax enable
-set t_Co=256
-filetype on
-set autoread
+" File:     ~/.vimrc files
+" Author:   Simon Gomizelj
+" Edit:     Tyler Goodlet
+" ----------------------------------------------------------------------------
+
+set nocompatible
+
+filetype off
+runtime bundle/pathogen/autoload/pathogen.vim
+call pathogen#runtime_append_all_bundles()
+call pathogen#helptags()
+
+syntax on
+filetype plugin indent on
+colorscheme diablo3
+
+" GENERAL {{{1
+" -----------------------------
+
+" formatting
+set tabstop=4
+set shiftwidth=4
+set smartindent
+set linebreak
+set nolist
+set nowrap
+set textwidth=72
+set wrapmargin=0
+set formatoptions=qn1
+
+" searching
+set hlsearch
+set smartcase
+set incsearch
+
+" editing
+set list
+set listchars=tab:\ \ ,extends:$,precedes:^
+set nrformats+=alpha
+
+" folding
+set foldenable
+set foldmethod=marker
+set foldmarker={{{,}}}
+set foldcolumn=1
 set backspace=indent,eol,start
 
-"----------------------------------------
-" COLOR SCHEME
-" ----------------------------------------
-colorscheme diablo3
-let g:diablo4_longline = 1 
-"default lenth of a line setting (default: 121) note: set value to length
-"wanted + 1
-"let g:diablo3_len = 79 
-
-if &term =~ "xterm\\|rxvt"
-    " use an orange cursor in insert mode
-    let &t_SI = "\<Esc>]12;orange\x7"
-    " use a red cursor otherwise
-    let &t_EI = "\<Esc>]12;red\x7"
-    silent !echo -ne "\033]12;red\007"
-    " keep cursor read when vim leaves
-    autocmd VimLeave * silent !echo -ne "\\033]12;red\007"
-
-    " reset cursor when vim exits
-    "autocmd VimLeave * silent !echo -ne "\033]112\007
-    " use \003]12;gray\007 for gnome-terminal
-endif
-
-"------------------------------------------
-" CUSTOM COMMANDS 
-"------------------------------------------
-command -range=% Share :<line1>,<line2>write !curl -F "sprunge=<-" http://sprunge.us|xclip
-
-"------------------------------------------
-" HANDLING TABS
-"------------------------------------------
-" replace tab character with spaces
-"set expandtab
-" set number of spaces that a <Tab> in the file counts for (recommend leaving at default=8)
-"set tabstop=4
-" how many columns is indented with the reindent operations and auto "smart tabbing" 
-set shiftwidth=4
-" adds tabs where it thinks you'll need them on new lines (not needed as
-" filetype indentation is used later on)
-"set smartindent
-" how many columns are put in when you hit tab in insert mode
-set softtabstop=4
-setl autoindent
-
-set whichwrap+=<,>,h,l
-set nowrap    
-set lbr
-
-set mouse=a
-set mouses=i-r:beam,s:updown,sd:udsizing,vs:leftright,vd:lrsizing,m:no,ml:up-arrow,v:rightup-arrow
-set mousehide
-
-set ignorecase
-set smartcase
-
-set guioptions-=m
-set guioptions-=T
-set sidescroll=1
-
-" highlights all occurences of your search
-setl hlsearch
-" search AS you type
-set incsearch 
-" shows line numbers
-set number
-"set bg=dark
+" spelling
+set spelllang=en_ca
 set spellfile=~/.vim/dict.add
 
-"-----------------------------
-" AUTOCOMMANDS
-"-----------------------------
-filetype indent on
-filetype plugin on
-filetype on
+" vim ui
+set autoread
+set autowrite
+set showcmd
+set title
+set ruler
+set number
+set cursorline
+set shortmess=at
+set hidden
+set laststatus=2
+set wildmenu
+set wildmode=list:longest,full
+set completeopt=longest,menuone
+set history=50
+set mouse=a
+set confirm
+set equalalways
 
-if has("autocmd")
-    augroup filetype
-        autocmd BufNewFile,BufRead *french*   set spelllang=fr
-        autocmd BufNewFile,BufRead *francais* set spelllang=fr
-        autocmd BufNewFile,BufRead *français* set spelllang=fr
-        autocmd BufNewFile,BufRead *.ly       setf lilypond
-        autocmd BufNewFile,BufRead *.lily     setf lilypond
-        augroup END
-"override tab settings from section 'TAB SETTINGS'    
-    autocmd FileType html,xhtml,xml,ruby,eruby,yaml,python "set ai sw=4 sts=2 et
-    autocmd FileType latex,tex set spell wrap
-    "autocmd FileType c set cindent 
-end
+set wildignore+=.hg,.git,.svn                  " version control
+set wildignore+=*.aux,*.out,*.toc              " LaTeX intermediate files
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg " images files
+set wildignore+=*.a*.o,*.obj,*.so,*.hi         " compiled object files
+set wildignore+=*.pyc                          " python byte code
+set wildignore+=*.spl                          " compiled spell lists
 
-" these 2 lines will save things like folds and load them automatically
-" au BufWinLeave * mkview
-" au BufWinEnter * silent loadview
+" backup
+set backup
+set backupdir=~/.vim/backups
+set dir=~/.vim/tmp
+set undofile
+set undodir=~/.vim/undo
 
-"-----------------------------
-" Matlab Specific
-"-----------------------------
-source $VIMRUNTIME/macros/matchit.vim
-autocmd BufEnter *.m    compiler mlint
-au FileType matlab map <buffer> <silent> <F5> :w<CR>:!matlab -nodesktop -nosplash -r "try, run(which('%')), pause, end, quit" <CR>\\|<ESC><ESC>
-au FileType matlab set foldmethod=syntax foldcolumn=2 foldlevel=33
-set spell
+" AUTOCMDS {{{1
+" ----------------------------
+au VimResized   * exe "normal! \<c-w>="
+au BufWritePre  * if ! &bin | silent! :call spaces#StripTrailing()<CR>
+au BufWritePost * if getline(1) =~ "^#!" | silent :!chmod +x <afile>
 
-"-----------------------------
-" KEYBOARD NAVIGATION
-"-----------------------------
-nnoremap j gj
-nnoremap k gk
-vnoremap j gj
-vnoremap k gk
-nnoremap <Down> gj
-nnoremap <Up> gk
-vnoremap <Down> gj
-vnoremap <Up> gk
-inoremap <Down> <C-o>gj
-inoremap <Up> <C-o>gk
-
-"remaps 'move to window and maximize' commands to Ctrl-h,j,k,l
-map <C-H> <C-W>h<C-W>_
-map <C-J> <C-W>j
-"<C-W>_
-map <C-K> <C-W>k
-"<C-W>_
-map <C-L> <C-W>l<C-W>_
-set wmh=0
-
-map <A-1> 1gt
-map <A-2> 2gt
-map <A-3> 3gt
-map <A-4> 4gt
-map <A-5> 5gt
-map <A-6> 6gt
-map <A-7> 7gt
-map <A-8> 8gt
-map <A-9> 9gt
-
-map <C-A-1> :tabm0
-map <C-A-2> :tabm1
-map <C-A-3> :tabm2
-map <C-A-4> :tabm3
-map <C-A-5> :tabm4
-map <C-A-6> :tabm5
-map <C-A-7> :tabm6
-map <C-A-8> :tabm7
-map <C-A-9> :tabm8
+" MAPPINGS {{{1
+" ----------------------------
 
 " for common typos
-command! Q quit
-command! W write
+command! Q q
+command! W w
+command! Qa qa
 command! Wq wq
 command! Wa wa
+command! Wqa wqa
+
+command! Ww w !wc -w
+
+" sane j k actions
+nnoremap j gj
+nnoremap k gk
+
+" map Y to act like D and C; yank till end of line
+map Y y$
+
+" shortcut to update diff
+nnoremap <silent> <leader>c :call toggle#ToggleList("Quickfix List", 'c')<CR>
+nnoremap <silent> <leader>d :diffupdate<CR>
+nnoremap <silent> <leader>h :nohl<CR>
+nnoremap <silent> <leader>l :ls<CR>:b<space>
+nnoremap <silent> <leader>s :setl spell!<CR>
+nnoremap <silent> <leader>w :call spaces#StripTrailing()<CR>
+nnoremap <silent> <leader>p :!sprunge "%"<CR>
+
+" window movements
+nmap <silent> <C-H> :winc h<CR>
+nmap <silent> <C-J> :winc j<CR>
+nmap <silent> <C-K> :winc k<CR>
+nmap <silent> <C-L> :winc l<CR>
+
+" map space to create/open/close fold
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':'l')<CR>
+vnoremap <Space> zf
 
 " changing dictionaries
-command! Fr set spelllang=fr
-command! En set spelllang=en
+command! Fr setl spelllang=fr
+command! En setl spelllang=en_ca
+command! Sl setl spelllang=sl
 
-nmap <silent><Home> :call SmartHome("n")<CR>
-nmap <silent><End>  :call SmartEnd("n")<CR>
-imap <silent><Home> <C-r>=SmartHome("i")<CR>
-imap <silent><End>  <C-r>=SmartEnd("i")<CR>
-vmap <silent><Home> <Esc>:call SmartHome("v")<CR>
-vmap <silent><End>  <Esc>:call SmartEnd("v")<CR>
+" bindings for building code
+nnoremap <F5>   :make<CR>
+nnoremap <S-F6> :!./"%"<CR>
 
-" smart home function
-function SmartHome(mode)
-  let curcol = col(".")
+" PLUGINS {{{1
+" ----------------------------
 
-  if curcol > indent(".") + 2
-    call cursor(0, col(".") - 1)
-  endif
+" set vim to download files with curl
+let g:netrw_http_cmd  = "curl"
+let g:netrw_http_xcmd = "-so"
 
-  if curcol == 1 || curcol > indent(".") + 1
-    if &wrap
-      normal g^
-    else
-      normal ^
-    endif
-  else
-    if &wrap
-      normal g0
-    else
-      normal 0
-    endif
-  endif
+" snippets config
+let snips_author = 'Simon Gomizelj'
+let snips_email  = 'simongmzlj@gmail.com'
 
-  if a:mode == "v"
-    normal msgv`s
-  endif
+" NERDTree config
+let g:NERDTreeChDirMode     = 2
+let g:NERDTreeIgnore        = ['\~$', '\.swp$', '\.o$', '\.hi$']
+let g:NERDTreeSortOrder     = ['^__\.py$', '\/$', '*', '\~$']
+let g:NERDTreeShowBookmarks = 1
+let g:NERDTreeMinimalUI     = 1
+nnoremap <silent> <F9> :NERDTreeToggle<CR>
 
-  return ""
-endfunction
+" SuperTab config
+let g:SuperTabDefaultCompletionType = "context"
 
-" smart end function
-function SmartEnd(mode)
-  let curcol = col(".")
-  let lastcol = a:mode == "i" ? col("$") : col("$") - 1
+" gundo config
+nnoremap <silent> <leader>u :GundoToggle<CR>
 
-  if curcol < lastcol - 1
-    call cursor(0, col(".") + 1)
-  endif
+" fugative config
+nnoremap <silent> <leader>gd :Gdiff<CR>
+nnoremap <silent> <leader>gb :Gbrowse<CR>
 
-  if curcol < lastcol
-    if &wrap
-      normal g$
-    else
-      normal $
-    endif
-  else
-    normal g_
-  endif
+" tagbar config
+nnoremap <silent> <leader>t :TagbarToggle<CR>
 
-  if a:mode == "i"
-    call cursor(0, col(".") + 1)
-  endif
-
-  if a:mode == "v"
-    normal msgv`s
-  endif
-
-  return ""
-endfunction
-
-"----------------------------------------------
-" OPTIONS FOR RULER AT BOTTOM
-"----------------------------------------------
-set formatoptions+=roc 
-set laststatus=2 
-set ruler 
-set hls
-
-"----------------------------------------------
-" OPTIONS FOR FOLDING
-"----------------------------------------------
-set foldcolumn=0
-set foldmethod=manual
-set nofoldenable
-set foldlevel=1
-
-"----------------------------------------------
-" AUTOCOMPLETION STUFF
-"----------------------------------------------
-set complete=.,w,b,u,U,t,kmake.conf,i
+" tabular config
+nnoremap <silent> <leader>== :Tabular /=<CR>

@@ -5,7 +5,10 @@
 " Thanks To:    lilydjwg, Tomas Restrepo(author of molokai.vim), terremoto 
 " License:      MIT License
 " Options:
-" Edits - Tyler Goodlet
+"
+" Edits:  Tyler Goodlet
+"   -> changed bg to transparency of term emulator
+"   -> changed current window to have the highlighted status bar
 "
 " If you want to set long line warning, copy this in your vimrc:
 "
