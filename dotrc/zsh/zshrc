@@ -2,21 +2,33 @@
 # Tyler Goodlet .zshrc config file
 #
 
-HISTFILE=~/.histfile
-HISTSIZE=5000
-SAVEHIST=5000
+# history
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory
+setopt extended_history
 
-setopt appendhistory 
-#setopt autocd 
+# completion
+zstyle :compinstall filename '/home/tyler/.zshrc'
+autoload -Uz compinit && compinit
+
+# changing directories
+#setopt autocd
 setopt autopushd
+
+# expansion and globbing
 setopt extendedglob 
-setopt nomatch 
+setopt nomatch
 setopt notify
 
+# zle
 unsetopt beep
+
+# vi front end
 bindkey -v
 
-#none of these effing work!?!
+# bindkeys
 bindkey "^[[A" history-beginning-search-backward
 bindkey "^[[B" history-beginning-search-forward
 bindkey "\e[1~" beginning-of-line
@@ -43,15 +55,7 @@ bindkey '^i' expand-or-complete-prefix
 bindkey '^w' push-line
 bindkey '^e' get-line
 
-# The following lines were added by compinstall
-zstyle :compinstall filename '/home/tyler/.zshrc'
-autoload -Uz compinit
-compinit
-# End of lines added by compinstall
-
-#
-# Aliases 
-#
+# aliases
 alias ls='ls --classify --tabsize=0 --literal --color=auto --show-control-chars --human-readable --group-directories-first'
 alias grep='grep --color=auto'
 alias less='less -R'
@@ -61,8 +65,7 @@ alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
 alias ll='ls -l --classify --color=always --human-readable --group-directories-first'
 #alias matlab ='/usr/local/bin/matlab -nodesktop -nosplash'
 
-#
-# Zsh FUNCTIONS 
+# FUNCTIONS
 #
 #function precmd {
 #        local cur_dir=''
@@ -85,20 +88,20 @@ export LESS_TERMCAP_so=$(printf "\e[1;44;33m")
 export LESS_TERMCAP_ue=$(printf "\e[0m")
 export LESS_TERMCAP_us=$(printf "\e[1;32m")
 
-# If not running interactively, don't do anything
+# display settings
+# If NOT running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-# PROMPT SETTINGS
 # enables coloured prompt settings
 autoload -U colors && colors
 PROMPT="%{$fg[green]%}->%#%{$reset_color%}"
 RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
 
-# Enable tmux at shell start
+# enable tmux (at shell start)
 #
 # check if tmux is installed
 if which tmux 2>&1 >/dev/null; then
-    
+
     #if not running interactively, do not do anything
     [[ $- != *i* ]] && break
 
@@ -107,12 +110,12 @@ if which tmux 2>&1 >/dev/null; then
     if  ( test -z ${TMUX} && [[ -z $(pidof tmux) ]]); then
 
         echo 'starting new tmux server'
-            
+
         # NOTE you must create a session (eg. new -s main zsh)
         # in ~/.tmux.conf or this attach line will fail if no prior 
         # session/server exists 
         tmux attach && exit
-        
+
         echo ':exit shell as well? [Y/n]'
         read input
         if [[ $input == ( y || \n ) ]]; then
@@ -146,21 +149,21 @@ function zle-keymap-select {
 zle -N zle-keymap-select
 
 # change cursor to RED in vi normal mode
-zle-keymap-select () {
-    if [ $TERM = "screen-256color" ]; then
-	if [ $KEYMAP = vicmd ]; then
-	    echo -ne "\033]12;Red\007"
-	else
-	    echo -ne "\033]12;Grey\007"
-	fi
-    fi
-}
-zle -N zle-keymap-select
-zle-line-init () {
-    zle -K viins
-    if [ $TERM = "rxvt-256color" ]; then
-	echo -ne "\033]12;Grey\007"
-    fi
-}
-zle -N zle-line-init
-bindkey -v
+#zle-keymap-select () {
+#    if [ $TERM = "screen-256color" ]; then
+#	if [ $KEYMAP = vicmd ]; then
+#	    echo -ne "\033]12;Red\007"
+#	else
+#	    echo -ne "\033]12;Grey\007"
+#	fi
+#    fi
+#}
+#zle -N zle-keymap-select
+#zle-line-init () {
+#    zle -K viins
+#    if [ $TERM = "rxvt-256color" ]; then
+#	echo -ne "\033]12;Grey\007"
+#    fi
+#}
+#zle -N zle-line-init
+#aindkey -v
