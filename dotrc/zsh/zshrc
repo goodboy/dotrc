@@ -45,7 +45,7 @@ bindkey "\e[5C" forward-word
 bindkey "\e[5D" backward-word
 bindkey "\eOc" emacs-forward-word
 bindkey "\eOd" emacs-backward-word
-bindkey "^H" backward-delete-word
+#bindkey "^H" backward-delete-word
 bindkey '^R' history-incremental-search-backward
 
 # completion in the middle of a line
@@ -101,9 +101,6 @@ RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
 #
 # check if tmux is installed
 if which tmux 2>&1 >/dev/null; then
-
-    #if not running interactively, do not do anything
-    [[ $- != *i* ]] && break
 
     # if NOT inside a session AND no server yet exits,
     # start a new server and new session
