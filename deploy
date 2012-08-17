@@ -15,6 +15,7 @@ link() {
   [[ -d "$target"                   ]] && rm "$target"
 
   ln -fs "$dotfiles/dotrc/$1" "$target"
+  echo "linking ~/$target -> $1"
 }
 
 # Deploy scriptlets {{{1
@@ -71,6 +72,7 @@ HERE
 }
 
 deploy() {
+echo "deploying for user: $(whoami)"
   while (( $# )); do
     cd && dotfiles_${1#dotfiles_}
     if [[ $? == 127 ]]; then
