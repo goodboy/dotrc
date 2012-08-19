@@ -17,7 +17,7 @@ autoload -Uz compinit && compinit
 #setopt autocd
 setopt autopushd
 
-# expansion and globbing
+# fxpansion and globbing
 setopt extendedglob 
 setopt nomatch
 setopt notify
@@ -68,18 +68,6 @@ alias tmux='tmux -2'
 alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
 #alias matlab ='/usr/local/bin/matlab -nodesktop -nosplash'
 
-# FUNCTIONS
-#
-#function precmd {
-#        local cur_dir=''
-#        if [[ $CUR_DIR != $PWD ]]; then
-#            cur_dir=${PWD/#$HOME/~}
-#            CUR_DIR=$cur_dir
-#        else
-#            cur_dir=""
-#        fi
-#        RPROMPT="%{$reset_color%}%{$fg[green]%}$cur_dir%{$reset_color%}"
-#}
 
 
 # Coloured man page support using 'less' (code taken from arch wiki)
@@ -91,7 +79,7 @@ export LESS_TERMCAP_so=$(printf "\e[1;44;33m")
 export LESS_TERMCAP_ue=$(printf "\e[0m")
 export LESS_TERMCAP_us=$(printf "\e[1;32m")
 
-# display settings
+# Display settings
 # If NOT running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -100,14 +88,24 @@ autoload -U colors && colors
 PROMPT="%{$fg[green]%}->%#%{$reset_color%}"
 RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
 
-# enable tmux (at shell start)
-#
-# check if tmux is installed
+# FUNCTIONS
+function precmd {
+        # only update right-prompt on dir change
+        if [[ ${cur_dir} != ${PWD} ]]; then
+            RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
+            cur_dir=${PWD}
+        else
+            RPROMPT=""
+        fi
+}
+
+# TMUX detection
 if which tmux 2>&1 >/dev/null; then
+# check if tmux is installed
 
     # if NOT inside a session AND no server yet exits,
     # start a new server and new session
-    if  ( test -z ${TMUX} && [[ -z $(pidof tmux) ]]); then
+    if  (test -z ${TMUX} && [[ -z $(pidof tmux) ]]); then
 
         echo 'starting new tmux server'
 
@@ -125,7 +123,7 @@ if which tmux 2>&1 >/dev/null; then
     # if session exists then create a new window and attach to it
     # (this code is called whenever a new shell is opened outside tmux
     # and the tmux session 'main' already exists)
-    elif (test -z $TMUX) && $(tmux has-session -t main); then
+    elif (test -z ${TMUX}) && $(tmux has-session -t main); then
 
         echo 'trying to connect to main session'
         if (test -z $(tmux list-clients -t main)); then
@@ -136,7 +134,7 @@ if which tmux 2>&1 >/dev/null; then
     elif (test -n ${TMUX}); then
         echo 'new tmux pseudo-shell'
     fi
-    [[ $TERM != "screen-256color" ]] && echo 'This is outside a tmux shell! Think of all the potential you waste...'
+    [[ -z $TMUX ]] && echo 'This is outside a tmux shell! Think of all the potential you waste...'
 fi
 
 # If I am using vi keys, I want to know what mode I'm currently using.
