@@ -54,7 +54,7 @@ bindkey '^i' expand-or-complete-prefix
 # buffer stack access
 bindkey '^w' push-line
 bindkey '^e' get-line
-}}}
+#}}}
 # {{{1 Aliases
 #alias ls='ls --classify --tabsize=0 --literal --color=auto --show-control-chars --human-readable --group-directories-first'
 alias ls='ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first'
@@ -66,9 +66,9 @@ alias less='less -R'
 alias cower='cower --color=auto'
 alias tmux='tmux -2'
 alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
-alias hask='tmux split-window -v; tmux resize-pane -D 10;'
-#alias matlab ='/usr/local/bin/matlab -nodesktop -nosplash'
-}}}
+alias console='tmux split-window -v; tmux resize-pane -D 10;'
+alias matlab='matlab -nodesktop -nosplash'
+#}}}
 # {{{1 Coloured man page support
 # using 'less' env vars (code taken from arch wiki)
 export LESS_TERMCAP_mb=$(printf "\e[1;31m")
@@ -78,7 +78,7 @@ export LESS_TERMCAP_se=$(printf "\e[0m")
 export LESS_TERMCAP_so=$(printf "\e[1;44;33m")
 export LESS_TERMCAP_ue=$(printf "\e[0m")
 export LESS_TERMCAP_us=$(printf "\e[1;32m")
-}}}
+#}}}
 
 # Display settings
 # If NOT running interactively, don't do anything
@@ -100,7 +100,7 @@ function precmd {
             RPROMPT=""
         fi
 }
-}}}
+#}}}
 # {{{1 TMUX detection
 if which tmux 2>&1 >/dev/null; then
 # check if tmux is installed
@@ -138,7 +138,7 @@ if which tmux 2>&1 >/dev/null; then
     fi
     [[ -z $TMUX ]] && echo 'This is outside a tmux shell! Think of all the potential you waste...'
 fi
-}}}
+#}}}
 
 # If I am using vi keys, I want to know what mode I'm currently using.
 # zle-keymap-select is executed every time KEYMAP changes.
