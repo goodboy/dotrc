@@ -30,7 +30,7 @@ au FileType c,cpp           setl cino=(0
 au FileType html,xhtml,xml  setl sw=2 ts=2 et
 au FileType ruby            setl sw=2 ts=2 et
 au FileType python          setl et
-au FileType bash,sh,zsh     setl sw=4 ts=4 et
+au FileType bash,sh,zsh     setl et
 au FileType haskell,cabal   setl et
 au FileType *               setl lcs+=tab:▸\ ,trail:- fo+=cr
 
