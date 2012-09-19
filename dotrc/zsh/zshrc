@@ -66,8 +66,8 @@ alias less='less -R'
 alias cower='cower --color=auto'
 alias tmux='tmux -2'
 alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
-alias console='tmux split-window -v; tmux resize-pane -D 10;'
 alias matlab='matlab -nodesktop -nosplash'
+alias console='tmux split-window -v; tmux resize-pane -D 10;'
 #}}}
 # {{{1 Coloured man page support
 # using 'less' env vars (code taken from arch wiki)
@@ -99,6 +99,11 @@ function precmd {
         else
             RPROMPT=""
         fi
+}
+
+function console_split {
+    process=$1
+    echo 'process'
 }
 #}}}
 # {{{1 TMUX detection

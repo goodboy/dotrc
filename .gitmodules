@@ -7,3 +7,9 @@
 [submodule "bin"]
 	path = bin
 	url = git://github.com/tgoodlet/scripts.git
+[submodule "dotrc/vim/bundle/surround"]
+	path = dotrc/vim/bundle/surround
+	url = git://github.com/tpope/vim-surround.git
+[submodule "dotrc/vim/bundle/supertab"]
+	path = dotrc/vim/bundle/supertab
+	url = git://github.com/ervandew/supertab.git
