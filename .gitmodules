@@ -13,3 +13,6 @@
 [submodule "dotrc/vim/bundle/supertab"]
 	path = dotrc/vim/bundle/supertab
 	url = git://github.com/ervandew/supertab.git
+[submodule "dotrc/vim/bundle/haskellmode"]
+	path = dotrc/vim/bundle/haskellmode
+	url = git://github.com/lukerandall/haskellmode-vim.git
