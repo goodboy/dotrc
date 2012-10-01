@@ -7,12 +7,11 @@
 au BufNewFile,BufRead *.nfo setf nfo
 au BufNewFile,BufRead *.txt setf txt
 au BufNewFile,BufRead *.md  setf pandoc
+au BufNewFile,BufRead *.bf  setf brainfuck
 au BufNewFile,BufRead *.hsc setf haskell
 au BufNewFile,BufRead *.chs setf haskell
-au BufNewFile,BufRead *.bf  setf brainfuck
+au BufNewFile,BufRead *.m   setf matlab
 au BufNewFile,BufRead /etc/nginx/*conf setf nginx
-" added matlab detection
-au BufNewFile,BufRead *.m setf matlab
 
 au BufReadPost *.doc silent %!catdoc "%"
 au BufWriteCmd *.doc setl readonly
