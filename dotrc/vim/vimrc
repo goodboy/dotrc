@@ -84,6 +84,9 @@ set dir=~/.vim/tmp
 set undofile
 set undodir=~/.vim/undo
 
+" path
+set path=.,,/usr/include,/usr/lib
+
 " AUTOCMDS {{{1
 " ----------------------------
 au VimResized   * exe "normal! \<c-w>="
@@ -153,12 +156,6 @@ let g:netrw_http_xcmd = "-so"
 let snips_author = 'Tyler Goodlet'
 let snips_email  = 'tgoodlet@gmail.com'
 
-" haskellmode config
-let g:haddock_browser = "/usr/bin/firefox"
-let g:ghc = "/usr/bin/ghc"
-let g:haddock_docdir="/usr/share/doc/ghc/html/"
-au Filetype haskell compiler ghc
-
 " NERDTree config
 let g:NERDTreeChDirMode     = 2
 let g:NERDTreeIgnore        = ['\~$', '\.swp$', '\.o$', '\.hi$']
@@ -182,3 +179,13 @@ nnoremap <silent> <leader>t :TagbarToggle<CR>
 
 " tabular config
 nnoremap <silent> <leader>== :Tabular /=<CR>
+
+" HASKELL
+
+" haskellmode config
+" let g:haddock_browser = "/usr/bin/firefox"
+" let g:ghc = "/usr/bin/ghc"
+" let g:haddock_docdir="/usr/share/doc/ghc/html/"
+" let g:haddock_indexfiledir="~/.vim/"
+" let g:wget="/usr/bin/wget"
+" au Filetype haskell compiler ghc

@@ -24,9 +24,7 @@ setopt notify
 
 # zle
 unsetopt beep
-
-# vi front end
-bindkey -v
+bindkey -v      # vi front end
 
 # {{{1 Bindkeys
 bindkey "^[[A" history-beginning-search-backward
@@ -47,6 +45,9 @@ bindkey "\eOc" emacs-forward-word
 bindkey "\eOd" emacs-backward-word
 #bindkey "^H" backward-delete-word
 bindkey '^R' history-incremental-search-backward
+
+# CTRL-Q for vi normal mode
+bindkey '^q' vicmd
 
 # completion in the middle of a line
 bindkey '^i' expand-or-complete-prefix

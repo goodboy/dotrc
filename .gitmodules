@@ -13,9 +13,6 @@
 [submodule "dotrc/vim/bundle/supertab"]
 	path = dotrc/vim/bundle/supertab
 	url = git://github.com/ervandew/supertab.git
-[submodule "dotrc/vim/bundle/haskellmode"]
-	path = dotrc/vim/bundle/haskellmode
-	url = git://github.com/lukerandall/haskellmode-vim.git
 [submodule "dotrc/vim/bundle/fugitive"]
 	path = dotrc/vim/bundle/fugitive
 	url = git://github.com/tpope/vim-fugitive.git
@@ -28,3 +25,6 @@
 [submodule "dotrc/vim/bundle/repeat"]
 	path = dotrc/vim/bundle/repeat
 	url = https://github.com/tpope/vim-repeat.git
+[submodule "dotrc/vim/bundle/vim2hs"]
+	path = dotrc/vim/bundle/vim2hs
+	url = https://github.com/dag/vim2hs.git
