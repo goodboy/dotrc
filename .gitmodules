@@ -28,3 +28,6 @@
 [submodule "dotrc/vim/bundle/vim2hs"]
 	path = dotrc/vim/bundle/vim2hs
 	url = https://github.com/dag/vim2hs.git
+[submodule "dotrc/vim/bundle/tabular"]
+	path = dotrc/vim/bundle/tabular
+	url = https://github.com/godlygeek/tabular.git

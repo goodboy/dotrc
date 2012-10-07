@@ -136,15 +136,14 @@ nmap <silent> <C-L> :winc l<CR>
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':'l')<CR>
 vnoremap <Space> zf
 
-" changing dictionaries
-command! Fr setl spelllang=fr
-command! En setl spelllang=en_ca
-command! Sl setl spelllang=sl
-
 " bindings for building code
 nnoremap <F5>   :make<CR>
 nnoremap <S-F6> :!./"%"<CR>
 
+" changing dictionaries
+command! Fr setl spelllang=fr
+command! En setl spelllang=en_ca
+command! Sl setl spelllang=sl
 " PLUGINS {{{1
 " ----------------------------
 
@@ -180,12 +179,16 @@ nnoremap <silent> <leader>t :TagbarToggle<CR>
 " tabular config
 nnoremap <silent> <leader>== :Tabular /=<CR>
 
-" HASKELL
+" HASKELL : vim2hs config
+let g:haskell_conceal_wide = 1
+let g:hpaste_author = 'Tyler'
+let g:haskell_tabular = 1
+let g:haskell_autotags = 0
 
-" haskellmode config
-" let g:haddock_browser = "/usr/bin/firefox"
-" let g:ghc = "/usr/bin/ghc"
-" let g:haddock_docdir="/usr/share/doc/ghc/html/"
-" let g:haddock_indexfiledir="~/.vim/"
-" let g:wget="/usr/bin/wget"
-" au Filetype haskell compiler ghc
+au Filetype haskell
+  \ compiler hlint
+"  \ let g:hlint_args = '--language=XmlSyntax'
+"
+au Filetype cabal
+  \ nnoremap <buffer> <silent> <Leader>t: :Tabularize colon<CR> 
+
