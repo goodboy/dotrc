@@ -31,3 +31,9 @@
 [submodule "dotrc/vim/bundle/tabular"]
 	path = dotrc/vim/bundle/tabular
 	url = https://github.com/godlygeek/tabular.git
+[submodule "dotrc/vim/bundle/syntastic"]
+	path = dotrc/vim/bundle/syntastic
+	url = https://github.com/scrooloose/syntastic.git
+[submodule "dotrc/vim/bundle/pydoc"]
+	path = dotrc/vim/bundle/pydoc
+	url = https://github.com/fs111/pydoc.vim
