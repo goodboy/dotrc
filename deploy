@@ -4,19 +4,20 @@
 dotfiles=$PWD
 
 die() {
-  echo >&2 "$1" && exit 1
+    echo >&2 "$1" && exit 1
 }
 
 link() {
-  [[ -z $2 ]] && target=".${1##*/}" \
-              || target="${2:-$target}"
+    local parentdir="dotrc"
+    [[ -z $2 ]] && target=".${1##*/}" \
+                || target="${2:-$target}"
 
-  [[ -e "$target" && ! -h "$target" ]] && die "$0: $target exists in filesystem"
-  [[ -d "$target"                   ]] && rm "$target"
-  [[ "$target" == ".bin"             ]] && target="${target#.}"
+    [[ -e "$target" && ! -h "$target" ]] && die "$0: $target exists in filesystem"
+    [[ -d "$target"                   ]] && rm "$target"
+    [[ "$target" == ".bin"            ]] && { target="${target##.}"; parentdir=""; }
 
-  ln -fs "$dotfiles/dotrc/$1" "$target"
-  echo "linking ~/$target -> $1"
+    ln -fs "$dotfiles/$parentdir/$1" "$target"
+    echo "linking ~/$target -> $1"
 }
 
 # Deploy scriptlets {{{1
@@ -37,26 +38,26 @@ dotfiles_tmux()         { link tmux/tmux.conf;                          }
 #dotfiles_xmonad()      { link xmonad;                                  }
 
 dotfiles_task() {
-  link task/task
-  link task/taskrc
+    link task/task
+    link task/taskrc
 }
 
 dotfiles_vim() {
-  link vim
-  link vim/vimrc
-  link vim/gvimrc
+    link vim
+    link vim/vimrc
+    link vim/gvimrc
 }
 
 dotfiles_X() {
-  link X/Xresources
-  link X/xinitrc
-  link X/Xmodmap
-  #link X/gtkrc-2.0 .gtkrc-2.0.mine
+    link X/Xresources
+    link X/xinitrc
+    link X/Xmodmap
+    #link X/gtkrc-2.0 .gtkrc-2.0.mine
 }
 
 dotfiles_zsh() {
-  link zsh/zshrc
-  link zsh/zprofile
+    link zsh/zshrc
+    link zsh/zprofile
 }
 # }}}
 
@@ -67,28 +68,28 @@ Automated deploy function for dotfile syncronization.
 SUPPORTED:
 HERE
 
-  for fun in $(compgen -A function dotfiles_); do
+for fun in $(compgen -A function dotfiles_); do
     echo "  ${fun#dotfiles_}"
-  done
-  exit ${1:-0}
+done
+exit ${1:-0}
 }
 
 deploy() {
-echo "deploying for user: $(whoami)"
-  while (( $# )); do
-    cd && dotfiles_${1#dotfiles_}
-    if [[ $? == 127 ]]; then
-      echo  >&2 "Error: don't know how to deploy \"$1\""
-      usage >&2 1
-    fi
-    shift
-  done
+    echo "deploying dotfiles for user: $(whoami)"
+    while (( $# )); do
+        cd && dotfiles_${1#dotfiles_}
+        if [[ $? == 127 ]]; then
+            echo  >&2 "Error: don't know how to deploy \"$1\""
+            usage >&2 1
+        fi
+        shift
+    done
 }
 
 if (( $# == 0 )); then
-  deploy $(compgen -A function dotfiles_)
+    deploy $(compgen -A function dotfiles_)
 elif [[ "$1" == "--help" ]]; then
-  usage 0
+    usage 0
 else
-  deploy $*
+    deploy $*
 fi
