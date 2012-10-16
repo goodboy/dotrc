@@ -37,3 +37,9 @@
 [submodule "dotrc/vim/bundle/pydoc"]
 	path = dotrc/vim/bundle/pydoc
 	url = https://github.com/fs111/pydoc.vim
+[submodule "dotrc/vim/bundle/neo-ghc"]
+	path = dotrc/vim/bundle/neo-ghc
+	url = https://github.com/ujihisa/neco-ghc.git
+[submodule "dotrc/vim/bundle/ghcmod-vim"]
+	path = dotrc/vim/bundle/ghcmod-vim
+	url = https://github.com/eagletmt/ghcmod-vim
