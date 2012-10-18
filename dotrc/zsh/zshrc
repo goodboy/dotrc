@@ -35,6 +35,7 @@ bindkey -v      # vi front end
 
 # zprofile
 export PATH="$PATH:$HOME/etc/bin:$HOME/.cabal/bin"
+# export PYTHONPATH="$PYTHONPATH:/usr/lib/python3.2/site-packages/" #:/home/tyler/builds/python-matplotlib-git/pkg/usr/lib/python3.2/site-packages"
 
 # {{{1 Bindkeys
 bindkey "^[[A" history-beginning-search-backward

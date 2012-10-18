@@ -5,3 +5,5 @@
 vim/backups/*
 vim/tmp/*
 vim/undo/*
+matplotlib/fontList.cache
+matplotlib/fontList.py3k.cache
