@@ -119,7 +119,7 @@ nnoremap k gk
 map Y y$
 
 " shortcut to update diff
-nnoremap <silent> <leader>c :call toggle#ToggleList("Quickfix List", 'c')<CR>
+nnoremap <silent> <leader>q :call toggle#ToggleList("Quickfix List", 'c')<CR>
 nnoremap <silent> <leader>d :diffupdate<CR>
 nnoremap <silent> <leader>h :nohl<CR>
 nnoremap <silent> <leader>l :ls<CR>:b<space>
@@ -185,22 +185,25 @@ nnoremap <silent> <leader>t :TagbarToggle<CR>
 " tabular config
 nnoremap <silent> <leader>== :Tabular /=<CR>
 
-" HASKELL : vim2hs config
+" HASKELL
+" consider making the function assigned to a vimscript variable
+au Filetype haskell nnoremap <silent> <Leader>d :!~/etc/bin/splitwin.sh hoogle -i <cword><CR>:redraw<CR>
+
+" vim2hs config
 let g:haskell_conceal_wide = 1
 let g:hpaste_author = 'Tyler'
 let g:haskell_tabular = 1
 let g:haskell_autotags = 0
+au Filetype cabal nnoremap <buffer> <silent> <Leader>t: :Tabularize colon<CR>
 
-au Filetype haskell
-    \ nnoremap <silent> <Leader>k :!~/etc/bin/splitwin.sh hoogle -i <cword><CR>:redraw<CR>
-    " \ compiler hlint
-    " \ setlocal keywordprg=~/bin/splitwin.sh\ "hoogle\ -i"
-    " \let g:hlint_args = '--language = XmlSyntax'
-au Filetype cabal
-    \nnoremap <buffer> <silent> <Leader>t: :Tabularize colon<CR> 
+" ghc-mod config
+" let g:ghcmod_ghc_options = ['-idir1', '-idir2']
+hi ghcmodType ctermbg=yellow
+let g:ghcmod_type_highlight = 'ghcmodType'
+let g:ghcmod_hlint_options = ['--ignore=Redundant $']
+au Filetype haskell nnoremap <silent> <leader>c :GhcModCheckAndLintAsync<CR>
 
 " PYTHON : pydoc config
 let g:pydoc_open_cmd = 'split'
 let g:pydoc_highlight=0
-au Filetype python
-    \ nnoremap <silent> <Leader>k :!~/etc/bin/splitwin.sh pydoc <cword><CR>:redraw<CR>
+au Filetype python nnoremap <silent> <Leader>k :!~/etc/bin/splitwin.sh pydoc <cword><CR>:redraw<CR>

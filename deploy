@@ -33,11 +33,14 @@ dotfiles_gtk2()         { link gtk-2.0/gtkrc-2.0;                       }
 #dotfiles_nethack()     { link nethack/nethackrc;                       }
 #dotfiles_pam()         { link pam/pam_environment;                     }
 #dotfiles_pentadactyl() { link pentadactyl/pentadactylrc;               }
-#dotfiles_termite()     { link termite/termite.cfg .config/termite.cfg; }
 dotfiles_tmux()         { link tmux/tmux.conf;                          }
 #dotfiles_weechat()     { link weechat;                                 }
 #dotfiles_xmonad()      { link xmonad;                                  }
-dotfiles_matplotlib()     { link matplotlib;                              }
+dotfiles_haskell()      { link haskell/haskeline;                       }
+dotfiles_ghci()         { link ghci/ghci;                               }
+dotfiles_matplotlib()   { link matplotlib;                              }
+dotfiles_matplotlib()   { link inputrc;                                 }
+#dotfiles_termite()     { link termite/termite.cfg .config/termite.cfg; }
 
 dotfiles_task() {
     link task/task
@@ -76,7 +79,7 @@ exit ${1:-0}
 }
 
 deploy() {
-    echo "deploying dotfiles for user: $(whoami)"
+    echo "deploying dotfiles for user '$(whoami)'"
     while (( $# )); do
         cd && dotfiles_${1#dotfiles_}
         if [[ $? == 127 ]]; then

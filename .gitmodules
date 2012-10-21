@@ -16,9 +16,6 @@
 [submodule "dotrc/vim/bundle/fugitive"]
 	path = dotrc/vim/bundle/fugitive
 	url = git://github.com/tpope/vim-fugitive.git
-[submodule "dotrc/vim/bundle/html5-syntax"]
-	path = dotrc/vim/bundle/html5-syntax
-	url = https://github.com/othree/html5-syntax.vim
 [submodule "dotrc/vim/bundle/commentary"]
 	path = dotrc/vim/bundle/commentary
 	url = https://github.com/tpope/vim-commentary
@@ -43,3 +40,6 @@
 [submodule "dotrc/vim/bundle/ghcmod-vim"]
 	path = dotrc/vim/bundle/ghcmod-vim
 	url = https://github.com/eagletmt/ghcmod-vim
+[submodule "dotrc/vim/bundle/vimproc"]
+	path = dotrc/vim/bundle/vimproc
+	url = https://github.com/Shougo/vimproc
