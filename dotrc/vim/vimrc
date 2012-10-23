@@ -162,7 +162,8 @@ let g:NERDTreeIgnore        = ['\~$', '\.swp$', '\.o$', '\.hi$']
 let g:NERDTreeSortOrder     = ['^__\.py$', '\/$', '*', '\~$']
 let g:NERDTreeShowBookmarks = 1
 let g:NERDTreeMinimalUI     = 1
-nnoremap <silent> <F8> :NERDTreeToggle<CR>
+nnoremap <silent> <leader>t :NERDTreeToggle<CR>
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
 " SuperTab config
 let g:SuperTabDefaultCompletionType = "context"
@@ -180,7 +181,7 @@ let g:syntastic_mode_map = { 'mode': 'passive'} ",
     " \ 'passive_filetypes': ['puppet'] }
 
 " tagbar config
-nnoremap <silent> <leader>t :TagbarToggle<CR>
+" nnoremap <silent> <leader>t :TagbarToggle<CR>
 
 " tabular config
 nnoremap <silent> <leader>== :Tabular /=<CR>
@@ -212,4 +213,4 @@ au Filetype python nnoremap <silent> <Leader>k :!~/etc/bin/splitwin.sh pydoc <cw
 let g:clang_complete_auto = 1
 let g:clang_complete_copen = 1
 let g:clang_hl_errors = 1
-let g:clang_periodic_quickfix = 1 
+let g:clang_periodic_quickfix = 0
