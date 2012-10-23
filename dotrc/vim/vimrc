@@ -162,7 +162,7 @@ let g:NERDTreeIgnore        = ['\~$', '\.swp$', '\.o$', '\.hi$']
 let g:NERDTreeSortOrder     = ['^__\.py$', '\/$', '*', '\~$']
 let g:NERDTreeShowBookmarks = 1
 let g:NERDTreeMinimalUI     = 1
-nnoremap <silent> <F9> :NERDTreeToggle<CR>
+nnoremap <silent> <F8> :NERDTreeToggle<CR>
 
 " SuperTab config
 let g:SuperTabDefaultCompletionType = "context"
@@ -207,3 +207,9 @@ au Filetype haskell nnoremap <silent> <leader>c :GhcModCheckAndLintAsync<CR>
 let g:pydoc_open_cmd = 'split'
 let g:pydoc_highlight=0
 au Filetype python nnoremap <silent> <Leader>k :!~/etc/bin/splitwin.sh pydoc <cword><CR>:redraw<CR>
+
+" C : clang_complete config
+let g:clang_complete_auto = 1
+let g:clang_complete_copen = 1
+let g:clang_hl_errors = 1
+let g:clang_periodic_quickfix = 1 

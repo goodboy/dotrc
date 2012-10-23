@@ -43,3 +43,12 @@
 [submodule "dotrc/vim/bundle/vimproc"]
 	path = dotrc/vim/bundle/vimproc
 	url = https://github.com/Shougo/vimproc
+[submodule "dotrc/vim/bundle/clang_complete"]
+	path = dotrc/vim/bundle/clang_complete
+	url = https://github.com/Rip-Rip/clang_complete.git
+[submodule "dotrc/vim/bundle/CCTree"]
+	path = dotrc/vim/bundle/CCTree
+	url = https://github.com/vim-scripts/CCTree.git
+[submodule "dotrc/vim/bundle/nerdtree"]
+	path = dotrc/vim/bundle/nerdtree
+	url = https://github.com/scrooloose/nerdtree
