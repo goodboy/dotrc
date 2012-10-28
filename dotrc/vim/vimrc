@@ -177,8 +177,6 @@ nnoremap <silent> <leader>gb :Gbrowse<CR>
 
 " syntastic config
 let g:syntastic_mode_map = { 'mode': 'passive'} ",
-    " \ 'active_filetypes': ['python', 'haskell', 'c'],
-    " \ 'passive_filetypes': ['puppet'] }
 
 " tagbar config
 " nnoremap <silent> <leader>t :TagbarToggle<CR>
@@ -207,7 +205,7 @@ au Filetype haskell nnoremap <silent> <leader>c :GhcModCheckAndLintAsync<CR>
 " PYTHON : pydoc config
 let g:pydoc_open_cmd = 'split'
 let g:pydoc_highlight=0
-au Filetype python nnoremap <silent> <Leader>k :!~/etc/bin/splitwin.sh pydoc <cword><CR>:redraw<CR>
+au Filetype python nnoremap <silent> <Leader>d :!~/etc/bin/splitwin.sh pydoc <cword><CR>:redraw<CR>
 
 " C : clang_complete config
 let g:clang_complete_auto = 1
