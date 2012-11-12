@@ -34,8 +34,8 @@ unsetopt beep
 bindkey -v      # vi front end
 
 # zprofile
-export PATH="$PATH:$HOME/etc/bin:$HOME/.cabal/bin"
-# export PYTHONPATH="$PYTHONPATH:/usr/lib/python3.2/site-packages/" #:/home/tyler/builds/python-matplotlib-git/pkg/usr/lib/python3.2/site-packages"
+export PATH="${PATH}:${HOME}/etc/bin:${HOME}/.cabal/bin"
+export PYTHONPATH="/usr/lib/python3.3/site-packages/"
 
 # {{{1 Bindkeys
 bindkey "^[[A" history-beginning-search-backward
@@ -140,7 +140,7 @@ function precmd {
 # RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
 #}}}
 # {{{1 TMUX detection
-if which tmux 2>&1 >/dev/null; then
+if type tmux 2>&1 >/dev/null; then
 # check if tmux is installed
 
     # if NOT inside a session AND no server yet exits,
