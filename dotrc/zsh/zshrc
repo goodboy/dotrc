@@ -133,6 +133,7 @@ function precmd {
         else
             RPROMPT=""
         fi
+        echo
 }
 
 # set_prompt
@@ -140,11 +141,10 @@ function precmd {
 # RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
 #}}}
 # {{{1 TMUX detection
-if type tmux 2>&1 >/dev/null; then
 # check if tmux is installed
+if type tmux 2>&1 >/dev/null; then
 
-    # if NOT inside a session AND no server yet exits,
-    # start a new server and new session
+    # if NOT inside a session AND no server yet exits, start a new server and new session
     if  (test -z ${TMUX} && [[ -z $(pidof tmux) ]]); then
 
         echo 'starting new tmux server'
@@ -177,33 +177,25 @@ if type tmux 2>&1 >/dev/null; then
     [[ -z $TMUX ]] && echo 'This is outside a tmux shell! Think of all the potential you waste...'
 fi
 #}}}
-
-# If I am using vi keys, I want to know what mode I'm currently using.
-# zle-keymap-select is executed every time KEYMAP changes.
-# # From http://zshwiki.org/home/examples/zlewidgets
-# function zle-keymap-select {
-#     VIMODE="${${KEYMAP/vicmd/ M:command}/(main|viins)/}"
-#     zle reset-prompt
-# }
-#zle -N zle-keymap-select
-
-
-# change cursor to RED in vi normal mode
-#zle-keymap-select () {
-#    if [ $TERM = "screen-256color" ]; then
-#	if [ $KEYMAP = vicmd ]; then
-#	    echo -ne "\033]12;Red\007"
-#	else
-#	    echo -ne "\033]12;Grey\007"
-#	fi
-#    fi
-#}
-#zle -N zle-keymap-select
-#zle-line-init () {
-#    zle -K viins
-#    if [ $TERM = "rxvt-256color" ]; then
-#	echo -ne "\033]12;Grey\007"
-#    fi
-#}
-#zle -N zle-line-init
-#aindkey -v
+# use cursor as indicator of vi mode
+zle-keymap-select () {
+    if [ $KEYMAP = vicmd ]; then
+        if [[ $TMUX = '' ]]; then
+            echo -ne "\033]12;Red\007"
+        else
+            printf '\033Ptmux;\033\033]12;red\007\033\\'
+        fi
+    else
+        if [[ $TMUX = '' ]]; then
+            echo -ne "\033]12;Grey\007"
+        else
+            printf '\033Ptmux;\033\033]12;grey\007\033\\'
+        fi
+    fi
+}
+zle-line-init () {
+    zle -K viins
+    echo -ne "\033]12;Grey\007"
+}
+zle -N zle-keymap-select
+zle -N zle-line-init
