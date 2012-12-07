@@ -13,3 +13,7 @@
 	ui = true
 [alias]
 	last = log -1 HEAD
+	glog = log --graph
+	logtree = log --graph --oneline --decorate --all
+[push]
+	default = simple
