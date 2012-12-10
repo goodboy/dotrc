@@ -34,8 +34,9 @@ unsetopt beep
 bindkey -v      # vi front end
 
 # zprofile
-export PATH="$PATH:$HOME/etc/bin:$HOME/.cabal/bin"
-# export PYTHONPATH="$PYTHONPATH:/usr/lib/python3.2/site-packages/" #:/home/tyler/builds/python-matplotlib-git/pkg/usr/lib/python3.2/site-packages"
+export TERM=xterm-256color
+export PATH="${PATH}:${HOME}/etc/bin:${HOME}/.cabal/bin"
+export PYTHONPATH="/usr/lib/python3.3/site-packages/"
 
 # {{{1 Bindkeys
 bindkey "^[[A" history-beginning-search-backward
@@ -69,18 +70,19 @@ bindkey '^e' get-line
 #}}}
 # {{{1 Aliases
 #alias ls='ls --classify --tabsize=0 --literal --color=auto --show-control-chars --human-readable --group-directories-first'
-alias ls='ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first'
+alias ls='pwd; ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first'
 alias la='ls -a'
 alias ll='ls -l'
 alias lla='ll -a'
 alias grep='grep --color=auto'
 alias less='less -R'
 alias cower='cower --color=auto'
-alias tmux='tmux -2'
+# alias tmux='tmux -2'
 alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
 alias matlab='matlab -nodesktop -nosplash'
 alias console='tmux split-window -v; tmux resize-pane -D 10;'
 alias hoogle='hoogle --color'
+alias pylab='ipython --pylab'
 #}}}
 # {{{1 Coloured man page support
 # using 'less' env vars, format : '\E[<brightness>;<colour>m'
@@ -106,8 +108,8 @@ autoload -U colors && colors
 #     vimode="${${KEYMAP/vicmd/C}/(main|viins)/I}"
 #     zle reset-prompt
 # }
-# zle -N zle-line-init
-# zle -N zle-keymap-select
+zle -N zle-keymap-select
+zle -N zle-line-init
 
 # function set_prompt {
 pmt="green"
@@ -133,6 +135,7 @@ function precmd {
         else
             RPROMPT=""
         fi
+        echo    # add a new line to each output
 }
 
 # set_prompt
@@ -140,11 +143,10 @@ function precmd {
 # RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
 #}}}
 # {{{1 TMUX detection
-if which tmux 2>&1 >/dev/null; then
 # check if tmux is installed
+if type tmux 2>&1 >/dev/null; then
 
-    # if NOT inside a session AND no server yet exits,
-    # start a new server and new session
+    # if NOT inside a session AND no server yet exits, start a new server and new session
     if  (test -z ${TMUX} && [[ -z $(pidof tmux) ]]); then
 
         echo 'starting new tmux server'
@@ -177,33 +179,39 @@ if which tmux 2>&1 >/dev/null; then
     [[ -z $TMUX ]] && echo 'This is outside a tmux shell! Think of all the potential you waste...'
 fi
 #}}}
+# use cursor as indicator of vi mode
+cmd_mode_col="red"
+cursor_col="grey"
 
-# If I am using vi keys, I want to know what mode I'm currently using.
-# zle-keymap-select is executed every time KEYMAP changes.
-# # From http://zshwiki.org/home/examples/zlewidgets
-# function zle-keymap-select {
-#     VIMODE="${${KEYMAP/vicmd/ M:command}/(main|viins)/}"
-#     zle reset-prompt
-# }
-#zle -N zle-keymap-select
+zle-keymap-select () {
+    if [ $KEYMAP = vicmd ]; then
+        if [[ $TMUX = '' ]]; then
+            echo -ne "\033]12;${cmd_mode_col}\007"
+        else
+            printf "\033Ptmux;\033\033]12;${cmd_mode_col}\007\033\\"
+        fi
+    else
+        if [[ $TMUX = '' ]]; then
+            echo -ne "\033]12;${cursor_col}\007"
+        else
+            printf "\033Ptmux;\033\033]12;${cursor_col}\007\033\\"
+        fi
+    fi
+}
 
+zle-line-init () {
+    zle -K viins
+    echo -ne "\033]12;red\007"
+}
+insert_sudo () { zle beginning-of-line; zle -U "sudo " }
+zle -N insert-sudo insert_sudo
+bindkey "^[s" insert-sudo
 
-# change cursor to RED in vi normal mode
-#zle-keymap-select () {
-#    if [ $TERM = "screen-256color" ]; then
-#	if [ $KEYMAP = vicmd ]; then
-#	    echo -ne "\033]12;Red\007"
-#	else
-#	    echo -ne "\033]12;Grey\007"
-#	fi
-#    fi
-#}
-#zle -N zle-keymap-select
-#zle-line-init () {
-#    zle -K viins
-#    if [ $TERM = "rxvt-256color" ]; then
-#	echo -ne "\033]12;Grey\007"
-#    fi
-#}
-#zle -N zle-line-init
-#aindkey -v
+#Show "waiting dots" while something tab-completes. (found on zsh-users)
+expand-or-complete-with-dots() {
+    echo -n "\e[31m...\e[0m"
+    zle expand-or-complete
+    zle redisplay
+}
+zle -N expand-or-complete-with-dots
+bindkey "^I" expand-or-complete-with-dots

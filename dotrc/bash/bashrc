@@ -5,7 +5,6 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-
 export PS1='\[\033[01;31m\]\u@\h \[\033[01;34m\]\W \n\$ \[\033[00m\]'
 #PS1='[\u@\h \W]\$ '
 set -o vi
@@ -30,18 +29,14 @@ then
 fi
 
 # Coloured man page support using 'less' (code taken from arch wiki)
-function man {
-    
-    env \
-        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
-        LESS_TERMCAP_md=$(printf "\e[1;31m") \
-        LESS_TERMCAP_me=$(printf "\e[0m") \
-        LESS_TERMCAP_se=$(printf "\e[0m") \
-        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-        LESS_TERMCAP_ue=$(printf "\e[0m") \
-        LESS_TERMCAP_us=$(printf "\e[1;32m") \
-            man "$@"
-}
+# using 'less' env vars, format : '\E[<brightness>;<colour>m'
+export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
+export LESS_TERMCAP_md=$'\E[01;31m'     # begin bold
+export LESS_TERMCAP_me=$'\E[0m'         # end mode
+export LESS_TERMCAP_so=$'\E[01;44;36m'  # begin standout-mode (bottom of screen)
+export LESS_TERMCAP_se=$'\E[0m'         # end standout-mode
+export LESS_TERMCAP_us=$'\E[00;36m'     # begin underline
+export LESS_TERMCAP_ue=$'\E[0m'         # end underline
 
 function Make() {
 	nice make $* 2>&1 | tee make.out
