@@ -77,7 +77,7 @@ alias lla='ll -a'
 alias grep='grep --color=auto'
 alias less='less -R'
 alias cower='cower --color=auto'
-alias tmux='tmux -2'
+# alias tmux='tmux -2'
 alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
 alias matlab='matlab -nodesktop -nosplash'
 alias console='tmux split-window -v; tmux resize-pane -D 10;'
@@ -154,7 +154,7 @@ if type tmux 2>&1 >/dev/null; then
         # NOTE you must create a session (eg. new -s main zsh)
         # in ~/.tmux.conf or this attach line will fail if no prior 
         # session/server exists 
-        exec tmux attach && exit
+        tmux attach && exit
 
         echo ':exit shell as well? [Y/n]'
         read input
@@ -169,9 +169,9 @@ if type tmux 2>&1 >/dev/null; then
 
         echo 'trying to connect to main session'
         if (test -z $(tmux list-clients -t main)); then
-            exec tmux attach && exit
+            tmux attach && exit
         else
-            exec tmux new-session zsh && exit
+            tmux new-session zsh && exit
         fi
     elif (test -n ${TMUX}); then
         echo 'new tmux pseudo-shell'
