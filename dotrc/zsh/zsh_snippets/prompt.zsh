@@ -11,20 +11,17 @@ zstyle ':vcs_info:*' actionformats '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{3}|%F{
 zstyle ':vcs_info:*' formats '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{5}]%f '
 zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{3}%r'
 
-vimode=I
-# set vimode to current editing mode
-function zle-line-init zle-keymap-select {
-    vimode="${${KEYMAP/vicmd/C}/(main|viins)/}"
-    zle reset-prompt
-}
-zle -N zle-keymap-select
-zle -N zle-line-init
+# vimode=I
+# # set vimode to current editing mode
+# function zle-line-init zle-keymap-select {
+#     vimode="${${KEYMAP/vicmd/C}/(main|viins)/}"
+#     zle reset-prompt
+# }
 
 function vcs_info_wrapper {
     vcs_info
-    [[ -n "$vcs_info_msg_0_" ]] && echo " %{$fg[grey]%}${vcs_info_msg_0_/ /}%{$reset_color%}"
+   [[ -n "$vcs_info_msg_0_" ]] && echo " %{$fg[grey]%}${vcs_info_msg_0_/ /}%{$reset_color%}"
 }
-
 
 # RPROMPT pwd updating
 function precmd {
@@ -34,7 +31,8 @@ function precmd {
             unset set_rprompt
             cur_dir=${PWD}
         else
-            RPROMPT=""
+            unset RPROMPT
+            # RPROMPT=""
         fi
         echo    # add a new line to each output
 }
@@ -47,8 +45,8 @@ function set_rprompt {
     # PROMPT="┌┤%{$fg[green]%}%n%{$reset_color%}>%{$fg[${pmt}]%}%m%{$reset_color%} %{$fg[blue]%}[%0~]%{$reset_color%}
     # └→ "
 
-    RPROMPT='$(vcs_info_wrapper)'
-    RPROMPT+=" %{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
+    RPROMPT=" %{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
+    RPROMPT+='$(vcs_info_wrapper)'
     # RPROMPT+='%{$fg[yellow]%}%(?.. %?)%{$reset_color%}'
     # RPROMPT+='%{$fg[red]%} ${vimode} %{$reset_color%}'
 }
@@ -66,23 +64,29 @@ cursor_col="grey"
 zle-keymap-select () {
     if [ $KEYMAP = vicmd ]; then
         if [[ $TMUX = '' ]]; then
-            echo -ne "\033]12;${cmd_mode_col}\007"
-        else
-            printf "\033Ptmux;\033\033]12;${cmd_mode_col}\007\033\\"
+           echo -ne "\033]12;${cmd_mode_col}\007"
+
+        elif [[ $TERM = 'screen-256color' ]]; then
+           printf "\033Ptmux;\033\033]12;${cmd_mode_col}\007\033\\"
         fi
     else
         if [[ $TMUX = '' ]]; then
-            echo -ne "\033]12;${cursor_col}\007"
-        else
-            printf "\033Ptmux;\033\033]12;${cursor_col}\007\033\\"
+           echo -ne "\033]12;${cursor_col}\007"
+
+        elif [[ $TERM = 'screen-256color' ]]; then
+           printf "\033Ptmux;\033\033]12;${cursor_col}\007\033\\"
         fi
     fi
 }
+# zle -N zle-keymap-select
 
-zle-line-init () {
-    zle -K viins
-    echo -ne "\033]12;${cursor_col}\007"
-}
+# zle-line-init () {
+#    zle -K viins
+#    if [[ $TERM = 'screen-256color' ]]; then
+#        echo -ne "\033]12;${cursor_col}\007"
+#    fi
+# }
+# zle -N zle-line-init
 
 # insert sudo to bol on ALT-s
 insert_sudo () {

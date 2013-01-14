@@ -23,6 +23,9 @@ autoload -Uz compinit && compinit
 # changing directories
 #setopt autocd
 setopt autopushd
+setopt cdable_vars
+setopt chase_links
+setopt pushd_ignore_dups
 
 # fxpansion and globbing
 setopt extendedglob
@@ -34,27 +37,27 @@ unsetopt beep
 bindkey -v      # vi front end
 
 # zprofile
-export TERM=xterm-256color
+export TERM=screen-256color
 export PATH="${PATH}:${HOME}/etc/bin:${HOME}/.cabal/bin"
-export PYTHONPATH="/usr/lib/python3.3/site-packages/"
+# export PYTHONPATH="/usr/lib/python3.3/site-packages/"
 
 # {{{1 Bindkeys
-bindkey "^[[A" history-beginning-search-backward
-bindkey "^[[B" history-beginning-search-forward
-bindkey "\e[1~" beginning-of-line
-bindkey "\e[4~" end-of-line
-bindkey "\e[7~" beginning-of-line
-bindkey "\e[8~" end-of-line
-bindkey "\e[5~" beginning-of-history
-bindkey "\e[6~" end-of-history
-bindkey "\e[3~" delete-char
-bindkey "\e[2~" quoted-insert
-bindkey "\e\e[C" forward-word
-bindkey "\e\e[D" backward-word
-bindkey "\e[5C" forward-word
-bindkey "\e[5D" backward-word
-bindkey "\eOc" emacs-forward-word
-bindkey "\eOd" emacs-backward-word
+# bindkey "^[[A" history-beginning-search-backward
+# bindkey "^[[B" history-beginning-search-forward
+# bindkey "\e[1~" beginning-of-line
+# bindkey "\e[4~" end-of-line
+# bindkey "\e[7~" beginning-of-line
+# bindkey "\e[8~" end-of-line
+# bindkey "\e[5~" beginning-of-history
+# bindkey "\e[6~" end-of-history
+# bindkey "\e[3~" delete-char
+# bindkey "\e[2~" quoted-insert
+# bindkey "\e\e[C" forward-word
+# bindkey "\e\e[D" backward-word
+# bindkey "\e[5C" forward-word
+# bindkey "\e[5D" backward-word
+# bindkey "\eOc" emacs-forward-word
+# bindkey "\eOd" emacs-backward-word
 #bindkey "^H" backward-delete-word
 bindkey '^R' history-incremental-search-backward
 
@@ -68,150 +71,11 @@ bindkey '^i' expand-or-complete-prefix
 bindkey '^w' push-line
 bindkey '^e' get-line
 #}}}
-# {{{1 Aliases
-#alias ls='ls --classify --tabsize=0 --literal --color=auto --show-control-chars --human-readable --group-directories-first'
-alias ls='pwd; ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first'
-alias la='ls -a'
-alias ll='ls -l'
-alias lla='ll -a'
-alias grep='grep --color=auto'
-alias less='less -R'
-alias cower='cower --color=auto'
-# alias tmux='tmux -2'
-alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
-alias matlab='matlab -nodesktop -nosplash'
-alias console='tmux split-window -v; tmux resize-pane -D 10;'
-alias hoogle='hoogle --color'
-alias pylab='ipython --pylab'
-#}}}
-# {{{1 Coloured man page support
-# using 'less' env vars, format : '\E[<brightness>;<colour>m'
-export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
-export LESS_TERMCAP_md=$'\E[01;31m'     # begin bold
-export LESS_TERMCAP_me=$'\E[0m'         # end mode
-export LESS_TERMCAP_so=$'\E[01;44;36m'  # begin standout-mode (bottom of screen)
-export LESS_TERMCAP_se=$'\E[0m'         # end standout-mode
-export LESS_TERMCAP_us=$'\E[00;36m'     # begin underline
-export LESS_TERMCAP_ue=$'\E[0m'         # end underline
-#}}}
-# {{{1 Prompt
+
 # Display settings
 # If not running interactively, don't do this
 [[ $- != *i* ]] && return
 
-# enables coloured prompt settings
-autoload -U colors && colors
-
-# vimode=I
-# # set vimode to current editing mode
-# function zle-line-init zle-keymap-select {
-#     vimode="${${KEYMAP/vicmd/C}/(main|viins)/I}"
-#     zle reset-prompt
-# }
-zle -N zle-keymap-select
-zle -N zle-line-init
-
-# function set_prompt {
-pmt="green"
-#     (( EUID == 0 )) && pmt="blue"
-#     [[ -n $SSH_CONNECTION ]] && pmt="magenta"
-PROMPT="%{$fg[${pmt}]%}->%#%{$reset_color%}"
-#     PROMPT="%{$fg[green]%}%n%{$reset_color%}>%{$fg[${pmt}]%}%m%{$reset_color%} %{$fg[blue]%}[%0~]%{$reset_color%}"
-
-#     (( EUID == 0 )) && PROMPT+='%{$fg[red]%}##%{$reset_color%} ' \
-#         || PROMPT+='%{$fg[blue]%}//%{$reset_color%} '
-
-#     RPROMPT='$(vcs_info_wrapper)'
-#     RPROMPT+='%{$fg[yellow]%}%(?.. %?)%{$reset_color%}'
-#     RPROMPT+='%{$fg[green]%} ${vimode}%{$reset_color%}'
-# }
-
-# RPROMPT pwd updating
-function precmd {
-        # only update right-prompt on dir change
-        if [[ ${cur_dir} != ${PWD} ]]; then
-            RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
-            cur_dir=${PWD}
-        else
-            RPROMPT=""
-        fi
-        echo    # add a new line to each output
-}
-
-# set_prompt
-# unset set_prompt
-# RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
-#}}}
-# {{{1 TMUX detection
-# check if tmux is installed
-if type tmux 2>&1 >/dev/null; then
-
-    # if NOT inside a session AND no server yet exits, start a new server and new session
-    if  (test -z ${TMUX} && [[ -z $(pidof tmux) ]]); then
-
-        echo 'starting new tmux server'
-
-        # NOTE you must create a session (eg. new -s main zsh)
-        # in ~/.tmux.conf or this attach line will fail if no prior 
-        # session/server exists 
-        tmux attach && exit
-
-        echo ':exit shell as well? [Y/n]'
-        read input
-        if [[ $input == ( y || \n ) ]]; then
-            exit 
-        fi
-
-    # if session exists then create a new window and attach to it
-    # (this code is called whenever a new shell is opened outside tmux
-    # and the tmux session 'main' already exists)
-    elif (test -z ${TMUX}) && $(tmux has-session -t main); then
-
-        echo 'trying to connect to main session'
-        if (test -z $(tmux list-clients -t main)); then
-            tmux attach && exit
-        else
-            tmux new-session zsh && exit
-        fi
-    elif (test -n ${TMUX}); then
-        echo 'new tmux pseudo-shell'
-    fi
-    [[ -z $TMUX ]] && echo 'This is outside a tmux shell! Think of all the potential you waste...'
-fi
-#}}}
-# use cursor as indicator of vi mode
-cmd_mode_col="red"
-cursor_col="grey"
-
-zle-keymap-select () {
-    if [ $KEYMAP = vicmd ]; then
-        if [[ $TMUX = '' ]]; then
-            echo -ne "\033]12;${cmd_mode_col}\007"
-        else
-            printf "\033Ptmux;\033\033]12;${cmd_mode_col}\007\033\\"
-        fi
-    else
-        if [[ $TMUX = '' ]]; then
-            echo -ne "\033]12;${cursor_col}\007"
-        else
-            printf "\033Ptmux;\033\033]12;${cursor_col}\007\033\\"
-        fi
-    fi
-}
-
-zle-line-init () {
-    zle -K viins
-    echo -ne "\033]12;red\007"
-}
-insert_sudo () { zle beginning-of-line; zle -U "sudo " }
-zle -N insert-sudo insert_sudo
-bindkey "^[s" insert-sudo
-
-#Show "waiting dots" while something tab-completes. (found on zsh-users)
-expand-or-complete-with-dots() {
-    echo -n "\e[31m...\e[0m"
-    zle expand-or-complete
-    zle redisplay
-}
-zle -N expand-or-complete-with-dots
-bindkey "^I" expand-or-complete-with-dots
+# load snippets
+for snippets (${HOME}/.zsh_snippets/*.zsh(N))
+      source $snippets
