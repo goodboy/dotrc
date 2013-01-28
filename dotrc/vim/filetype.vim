@@ -1,5 +1,5 @@
 " file:     ~/.vim/filetype.vim
-" author:   Simon Gomizelj
+" author:   Tyler Goodlet
 " ----------------------------------------------------------------------------
 
 " DETECTION {{{1
@@ -31,7 +31,7 @@ au FileType ruby            setl sw=2 ts=2 et
 au FileType python          setl et
 au FileType bash,sh,zsh     setl et
 au FileType haskell,cabal   setl et
-au FileType *               setl lcs+=tab:▸\ ,trail:- fo+=cr
+au FileType *               setl lcs+=tab:→\ ,trail:- fo+=cr
 
 " tab completion help
 au FileType c,cpp           setl tags+=~/.vim/tags/gtk3
@@ -41,6 +41,6 @@ au FileType c,cpp           setl tags+=~/.vim/tags/pango
 " TEXT {{{1
 " ----------------------------
 au FileType mail            setl spell et fo+=ct
-au FileType plaintex        setl spell et fo+=ct
+au FileType plaintex,pod    setl spell et fo+=ct
 au FileType gitcommit       setl spell et fo+=ct
 au FileType pandoc,markdown setl spell et sw=2 ts=2 fo+=ct

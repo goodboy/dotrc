@@ -22,6 +22,8 @@ colorscheme diablo3
 " formatting
 set tabstop=4
 set shiftwidth=4
+"set softtabstop=2
+set cinoptions=(0
 set smartindent
 set linebreak
 set nolist
@@ -36,8 +38,7 @@ set smartcase
 set incsearch
 
 " editing
-set list
-set listchars=tab:\ \ ,extends:$,precedes:^
+set list listchars=tab:\ \ ,extends:$,precedes:^,trail:-
 set nrformats+=alpha
 
 " folding
@@ -62,18 +63,21 @@ set number
 set shortmess=at
 set hidden
 set laststatus=2
-set wildmenu
-set wildmode=list:longest,full
+set scrolloff=3
+set wildmenu wildmode=list:longest,full
 set completeopt=longest,menuone
 set history=50
 set confirm
 set equalalways
-set mouse=a
+
+if has('mouse')
+  set mouse=a
+endif
 
 set wildignore+=.hg,.git,.svn                  " version control
 set wildignore+=*.aux,*.out,*.toc              " LaTeX intermediate files
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg " images files
-set wildignore+=*.a*.o,*.obj,*.so,*.hi         " compiled object files
+set wildignore+=*.a,*.o,*.obj,*.so,*.hi        " compiled object files
 set wildignore+=*.pyc                          " python byte code
 set wildignore+=*.spl                          " compiled spell lists
 
@@ -96,8 +100,9 @@ au BufWritePre  * if ! &bin | silent! :call spaces#StripTrailing()<CR>
 au BufWritePost * if getline(1) =~ "^#!" | silent :!chmod +x <afile>
 
 " CUSTOM COMMANDS {{{1
-"                             
+" ----------------------------
 command -range=% Share :<line1>,<line2>write !curl -F "sprunge=<-" http://sprunge.us|xclip
+
 " MAPPINGS {{{1
 " ----------------------------
 
@@ -137,17 +142,18 @@ nmap <silent> <C-L> :winc l<CR>
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':'l')<CR>
 vnoremap <Space> zf
 
-" bindings for building code
-nnoremap <F5>   :make<CR>
-nnoremap <S-F6> :!./"%"<CR>
-
 " changing dictionaries
 command! Fr setl spelllang=fr
 command! En setl spelllang=en_ca
 command! Sl setl spelllang=sl
 
+" bindings for building code
+nnoremap <F5>   :make<CR>
+nnoremap <S-F6> :!./"%"<CR>
+
 " PLUGINS {{{1
 " ----------------------------
+
 " set vim to download files with curl
 let g:netrw_http_cmd  = "curl"
 let g:netrw_http_xcmd = "-so"
@@ -173,6 +179,7 @@ nnoremap <silent> <leader>u :GundoToggle<CR>
 
 " fugative config
 nnoremap <silent> <leader>gd :Gdiff<CR>
+nnoremap <silent> <leader>ge :Gedit<CR>
 nnoremap <silent> <leader>gb :Gbrowse<CR>
 
 " syntastic config
@@ -184,7 +191,7 @@ let g:syntastic_mode_map = { 'mode': 'passive'} ",
 " tabular config
 nnoremap <silent> <leader>== :Tabular /=<CR>
 
-" HASKELL
+" HASKELL :
 " consider making the function assigned to a vimscript variable
 au Filetype haskell nnoremap <silent> <Leader>d :!~/etc/bin/splitwin.sh hoogle -i <cword><CR>:redraw<CR>
 
@@ -202,10 +209,12 @@ let g:ghcmod_type_highlight = 'ghcmodType'
 let g:ghcmod_hlint_options = ['--ignore=Redundant $']
 au Filetype haskell nnoremap <silent> <leader>c :GhcModCheckAndLintAsync<CR>
 
-" PYTHON : pydoc config
+" PYTHON : 
+" pydoc config
 let g:pydoc_open_cmd = 'split'
-let g:pydoc_highlight=0
+let g:pydoc_highlight=1
 au Filetype python nnoremap <silent> <Leader>d :!~/etc/bin/splitwin.sh pydoc <cword><CR>:redraw<CR>
+" autocmd FileType python set complete+=k~/.vim/syntax/python.vim isk+=.,(
 
 " C : clang_complete config
 let g:clang_complete_auto = 1

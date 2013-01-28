@@ -52,3 +52,6 @@
 [submodule "dotrc/vim/bundle/nerdtree"]
 	path = dotrc/vim/bundle/nerdtree
 	url = https://github.com/scrooloose/nerdtree
+[submodule "dotrc/vim/bundle/taglist"]
+	path = dotrc/vim/bundle/taglist
+	url = git://github.com/vim-scripts/taglist.vim.git
