@@ -16,4 +16,4 @@
 	glog = log --graph
 	logtree = log --graph --oneline --decorate --all
 [push]
-	default = simple
+	default = current
