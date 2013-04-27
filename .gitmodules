@@ -55,3 +55,6 @@
 [submodule "dotrc/vim/bundle/taglist"]
 	path = dotrc/vim/bundle/taglist
 	url = git://github.com/vim-scripts/taglist.vim.git
+[submodule "dotrc/vim/bundle/linediff"]
+	path = dotrc/vim/bundle/linediff
+	url = git://github.com/AndrewRadev/linediff.vim.git
