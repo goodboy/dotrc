@@ -15,10 +15,13 @@ fi
 if [ -f $HOME/.Xmodmap ]; then
     /usr/bin/xmodmap $HOME/.Xmodmap
 fi
-if [ -f $HOME/.gtkrc-2.0 ]; then
-    export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
-fi
+# if [ -f $HOME/.gtkrc-2.0 ]; then
+#     export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
+# fi
+
 # exec gnome-session
+# exec openbox-session
+exec i3
 # exec startkde
 # exec startxfce4
 # ...or the Window Manager of your choice
