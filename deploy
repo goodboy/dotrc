@@ -1,23 +1,49 @@
 #!/bin/bash
-# taken from simon's dotfiles repository and slightly modified
+# taken from simon's dotfiles repository modified
 
+# MUST be the repo root dir
 dotfiles=$PWD
+parentdir="dotrc/"  # the sub-dir of config files
 
 die() {
     echo >&2 "$1" && exit 1
 }
 
 link() {
-    local parentdir="dotrc"
-    [[ -z $2 ]] && target=".${1##*/}" \
-                || target="${2:-$target}"
+    # file sys scope is $HOME...
+    local parentdir="dotrc/"
 
-    [[ -e "$target" && ! -h "$target" ]] && die "$0: $target exists in filesystem"
-    [[ -d "$target"                   ]] && rm "$target"
-    [[ "$target" == ".bin"            ]] && { target="${target##.}"; parentdir=""; }
+    # get the filename to link
+    [[ -z $2 ]] && sym_link=".${1##*/}" \
+                || sym_link="${2:-$sym_link}"   # if $2 is null then use $1
 
-    ln -fs "$dotfiles/$parentdir/$1" "$target"
-    echo "linking ~/$target -> $1"
+    # if the file exists and not a sym link -> die
+    if [[ -e "$sym_link" && ! -h "$sym_link" ]]; then
+        die "$0: $sym_link exists in filesystem, stopping!"
+    fi
+
+    # 1) don't hide (i.e. '.' prefix) the bin dir in user's $HOME
+    # 2) bin/ is in the repo root dir
+    if [[ "$sym_link" == ".bin" ]]; then
+        sym_link="${sym_link##.}"
+        parentdir=""
+    fi
+
+    local sl_target=$(readlink -f $sym_link)
+    # if dir already exists then skip to next so we don't make a link to itself
+    if [[ -d $sl_target  ]]; then
+        echo "$PWD/$sym_link already links to dir: '$sl_target', skipping..."
+        return 0
+    fi
+    # if the sym_link is a dir remove it? shouldn't get here!?
+    # if [[ -d "$sym_link" ]]; then
+    #    echo "$sym_link is a directory removing..."
+    #    rm "$sym_link"
+    # fi
+
+    local target="$dotfiles/${parentdir}${1}"
+    ln -fs "$target" "$sym_link"
+    echo "linking $sym_link -> $target"
 }
 
 # Deploy scriptlets {{{1
@@ -39,7 +65,7 @@ dotfiles_tmux()         { link tmux/tmux.conf;                          }
 dotfiles_haskell()      { link haskell/haskeline;                       }
 dotfiles_ghci()         { link ghci/ghci;                               }
 dotfiles_matplotlib()   { link matplotlib;                              }
-dotfiles_matplotlib()   { link inputrc;                                 }
+dotfiles_inputrc()      { link inputrc;                                 }
 #dotfiles_termite()     { link termite/termite.cfg .config/termite.cfg; }
 
 dotfiles_task() {
@@ -80,9 +106,12 @@ exit ${1:-0}
 }
 
 deploy() {
+    # go to $HOME and create links for each tool
     echo "deploying dotfiles for user '$(whoami)'"
+    cd && echo -e "entered $PWD\n"
+
     while (( $# )); do
-        cd && dotfiles_${1#dotfiles_}
+        dotfiles_${1#dotfiles_}
         if [[ $? == 127 ]]; then
             echo  >&2 "Error: don't know how to deploy \"$1\""
             usage >&2 1
@@ -91,7 +120,9 @@ deploy() {
     done
 }
 
+# start script
 if (( $# == 0 )); then
+    [[ ! -d $parentdir ]] && { echo "E: this script must be run from repo base dir!"; exit 1; }
     deploy $(compgen -A function dotfiles_)
 elif [[ "$1" == "--help" ]]; then
     usage 0
