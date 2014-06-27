@@ -59,11 +59,11 @@ set showcmd
 set title
 set ruler
 set number
-"set cursorline
+set cursorline
 set shortmess=at
 set hidden
 set laststatus=2
-set scrolloff=3
+set scrolloff=2
 set wildmenu wildmode=list:longest,full
 set completeopt=longest,menuone
 set history=50
@@ -164,7 +164,7 @@ let snips_email  = 'tgoodlet@gmail.com'
 
 " NERDTree config
 let g:NERDTreeChDirMode     = 2
-let g:NERDTreeIgnore        = ['\~$', '\.swp$', '\.o$', '\.hi$']
+let g:NERDTreeIgnore        = ['\~$', '\.swp$', '\.o$', '\.hi$', '\.pyc$', '\.pyo$']
 let g:NERDTreeSortOrder     = ['^__\.py$', '\/$', '*', '\~$']
 let g:NERDTreeShowBookmarks = 1
 let g:NERDTreeMinimalUI     = 1
