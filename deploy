@@ -1,5 +1,5 @@
 #!/bin/bash
-# taken from simon's dotfiles repository modified
+# taken from simon's dotfiles repository and modified
 
 # MUST be the repo root dir
 dotfiles=$PWD
@@ -64,7 +64,7 @@ dotfiles_tmux()         { link tmux/tmux.conf;                          }
 #dotfiles_xmonad()      { link xmonad;                                  }
 dotfiles_haskell()      { link haskell/haskeline;                       }
 dotfiles_ghci()         { link ghci/ghci;                               }
-dotfiles_matplotlib()   { link matplotlib;                              }
+dotfiles_matplotlib()   { link matplotlib ~/.config/matplotlib;         }
 dotfiles_inputrc()      { link inputrc;                                 }
 #dotfiles_termite()     { link termite/termite.cfg .config/termite.cfg; }
 
