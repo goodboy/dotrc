@@ -66,6 +66,7 @@ dotfiles_haskell()      { link haskell/haskeline;                       }
 dotfiles_ghci()         { link ghci/ghci;                               }
 dotfiles_matplotlib()   { link matplotlib ~/.config/matplotlib;         }
 dotfiles_inputrc()      { link inputrc;                                 }
+dotfiles_i3()           { link i3/config ~/.i3/config;                  }
 #dotfiles_termite()     { link termite/termite.cfg .config/termite.cfg; }
 
 dotfiles_task() {
