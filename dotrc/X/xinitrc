@@ -1,27 +1,17 @@
-#!/bin/sh
-#
-# ~/.xinitrc
+#!/bin/bash
 #
 # Executed by startx (run your window manager from here)
 
-if [ -d /etc/X11/xinit/xinitrc.d ]; then
-  for f in /etc/X11/xinit/xinitrc.d/*; do
-    [ -x "$f" ] && . "$f"
-  done
-  unset f
+# activate custom kbd mappings
+if [ -s ~/.Xmodmap ]; then
+    xmodmap ~/.Xmodmap
 fi
 
-# Custom mappings for keyboard
-if [ -f $HOME/.Xmodmap ]; then
-    /usr/bin/xmodmap $HOME/.Xmodmap
-fi
-# if [ -f $HOME/.gtkrc-2.0 ]; then
-#     export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
-# fi
-
-# exec gnome-session
-# exec openbox-session
-exec i3
-# exec startkde
-# exec startxfce4
-# ...or the Window Manager of your choice
+# launch with wm of choice
+cd
+case "$2" in
+    gnome)
+        exec gnome-session;;
+    *)
+        exec ${2:-i3};;
+esac
