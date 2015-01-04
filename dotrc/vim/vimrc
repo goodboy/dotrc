@@ -24,7 +24,7 @@ set tabstop=4
 set shiftwidth=4
 "set softtabstop=2
 set cinoptions=(0
-set smartindent
+set autoindent
 set linebreak
 set nolist
 set nowrap

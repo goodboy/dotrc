@@ -12,4 +12,3 @@ vnoremap <silent> # :<C-U>
 
 " replaces selected text using command CTRL-r in visual mode
 "vnoremap <C-h> ""y:%s/<C-R>=escape(@", '/\')<CR>//g<Left><Left>
-
