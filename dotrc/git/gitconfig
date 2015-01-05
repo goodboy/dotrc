@@ -9,6 +9,7 @@
 	log = true
 [core]
 	editor = vim
+	excludesfile = ~/.cvsignore
 [color]
 	ui = true
 [alias]
