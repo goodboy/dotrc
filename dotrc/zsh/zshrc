@@ -1,5 +1,5 @@
 #
-# Tyler Goodlet .zshrc config file
+# .zshrc config file
 #
 
 # history
@@ -32,40 +32,18 @@ setopt extendedglob
 setopt nomatch
 setopt notify
 
-# zle
+# turn off zle beep
 unsetopt beep
-bindkey -v      # vi front end
-
-# zprofile
-export TERM=screen-256color
-export PATH="${PATH}:${HOME}/etc/bin:${HOME}/.cabal/bin"
-# export PYTHONPATH="/usr/lib/python3.3/site-packages/"
 
 # {{{1 Bindkeys
-# bindkey "^[[A" history-beginning-search-backward
-# bindkey "^[[B" history-beginning-search-forward
-# bindkey "\e[1~" beginning-of-line
-# bindkey "\e[4~" end-of-line
-# bindkey "\e[7~" beginning-of-line
-# bindkey "\e[8~" end-of-line
-# bindkey "\e[5~" beginning-of-history
-# bindkey "\e[6~" end-of-history
-# bindkey "\e[3~" delete-char
-# bindkey "\e[2~" quoted-insert
-# bindkey "\e\e[C" forward-word
-# bindkey "\e\e[D" backward-word
-# bindkey "\e[5C" forward-word
-# bindkey "\e[5D" backward-word
-# bindkey "\eOc" emacs-forward-word
-# bindkey "\eOd" emacs-backward-word
-#bindkey "^H" backward-delete-word
-bindkey '^R' history-incremental-search-backward
+# zle bindkey mappings
+bindkey -v              # use vi keymap and bind 'main' to it (so we're modifying 'main')
+# bindkey -N mymap viins  # create my customer keymap based on viins
+bindkey "\b" vi-backward-delete-char
 
-# CTRL-Q for vi normal mode
-bindkey '^q' vicmd
-
-# completion in the middle of a line
-bindkey '^i' expand-or-complete-prefix
+# hist searching in both the viins and vicmd keymaps
+bindkey -M viins '^r' history-incremental-search-backward
+bindkey -M vicmd '^r' history-incremental-search-backward
 
 # buffer stack access
 bindkey '^w' push-line

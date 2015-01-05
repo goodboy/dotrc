@@ -1,14 +1,22 @@
-# set my environment
+# environment
 
-export GREP_OPTIONS='--color=auto'
+# grep colours
 export GREP_COLOR=$'4;1;31'
+# prettify the sudo prompt
 export SUDO_PROMPT=$'\e[31mSUDO\e[m password for \e[34m%p\e[m: '
+# append static paths
+p=":${HOME}/.cabal/bin"
+# add script dirs
+p+=":$(echo $HOME/bin/**/ | sed 's/\s\+/:/g')"
+PATH+="$p"
+export PATH
 
-[[ -f ~/etc/dircolors/dircolors ]] && \
-      eval $(dircolors ~/etc/dircolors/dircolors)
+# ls colors
+[[ -f ~/etc/dircolors/dircolors ]] && eval $(dircolors ~/etc/dircolors/dircolors)
+[[ -f ~/.dircolors ]] && eval $(dircolors ~/.dircolors)
 
 # Coloured man page support
-# using 'less' env vars, format : '\E[<brightness>;<colour>m'
+# using 'less' env vars (format is '\E[<brightness>;<colour>m')
 export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
 export LESS_TERMCAP_md=$'\E[01;31m'     # begin bold
 export LESS_TERMCAP_me=$'\E[0m'         # end mode
