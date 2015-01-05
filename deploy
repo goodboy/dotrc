@@ -1,73 +1,71 @@
 #!/bin/bash
-# taken from simon's dotfiles repository and modified
+#
+# util funcs #{{{
+ALL_OFF="$(tput sgr0)"
+BOLD="$(tput bold)"
+GREEN="${BOLD}$(tput setaf 2)"
+YELLOW="${BOLD}$(tput setaf 3)"
+RED="${BOLD}$(tput setaf 1)"
+WHITE="${BOLD}$(tput setaf 7)"
 
-# MUST be the repo root dir
-dotfiles=$PWD
-parentdir="dotrc/"  # the sub-dir of config files
-
-die() {
-    echo >&2 "$1" && exit 1
+err() {
+  printf "${RED}Error: ${ALL_OFF}${1}\n" >&2
 }
+
+warn() {
+  printf "${YELLOW}Warning: ${ALL_OFF}${1}\n" >&2
+}
+
+msg() {
+  local mesg=$1; shift
+  printf "${GREEN}==> ${WHITE}${mesg}${ALL_OFF}\n" "$*" >&2
+} #}}}
+
+root=$PWD  # must be the repo root dir
+parentdir="dotrc"  # the sub-dir of config files/dirs
 
 link() {
-    # file sys scope is $HOME...
-    local parentdir="dotrc/"
+    local symlink="$2"
+    [[ -z $2 ]] && symlink=".${1##*/}"  # if $2 is null then use .<filename>
 
-    # get the filename to link
-    [[ -z $2 ]] && sym_link=".${1##*/}" \
-                || sym_link="${2:-$sym_link}"   # if $2 is null then use $1
-
-    # if the file exists and not a sym link -> die
-    if [[ -e "$sym_link" && ! -h "$sym_link" ]]; then
-        die "$0: $sym_link exists in filesystem, stopping!"
+    if [[ -e "$symlink" && ! -h "$symlink" ]]; then
+        warn "$symlink already exists in filesystem, skipping..."
+        return
     fi
 
-    # 1) don't hide (i.e. '.' prefix) the bin dir in user's $HOME
-    # 2) bin/ is in the repo root dir
-    if [[ "$sym_link" == ".bin" ]]; then
-        sym_link="${sym_link##.}"
-        parentdir=""
-    fi
-
-    local sl_target=$(readlink -f $sym_link)
+    local sl_target=$(readlink -f $symlink)
     # if dir already exists then skip to next so we don't make a link to itself
-    if [[ -d $sl_target  ]]; then
-        echo "$PWD/$sym_link already links to dir: '$sl_target', skipping..."
-        return 0
+    if [[ -d $sl_target ]]; then
+        warn "$HOME/$symlink already links to dir '$sl_target', skipping..."
+        return
     fi
-    # if the sym_link is a dir remove it? shouldn't get here!?
-    # if [[ -d "$sym_link" ]]; then
-    #    echo "$sym_link is a directory removing..."
-    #    rm "$sym_link"
-    # fi
 
-    local target="$dotfiles/${parentdir}${1}"
-    ln -fs "$target" "$sym_link"
-    echo "linking $sym_link -> $target"
+    local target="$root/${parentdir}/${1}"
+    ln -fs "$target" "$symlink"
+    msg "linking $symlink -> $target"
 }
 
-# Deploy scriptlets {{{1
-dotfiles_bin()          { link bin;                                     }
-#dotfiles_cower()       { link cower .config/cower;                     }
-dotfiles_dircolors()    { link dircolors/dircolors;                     }
-dotfiles_git()          { link git/gitconfig;                           }
-dotfiles_gtk2()         { link gtk-2.0/gtkrc-2.0;                       }
-#dotfiles_htop()        { link htop/htoprc;                             }
-#dotfiles_lxdm()        { link lxdm/dmrc;                               }
-#dotfiles_ncmpcpp()     { link ncmpcpp;                                 }
-#dotfiles_mutt()        { link mutt;                                    }
-#dotfiles_nethack()     { link nethack/nethackrc;                       }
-#dotfiles_pam()         { link pam/pam_environment;                     }
-#dotfiles_pentadactyl() { link pentadactyl/pentadactylrc;               }
-dotfiles_tmux()         { link tmux/tmux.conf;                          }
-#dotfiles_weechat()     { link weechat;                                 }
-#dotfiles_xmonad()      { link xmonad;                                  }
-dotfiles_haskell()      { link haskell/haskeline;                       }
-dotfiles_ghci()         { link ghci/ghci;                               }
-dotfiles_matplotlib()   { link matplotlib ~/.config/matplotlib;         }
-dotfiles_inputrc()      { link inputrc;                                 }
-dotfiles_i3()           { link i3/config ~/.i3/config;                  }
-dotfiles_termite()      { link termite/config .config/termite/config;   }
+# deploy scriptlets {{{1
+dotfiles_bin()          { link bin bin;                         }
+dotfiles_cower()        { link cower .config/cower;             }
+dotfiles_dircolors()    { link dircolors/dircolors;             }
+dotfiles_git()          { link git/gitconfig;                   }
+dotfiles_gtk2()         { link gtk-2.0/gtkrc-2.0;               }
+#dotfiles_htop()        { link htop/htoprc;                     }
+#dotfiles_lxdm()        { link lxdm/dmrc;                       }
+#dotfiles_ncmpcpp()     { link ncmpcpp;                         }
+#dotfiles_mutt()        { link mutt;                            }
+#dotfiles_nethack()     { link nethack/nethackrc;               }
+#dotfiles_pam()         { link pam/pam_environment;             }
+#dotfiles_pentadactyl() { link pentadactyl/pentadactylrc;       }
+dotfiles_tmux()         { link tmux/tmux.conf;                  }
+#dotfiles_weechat()     { link weechat;                         }
+dotfiles_haskell()      { link haskell/haskeline;               }
+dotfiles_ghci()         { link ghci/ghci;                       }
+dotfiles_matplotlib()   { link matplotlib ~/.config/matplotlib; }
+dotfiles_inputrc()      { link inputrc;                         }
+dotfiles_i3()           { link i3;                              }
+dotfiles_termite()      { link termite .config/termite;         }
 
 dotfiles_task() {
     link task/task
@@ -90,8 +88,7 @@ dotfiles_zsh() {
     link zsh/zshrc
     link zsh/zprofile
     link zsh/zsh_snippets
-}
-# }}}
+} # }}}
 
 usage() {
   cat << HERE
@@ -108,20 +105,20 @@ exit ${1:-0}
 
 deploy() {
     # go to $HOME and create links for each tool
-    echo "deploying dotfiles for user '$(whoami)'"
-    cd && echo -e "entered $PWD\n"
+    msg "deploying dotfiles for user '$(whoami)'"
+    cd && msg "entered $PWD"
 
     while (( $# )); do
         dotfiles_${1#dotfiles_}
         if [[ $? == 127 ]]; then
-            echo  >&2 "Error: don't know how to deploy \"$1\""
+            err "Don't know how to deploy \"$1\""
             usage >&2 1
         fi
         shift
     done
 }
 
-# start script
+# main
 if (( $# == 0 )); then
     [[ ! -d $parentdir ]] && { echo "E: this script must be run from repo base dir!"; exit 1; }
     deploy $(compgen -A function dotfiles_)
