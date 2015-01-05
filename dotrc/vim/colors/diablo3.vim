@@ -53,10 +53,10 @@ if &term =~ 'xterm\|rxvt'
   exe 'autocmd VimLeave * :!echo -ne "\e]12;"' . s:color_exit . '"\007"'
 elseif &term =~ "screen"
    if exists('$TMUX')
-  "   exe 'silent !echo -ne "\033Ptmux;\033\e]12;"' . s:color_normal . '"\007\033\\"'
-  "   let &t_SI="\033Ptmux;\033\e]12;" . s:color_insert . "\007\033\\"
-  "   let &t_EI="\033Ptmux;\033\e]12;" . s:color_normal . "\007\033\\"
-  "   exe 'autocmd VimLeave * :!echo -ne "\033Ptmux;\033\e]12;"' . s:color_exit . '"\007\033\\"'
+    exe 'silent !echo -ne "\033Ptmux;\033\e]12;"' . s:color_normal . '"\007\033\\"'
+    let &t_SI="\033Ptmux;\033\e]12;" . s:color_insert . "\007\033\\"
+    let &t_EI="\033Ptmux;\033\e]12;" . s:color_normal . "\007\033\\"
+    exe 'autocmd VimLeave * :!echo -ne "\033Ptmux;\033\e]12;"' . s:color_exit . '"\007\033\\"'
   else
     exe 'silent !echo -ne "\033P\e]12;"' . s:color_normal . '"\007\033\\"'
     let &t_SI="\033P\e]12;" . s:color_insert . "\007\033\\"
@@ -233,10 +233,10 @@ if &t_Co > 255
   highlight Statement       cterm=bold                    ctermfg=68
   highlight htmlStatement                                 ctermfg=110
 
-"swapped ctermfg values (following two) to keep the current status bar highlighted - TG
-  highlight StatusLine                                    ctermfg=244 
+" swapped ctermfg values (following two) to keep the current status bar highlighted
+  highlight StatusLine                                    ctermfg=244
   highlight StatusLineNC                    ctermbg=232   ctermfg=240
-  
+
   highlight StorageClass                                  ctermfg=208
   highlight Structure       cterm=bold                    ctermfg=81
   highlight Tag                                           ctermfg=161
@@ -253,8 +253,8 @@ if &t_Co > 255
   highlight WarningMsg      cterm=bold      ctermbg=236   ctermfg=231
   highlight WildMenu                        ctermbg=16    ctermfg=81
 
-"originally ctermbg=235   ctermfg=231 changed to make bg transparent - TG
-  highlight Normal                          ctermbg=none   ctermfg=231
+" originally ctermbg=235   ctermfg=231 changed to make bg transparent
+  highlight Normal                          ctermbg=233   ctermfg=231
 
   highlight Comment                                       ctermfg=248
   highlight CursorLine      cterm=none      ctermbg=237

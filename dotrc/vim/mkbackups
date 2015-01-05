@@ -1,8 +1,10 @@
 #!/bin/bash
 # quickgen the vim back up dirs for vimrc:177
-VIMbackupdirs="./backups \
-./tmp \
+VIMbackupdirs=(
+"./backups
+./tmp
 ./undo"
+)
 
 for dir in $VIMbackupdirs
 do
@@ -12,4 +14,3 @@ do
     mkdir $dir
   fi
 done
-

@@ -1,15 +1,12 @@
 " File:     ~/.vimrc files
-" Author:   Simon Gomizelj
-" Edit:     Tyler Goodlet
-"      -> removed cursor line for my slow laptop
-"      -> added custom command 'Share'
-" ----------------------------------------------------------------------------
+" Author:   Tyler Goodlet
+" ------------------------
 
 set nocompatible
 
 filetype off
 runtime bundle/pathogen/autoload/pathogen.vim
-call pathogen#runtime_append_all_bundles()
+call pathogen#infect()
 call pathogen#helptags()
 
 syntax on
@@ -91,9 +88,7 @@ set undodir=~/.vim/undo
 " path
 set path=.,,/usr/include,/usr/lib
 
-" split window for docs
-" set keywordprg=~/etc/bin/splitwin.sh\ $keywordprg
-" AUTOCMDS {{{1
+" AUTOCMDS  {{{1
 " ----------------------------
 au VimResized   * exe "normal! \<c-w>="
 au BufWritePre  * if ! &bin | silent! :call spaces#StripTrailing()<CR>
