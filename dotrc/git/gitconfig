@@ -18,3 +18,5 @@
 	logtree = log --graph --oneline --decorate --all
 [push]
 	default = simple
+[diff]
+	submodule = log
