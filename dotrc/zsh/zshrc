@@ -1,13 +1,14 @@
-#
-# .zshrc config file
-#
+# zsh config
+autoload -U vcs_info  # init vcs helpers
+autoload -U colors && colors
+autoload zsh/terminfo
 
 # history
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 HISTIGNORE=' '
-setopt appendhistory
+setopt append_history
 setopt extended_history
 setopt hist_expire_dups_first
 setopt hist_ignore_dups
@@ -18,7 +19,18 @@ setopt share_history
 
 # completion
 zstyle :compinstall filename '$HOME/.zshrc'
-autoload -Uz compinit && compinit
+autoload -Uz compinit && compinit  # init completion system
+setopt always_to_end
+setopt auto_menu
+setopt auto_name_dirs
+setopt auto_param_keys
+setopt auto_param_slash
+setopt auto_remove_slash
+setopt complete_aliases
+setopt complete_in_word
+setopt list_ambiguous
+setopt list_packed
+unsetopt menu_complete
 
 # changing directories
 #setopt autocd
@@ -26,20 +38,165 @@ setopt autopushd
 setopt cdable_vars
 setopt chase_links
 setopt pushd_ignore_dups
+setopt pushd_silent
+setopt pushd_to_home
 
-# fxpansion and globbing
-setopt extendedglob
-setopt nomatch
-setopt notify
+# expansion and globbing
+setopt braceccl
+setopt extended_glob
+setopt long_list_jobs
+setopt multios
+setopt prompt_subst
+# setopt nomatch
+# setopt notify
+
+# input/output
+setopt correct
+setopt interactive_comments
+setopt rc_quotes
+setopt short_loops
+unsetopt flowcontrol
+
+# job control
+setopt bg_nice
 
 # turn off zle beep
 unsetopt beep
 
-# {{{1 Bindkeys
-# zle bindkey mappings
-bindkey -v              # use vi keymap and bind 'main' to it (so we're modifying 'main')
-# bindkey -N mymap viins  # create my customer keymap based on viins
-bindkey "\b" vi-backward-delete-char
+# smart urls
+autoload -U url-quote-magic
+zle -N self-insert url-quote-magic
+
+# Widgets and Hooks {{{
+function fancy-ctrl-z {
+    # bg on empty line, push-input on non-empty line
+    if [[ $#BUFFER -eq 0 ]]; then
+        bg
+        zle redisplay
+    else
+        zle push-input
+    fi
+}
+
+# function zle-keymap-select {
+#     # set vimode to current editing mode
+#     vimode="${${KEYMAP/vicmd/C}/(main|viins)/}"
+#     zle reset-prompt
+# }
+
+function precmd {
+    # pre-prompt rendering hook
+    # if [[ -z $(git ls-files --other --exclude-standard 2> /dev/null) ]] {
+    #     zstyle ':vcs_info:*' formats "${at_normal} ${fg_dgray}%b%c%u${at_normal}"
+    # } else {
+    #     zstyle ':vcs_info:*' formats "${at_normal} ${fg_dgray}%b%c%u${fg_red}!${at_normal}"
+    # }
+    # vcs_info
+
+    echo  # add a new line to each output
+    # update the xterm title with `username@hostname pwd`
+    case $TERM in
+        xterm*)
+            print -Pn "\e]0;%n@%m: %~\a";;
+    esac
+}
+
+# RPROMPT="%{$reset_color%}[%{$fg[green]%}%~%{$reset_color%}]"
+function set_rprompt {
+    # right prompt draw hook
+    local pmt="red"
+    (( EUID == 0 )) && pmt="blue"
+    [[ -n $SSH_CONNECTION ]] && pmt="magenta"
+    # RPROMPT="%{$reset_color%}%(?/${at_normal}/${fg_red})%%${at_normal}"
+    RPROMPT='$(vcs_info_wrapper)'
+    # RPROMPT+="%c \${vcs_info_msg_0_}"
+    # RPROMPT+='%{$fg[yellow]%}%(?.. %?)%{$reset_color%}'
+    # RPROMPT+='%{$fg[red]%} ${vimode} %{$reset_color%}'
+}
+set_rprompt
+unset set_rprompt
+
+function vcs_info_wrapper {
+   # render and print vcs line
+   vcs_info
+   [[ -n "$vcs_info_msg_0_" ]] && echo " %{$fg[gray]%}${vcs_info_msg_0_/ /}%{$reset_color%}"
+}
+
+# use cursor as indicator of vi mode
+# (urxvt and family accepts even #RRGGBB)
+INSERT_PROMPT="gray"
+COMMAND_PROMPT="red"
+
+# helper for setting color including all kinds of terminals
+set_prompt_color() {
+    if [[ $TERM = "linux" ]]; then
+        # nothing
+    elif [[ $TMUX != '' ]]; then
+        printf '\033Ptmux;\033\033]12;%b\007\033\\' "$1"
+    else
+        echo -ne "\033]12;$1\007"
+    fi
+}
+
+# change cursor color based on vi mode
+zle-keymap-select () {
+    if [ $KEYMAP = vicmd ]; then
+        set_prompt_color $COMMAND_PROMPT
+    else
+        set_prompt_color $INSERT_PROMPT
+    fi
+}
+
+zle-line-finish() {
+    set_prompt_color $INSERT_PROMPT
+}
+
+zle-line-init () {
+    zle -K viins
+    set_prompt_color $INSERT_PROMPT
+}
+
+# Show "waiting dots" while something tab-completes
+expand-or-complete-with-dots() {
+    echo -n "\e[31m...\e[0m"
+    zle expand-or-complete
+    zle redisplay
+}
+
+# create/override widgets
+zle -N fancy-ctrl-z
+zle -N zle-keymap-select
+zle -N zle-line-init
+zle -N zle-line-finish
+zle -N expand-or-complete-with-dots
+# }}}
+
+# Bindkeys {{{
+# make zsh/terminfo work for terms with application and cursor modes
+case "$TERM" in
+  vte*|xterm*)
+    zle-line-init()   { zle-keymap-select; echoti smkx }
+    zle-line-finish() { echoti rmkx }
+    zle -N zle-line-init
+    zle -N zle-line-finish
+    ;;
+esac
+
+# use vi keymap and bind 'main' to it (so we're modifying 'main')
+bindkey -v
+
+# shift-tab to reverse direction in menu
+if [[ -n $terminfo[kcbt] ]]; then
+  bindkey "$terminfo[kcbt]" reverse-menu-complete
+fi
+
+# do history expansion on space
+bindkey ' ' magic-space
+
+# map tab key to show red dots on completion wait
+bindkey "^I" expand-or-complete-with-dots
+
+# bindkey "\b" vi-backward-delete-char
 
 # hist searching in both the viins and vicmd keymaps
 bindkey -M viins '^r' history-incremental-search-backward
@@ -48,7 +205,25 @@ bindkey -M vicmd '^r' history-incremental-search-backward
 # buffer stack access
 bindkey '^w' push-line
 bindkey '^e' get-line
-#}}}
+# }}}
+
+# Zstyle {{{
+# vcs settings
+zstyle ':vcs_info:*' enable git cvs svn
+zstyle ':vcs_info:*' actionformats '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{3}|%F{1}%a%F{5}]%f '
+zstyle ':vcs_info:*' formats '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{5}]%f '
+zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{3}%r'
+
+# zstyle ':vcs_info:*' stagedstr "${fg_blue}?"
+# zstyle ':vcs_info:*' unstagedstr "${fg_brown}?"
+# zstyle ':vcs_info:*' check-for-changes true
+# zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{11}%r'
+# zstyle ':vcs_info:*' enable git svn
+# }}}
+
+# left prompt
+pmt="green"
+PROMPT="%{$fg[${pmt}]%} >>> %{$reset_color%}"
 
 # Display settings
 # If not running interactively, don't do this
