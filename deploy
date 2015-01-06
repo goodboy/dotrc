@@ -87,8 +87,8 @@ dotfiles_X() {
 dotfiles_zsh() {
     link zsh/zshrc
     link zsh/zprofile
-    link zsh/zsh_snippets
-} # }}}
+}
+# }}}
 
 usage() {
   cat << HERE
