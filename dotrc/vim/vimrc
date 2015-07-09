@@ -96,7 +96,7 @@ au BufWritePost * if getline(1) =~ "^#!" | silent :!chmod +x <afile>
 
 " CUSTOM COMMANDS {{{1
 " ----------------------------
-command -range=% Share :<line1>,<line2>write !curl -F "sprunge=<-" http://sprunge.us|xclip
+" command -range=% Share :<line1>,<line2>write !curl -F "sprunge=<-" http://sprunge.us|xclip
 
 " MAPPINGS {{{1
 " ----------------------------
@@ -120,12 +120,13 @@ map Y y$
 
 " shortcut to update diff
 nnoremap <silent> <leader>q :call toggle#ToggleList("Quickfix List", 'c')<CR>
+nnoremap <silent> <leader>l :call toggle#ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <leader>d :diffupdate<CR>
 nnoremap <silent> <leader>h :nohl<CR>
-nnoremap <silent> <leader>l :ls<CR>:b<space>
+nnoremap <silent> <leader>b :ls<CR>:b<space>
 nnoremap <silent> <leader>s :setl spell!<CR>
 nnoremap <silent> <leader>w :call spaces#StripTrailing()<CR>
-nnoremap <silent> <leader>p :!sprunge "%"<CR>
+" nnoremap <silent> <leader>p :!sprunge "%"<CR>
 
 " window movements
 nmap <silent> <C-H> :winc h<CR>
@@ -178,7 +179,9 @@ nnoremap <silent> <leader>ge :Gedit<CR>
 nnoremap <silent> <leader>gb :Gbrowse<CR>
 
 " syntastic config
-let g:syntastic_mode_map = { 'mode': 'passive'} ",
+let g:syntastic_mode_map = {'mode': 'passive'} ",
+nnoremap <silent> <leader>e :Errors<CR>
+nnoremap <silent> <leader>c :SyntasticCheck<CR>
 
 " tagbar config
 " nnoremap <silent> <leader>t :TagbarToggle<CR>
