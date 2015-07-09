@@ -7,6 +7,7 @@ autoload zsh/terminfo
 [[ $- != *i* ]] && return
 
 # environment
+export EDITOR='vim'
 export GREP_COLOR=$'4;1;31'
 # prettify the sudo prompt
 export SUDO_PROMPT=$'\e[31mSUDO\e[m password for \e[34m%p\e[m: '
@@ -20,6 +21,12 @@ export PATH
 # ls colors
 [[ -f ~/etc/dircolors/dircolors ]] && eval $(dircolors ~/etc/dircolors/dircolors)
 [[ -f ~/.dircolors ]] && eval $(dircolors ~/.dircolors)
+
+# ssh-agent keychain
+if test $(which keychain); then
+    keychain -q $HOME/.ssh/id_rsa
+    source $HOME/.keychain/$HOST-sh
+fi
 
 # Coloured man page support
 # using 'less' env vars (format is '\E[<brightness>;<colour>m')
@@ -105,12 +112,11 @@ alias lla='ll -a'
 alias grep='grep -n --color=auto'
 alias less='less -R'
 alias cower='cower --color=auto'
-# alias tmux='tmux -2'
 alias share='curl -F "sprunge=<-" http://sprunge.us | xclip'
 alias matlab='matlab -nodesktop -nosplash'
 alias console='cd ~/code/; tmux split-window -v; tmux resize-pane -D 10;'
 alias hoogle='hoogle --color'
-alias pylab='ipython --pylab'
+alias ssh='TERM=xterm ssh'
 # }}}
 
 # Widgets and Hooks {{{
@@ -388,7 +394,7 @@ _force_rehash() {
 zstyle ':completion::complete:*' use-cache on
 
 # Group matches and describe.
-zstyle ':completion:*:*:*:*:*' menu yes select
+zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*:matches' group 'yes'
 zstyle ':completion:*:options' description 'yes'
 zstyle ':completion:*:options' auto-description '%d'
@@ -458,3 +464,22 @@ zstyle ':completion:*:(ssh|scp|rsync):*:hosts-ipaddr' ignored-patterns '^<->.<->
 
 # left prompt
 PROMPT="%{$fg[green]%} >>> %{$reset_color%}"
+
+# fish-like syntax highlighting as per:
+# https://wiki.archlinux.org/index.php/zsh#Fish-like_syntax_highlighting
+flsh="/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+[[ -f $flsh ]] && source $flsh
+
+# # Setup zsh-autosuggestions
+# source /home/tyler/.zsh-autosuggestions/autosuggestions.zsh
+
+# # Enable autosuggestions automatically
+# zle-line-init() {
+#     zle autosuggest-start
+# }
+
+# zle -N zle-line-init
+
+# # use ctrl+t to toggle autosuggestions(hopefully this wont be needed as
+# # zsh-autosuggestions is designed to be unobtrusive)
+# bindkey '^T' autosuggest-toggle
