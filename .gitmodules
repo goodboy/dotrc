@@ -61,3 +61,6 @@
 [submodule "dotrc/vim/bundle/vim-airline"]
 	path = dotrc/vim/bundle/vim-airline
 	url = https://github.com/bling/vim-airline
+[submodule "dotrc/vim/bundle/vim-grep-operator"]
+	path = dotrc/vim/bundle/vim-grep-operator
+	url = git@github.com:inside/vim-grep-operator.git
