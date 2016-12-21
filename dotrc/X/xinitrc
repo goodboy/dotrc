@@ -13,5 +13,7 @@ case "$2" in
     gnome)
         exec gnome-session;;
     *)
+        systemctl --user import-environment DISPLAY XAUTHORITY
+        dbus-update-activation-environment --all
         exec ${2:-i3};;
 esac
