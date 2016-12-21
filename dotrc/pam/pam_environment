@@ -1,0 +1,28 @@
+# default applications
+BROWSER=firefox
+EDITOR=vim
+VISUAL=vim
+PAGER=less
+LANG=en_US.UTF-8
+
+LESS=FRSX
+GREP_COLOR=4;1;31
+
+# use clang
+# CC=clang
+# CXX=clang++
+GCC_COLORS=error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01
+
+# sdl fix
+SDL_VIDEO_X11_DGAMOUSE=0
+SDL_VIDEO_FULLSCREEN_HEAD=0
+
+# wine settings
+WINEARCH=win32
+WINDEBUG=-all
+WINEDLLOVERRIDES=winemenubuilder.exe=d
+
+# HiDPI scaling
+GDK_SCALE=2
+
+# vim: ft=conf

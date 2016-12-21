@@ -56,7 +56,7 @@ dotfiles_gtk2()         { link gtk-2.0/gtkrc-2.0;               }
 #dotfiles_ncmpcpp()     { link ncmpcpp;                         }
 #dotfiles_mutt()        { link mutt;                            }
 #dotfiles_nethack()     { link nethack/nethackrc;               }
-#dotfiles_pam()         { link pam/pam_environment;             }
+dotfiles_pam()         { link pam/pam_environment;             }
 #dotfiles_pentadactyl() { link pentadactyl/pentadactylrc;       }
 dotfiles_tmux()         { link tmux/tmux.conf;                  }
 #dotfiles_weechat()     { link weechat;                         }
