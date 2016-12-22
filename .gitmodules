@@ -61,3 +61,6 @@
 [submodule "dotrc/vim/bundle/vim-grep-operator"]
 	path = dotrc/vim/bundle/vim-grep-operator
 	url = git@github.com:inside/vim-grep-operator.git
+[submodule "dotrc/vim/bundle/ctrlp"]
+	path = dotrc/vim/bundle/ctrlp
+	url = git@github.com:ctrlpvim/ctrlp.vim.git
