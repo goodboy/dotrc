@@ -22,12 +22,6 @@ export PATH
 [[ -f ~/etc/dircolors/dircolors ]] && eval $(dircolors ~/etc/dircolors/dircolors)
 [[ -f ~/.dircolors ]] && eval $(dircolors ~/.dircolors)
 
-# ssh-agent keychain
-if test $(which keychain); then
-    keychain -q $HOME/.ssh/id_rsa
-    source $HOME/.keychain/$HOST-sh
-fi
-
 # Coloured man page support
 # using 'less' env vars (format is '\E[<brightness>;<colour>m')
 export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
@@ -117,6 +111,7 @@ alias matlab='matlab -nodesktop -nosplash'
 alias console='cd ~/code/; tmux split-window -v; tmux resize-pane -D 10;'
 alias hoogle='hoogle --color'
 alias ssh='TERM=xterm ssh'
+alias wanip='dig +short myip.opendns.com @resolver1.opendns.com'
 # }}}
 
 # Widgets and Hooks {{{
