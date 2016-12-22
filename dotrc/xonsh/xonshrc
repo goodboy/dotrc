@@ -1,0 +1,80 @@
+# vim: ft=python
+import sys
+
+# add home bin to the path
+$PATH.append($HOME + 'etc/bin/')
+
+# xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
+
+# alias to quit AwesomeWM from the terminal
+# def _quit_awesome(args, stdin=None):
+#     lines = $(ps ux | grep "gnome-session --session=awesome").splitlines()
+#     pids = [l.split()[1] for l in lines]
+#     for pid in pids:
+#         lill @(pid)
+
+# if sys.getfilesystemencoding() == 'utf-8':
+#     $TITLE = '\N{SPIRAL SHELL} {current_job:{}:}{cwd}'
+
+aliases.update({
+    'ls': "ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first",
+    'll': "ls -l",
+    'la': "ls -a",
+    'lla': "ls -la",
+    'grep': 'grep -n --color=auto',
+    'less': 'less -R',
+    'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
+})
+# faster completion to "ipy<tab>thon"
+aliases.pop('ipynb')
+
+# some customization options
+$MULTILINE_PROMPT = '`·.,¸,.·*¯`·.,¸,.·*¯'
+$XONSH_SHOW_TRACEBACK = True
+$XONSH_STORE_STDOUT = True
+$VI_MODE = True
+$SHELL_TYPE = 'prompt_toolkit'
+$AUTO_PUSHD = True
+$XONSH_COLOR_STYLE = 'monokai'
+
+# prompt
+# $PROMPT = '\nxonsh {GREEN}>>>{NO_COLOR} '
+# $PROMPT = '\n \N{SPIRAL SHELL}{GREEN}>>>{NO_COLOR} '
+$PROMPT = '\n {GREEN}>>>{NO_COLOR} '
+
+# rprompt
+cwdpart = '{GREEN}({NO_COLOR}{cwd}{GREEN}){NO_COLOR}'
+vcspart = '{curr_branch: {{GREEN}}[{{}}{{}}{{GREEN}}]}'
+# vcspart = '{curr_branch: - [{{}}]}'
+$RIGHT_PROMPT = '\n' + cwdpart + vcspart
+
+# $RIGHT_PROMPT = '\n{GREEN}({NO_COLOR}{cwd}{GREEN}){NO_COLOR}{curr_branch:-{GREEN}[{branch_color}{}{GREEN}]}'
+
+# XONSH_COLOR_STYLE
+
+# namespace bookkeeping
+_new = set()
+
+
+def ctxdiff(now, start, remove):
+    new = now.keys() - start.keys() - remove
+    return {k: now[k] for k in new}
+
+
+def diff_context(args, stdin=None):
+    diff = ctxdiff(__xonsh_ctx__, __xonsh_ctx__['_startctx'], {'_startctx', '__name__'})
+    _new.update(diff.keys())
+    for k, v in diff.items():
+        print('{} {}: {}'.format(type(v), k, v))
+
+
+def clear(args, stdin=None):
+    global _new
+    for k in _new:
+        __xonsh_ctx__.pop(k)
+    _new = set()
+
+
+aliases['ns'] = diff_context
+aliases['cns'] = clear
+_startctx  = __xonsh_ctx__.copy()
