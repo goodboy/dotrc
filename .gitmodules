@@ -6,7 +6,7 @@
 	url = https://github.com/tsaleh/vim-tmux.git
 [submodule "bin"]
 	path = bin
-	url = git://github.com/tgoodlet/scripts.git
+	url = https://github.com/tgoodlet/scripts.git
 [submodule "dotrc/vim/bundle/surround"]
 	path = dotrc/vim/bundle/surround
 	url = git://github.com/tpope/vim-surround.git
@@ -49,9 +49,6 @@
 [submodule "dotrc/vim/bundle/nerdtree"]
 	path = dotrc/vim/bundle/nerdtree
 	url = https://github.com/scrooloose/nerdtree
-[submodule "dotrc/vim/bundle/taglist"]
-	path = dotrc/vim/bundle/taglist
-	url = git://github.com/vim-scripts/taglist.vim.git
 [submodule "dotrc/vim/bundle/linediff"]
 	path = dotrc/vim/bundle/linediff
 	url = git://github.com/AndrewRadev/linediff.vim.git
