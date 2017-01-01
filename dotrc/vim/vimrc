@@ -93,9 +93,9 @@ set shell=/bin/bash
 
 " AUTOCMDS  {{{1
 " ----------------------------
-au VimResized   * exe "normal! \<c-w>="
-au BufWritePre  * if ! &bin | silent! :call spaces#StripTrailing()<CR>
-au BufWritePost * if getline(1) =~ "^#!" | silent :!chmod +x <afile>
+autocmd VimResized   * exe "normal! \<c-w>="
+autocmd BufWritePre  * if ! &bin | silent! :call spaces#StripTrailing()<CR>
+autocmd BufWritePost * if getline(1) =~ "^#!" | silent :!chmod +x <afile>
 
 " CUSTOM COMMANDS {{{1
 " ----------------------------
@@ -152,6 +152,7 @@ nnoremap <S-F6> :!./"%"<CR>
 
 " ctags
 map <f12> :!ctags -R .<cr>
+map <f10> :!ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")<cr>
 
 " PLUGINS {{{1
 " ----------------------------
@@ -176,13 +177,11 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 " SuperTab config
 let g:SuperTabDefaultCompletionType = "context"
 
-" gundo config
-nnoremap <silent> <leader>u :GundoToggle<CR>
-
 " fugative config
 nnoremap <silent> <leader>gd :Gdiff<CR>
 nnoremap <silent> <leader>ge :Gedit<CR>
 nnoremap <silent> <leader>gb :Gbrowse<CR>
+nnoremap <silent> <leader>g :Ggrep <cword><cr>
 
 " syntastic config
 let g:syntastic_mode_map = {'mode': 'passive'} ",
@@ -194,7 +193,7 @@ nnoremap <silent> <leader>== :Tabular /=<CR>
 
 " HASKELL :
 " consider making the function assigned to a vimscript variable
-au Filetype haskell nnoremap <silent> <Leader>d :!~/etc/bin/splitwin.sh hoogle -i <cword><CR>:redraw<CR>
+" au Filetype haskell nnoremap <silent> <Leader>d :!~/etc/bin/splitwin.sh hoogle -i <cword><CR>:redraw<CR>
 
 " vim2hs
 let g:haskell_conceal_wide = 1
@@ -213,5 +212,41 @@ au Filetype haskell nnoremap <silent> <leader>c :GhcModCheckAndLintAsync<CR>
 " pydoc
 let g:pydoc_open_cmd = 'split'
 let g:pydoc_highlight=1
-au Filetype python nnoremap <silent> <Leader>d :!~/etc/bin/splitwin.sh pydoc <cword><CR>:redraw<CR>
-" autocmd FileType python set complete+=k~/.vim/syntax/python.vim isk+=.,(
+
+" ctrl-p
+let g:ctrlp_cmd = 'CtrlPMixed'
+let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
+let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_user_command = {
+\ 'types': {
+    \ 1: ['.git', 'cd %s && git ls-files -co --exclude-standard'],
+    \ 2: ['.hg', 'hg --cwd %s locate -I .'],
+    \ },
+\ 'fallback': 'find %s -type f'
+\ }
+
+let g:ctrlp_extensions = [
+    \'mixed',
+\ ]
+    " \'tag',
+    " \'bookmarkdir'
+    " \'changes',
+    " \'line',
+    " \'mixed',
+    " \'rtscript',
+
+" autoignore
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+    \ 'file': '\v\.(exe|so|dll)$',
+    \ 'link': 'some_bad_symbolic_links',
+\ }
+" buffer tag
+let g:ctrlp_buftag_types = {
+\ 'python': '--fields+=l --language-force=pyton --python-kinds=-iv',
+\ 'erlang': '--language-force=erlang --erlang-types=drmf',
+\ 'javascript' : {
+  \ 'bin': 'jsctags',
+  \ 'args': '-f -',
+  \ },
+\ }
