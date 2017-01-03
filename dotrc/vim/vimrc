@@ -123,7 +123,7 @@ set shell=/bin/bash
 " ----------------------------
 autocmd VimResized * exe "normal! \<c-w>="
 autocmd BufWritePre * if ! &bin | silent! :call spaces#StripTrailing()<CR>
-autocmd BufWritePost * if getline(1) =~ "^#!" | silent :!chmod +x <afile>
+autocmd BufWritePost * if getline(1) =~ "^#!" | execute 'silent :!chmod +x <afile>' | endif
 
 " CUSTOM COMMANDS {{{1
 " ----------------------------
