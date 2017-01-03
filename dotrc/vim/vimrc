@@ -33,6 +33,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
 Plug 'tsaleh/vim-tmux'
+Plug 'chrisbra/csv.vim', {'for': 'csv'}
+Plug 'nanotech/jellybeans.vim'
 
 " Initialize plugin system
 call plug#end()
@@ -177,6 +179,7 @@ nnoremap <S-F6> :!./"%"<CR>
 
 " ctags
 map <f12> :!ctags -R .<cr>
+" https://www.fusionbox.com/blog/detail/navigating-your-django-project-with-vim-and-ctags/590/
 map <f10> :!ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")<cr>
 
 " PLUGINS CONFIG {{{1
@@ -215,7 +218,14 @@ nnoremap <silent> <leader>gd :Gdiff<cr>
 nnoremap <silent> <leader>ge :Gedit<cr>
 nnoremap <silent> <leader>gb :Gbrowse<cr>
 nnoremap <silent> <leader>gs :Gstatus<cr>
-nnoremap <silent> <leader>g :Ggrep <cword><cr>
+
+" grep-operator
+set grepprg=git\ grep\ -n\ $*
+let g:grep_operator_set_search_register = 1
+nmap <leader>g <Plug>GrepOperatorOnCurrentDirectory
+vmap <leader>g <Plug>GrepOperatorOnCurrentDirectory
+nmap <leader><leader>g <Plug>GrepOperatorWithFilenamePrompt
+vmap <leader><leader>g <Plug>GrepOperatorWithFilenamePrompt
 
 " syntastic config
 let g:syntastic_mode_map = {'mode': 'passive'} ",
