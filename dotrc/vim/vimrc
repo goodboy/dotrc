@@ -35,6 +35,7 @@ Plug 'tpope/vim-surround'
 Plug 'tsaleh/vim-tmux'
 Plug 'chrisbra/csv.vim', {'for': 'csv'}
 Plug 'nanotech/jellybeans.vim'
+Plug 'tweekmonster/braceless.vim'
 
 " Initialize plugin system
 call plug#end()
@@ -193,7 +194,7 @@ let g:airline#extensions#tabline#enabled = 1
 
 " signify
 let g:signify_vcs_list = ['git']
-autocmd BufWritePost,FileWritePost * nested call sy#util#refresh_windows()
+" autocmd BufWritePost,FileWritePost * nested call sy#util#refresh_windows()
 " autocmd BufWritePost,FileWritePost * execute :SignifyRefresh
 " autocmd User Signify call sy#util#refresh_windows()
 
@@ -287,3 +288,6 @@ let g:ctrlp_buftag_types = {
   \ 'args': '-f -',
   \ },
 \ }
+
+" braceless
+autocmd FileType python,haml,yaml,coffee BracelessEnable +indent +fold +highlight
