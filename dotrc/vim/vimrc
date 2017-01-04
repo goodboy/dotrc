@@ -1,11 +1,11 @@
-" File:     ~/.vimrc files
+" File:     ~/.vimrc
 " Author:   Tyler Goodlet
 " ------------------------
 
 set nocompatible
 filetype off
 
-" Auto-install
+" Auto-install vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -21,10 +21,8 @@ Plug 'bling/vim-airline'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'dag/vim2hs'
 Plug 'ervandew/supertab'
-Plug 'fs111/pydoc.vim'
 Plug 'godlygeek/tabular'
 Plug 'inside/vim-grep-operator'
-Plug 'mhinz/vim-signify'
 Plug 'plasticboy/vim-markdown'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'scrooloose/syntastic'
@@ -36,9 +34,11 @@ Plug 'tsaleh/vim-tmux'
 Plug 'chrisbra/csv.vim', {'for': 'csv'}
 Plug 'nanotech/jellybeans.vim'
 Plug 'tweekmonster/braceless.vim'
+Plug 'FelikZ/ctrlp-py-matcher'
 
 " Initialize plugin system
 call plug#end()
+
 colorscheme diablo3
 
 " GENERAL {{{1
@@ -121,7 +121,7 @@ set shell=/bin/bash
 
 " AUTOCMDS  {{{1
 " ----------------------------
-autocmd VimResized * exe "normal! \<c-w>="
+autocmd VimResized * execute "normal! \<c-w>="
 autocmd BufWritePre * if ! &bin | silent! :call spaces#StripTrailing()<CR>
 autocmd BufWritePost * if getline(1) =~ "^#!" | execute 'silent :!chmod +x <afile>' | endif
 
@@ -181,7 +181,7 @@ nnoremap <S-F6> :!./"%"<CR>
 " ctags
 map <f12> :!ctags -R .<cr>
 " https://www.fusionbox.com/blog/detail/navigating-your-django-project-with-vim-and-ctags/590/
-map <f10> :!ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")<cr>
+map <f10> :!ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags ./ $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")<cr>
 
 " PLUGINS CONFIG {{{1
 " ----------------------------
@@ -192,17 +192,11 @@ let g:netrw_http_xcmd = "-so"
 " airline
 let g:airline#extensions#tabline#enabled = 1
 
-" signify
-let g:signify_vcs_list = ['git']
-" autocmd BufWritePost,FileWritePost * nested call sy#util#refresh_windows()
-" autocmd BufWritePost,FileWritePost * execute :SignifyRefresh
-" autocmd User Signify call sy#util#refresh_windows()
-
 " snippets config
 let snips_author = 'Tyler Goodlet'
 let snips_email  = 'tgoodlet@gmail.com'
 
-" NERDTree config
+" NERDTree
 let g:NERDTreeChDirMode     = 2
 let g:NERDTreeIgnore        = ['\~$', '\.swp$', '\.o$', '\.hi$', '\.pyc$', '\.pyo$']
 let g:NERDTreeSortOrder     = ['^__\.py$', '\/$', '*', '\~$']
@@ -211,10 +205,10 @@ let g:NERDTreeMinimalUI     = 1
 nnoremap <silent> <leader>t :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
-" SuperTab config
+" SuperTab
 let g:SuperTabDefaultCompletionType = "context"
 
-" fugative config
+" fugative
 nnoremap <silent> <leader>gd :Gdiff<cr>
 nnoremap <silent> <leader>ge :Gedit<cr>
 nnoremap <silent> <leader>gb :Gbrowse<cr>
@@ -228,7 +222,7 @@ vmap <leader>g <Plug>GrepOperatorOnCurrentDirectory
 nmap <leader><leader>g <Plug>GrepOperatorWithFilenamePrompt
 vmap <leader><leader>g <Plug>GrepOperatorWithFilenamePrompt
 
-" syntastic config
+" syntastic
 let g:syntastic_mode_map = {'mode': 'passive'} ",
 nnoremap <silent> <leader>e :Errors<CR>
 nnoremap <silent> <leader>c :SyntasticCheck<CR>
@@ -247,11 +241,8 @@ let g:haskell_tabular = 1
 let g:haskell_autotags = 0
 au Filetype cabal nnoremap <buffer> <silent> <Leader>t: :Tabularize colon<CR>
 
-" pydoc
-let g:pydoc_open_cmd = 'split'
-let g:pydoc_highlight = 1
-
 " ctrl-p
+nmap <c-g> :CtrlPLine<cr>
 let g:ctrlp_cmd = 'CtrlPMixed'
 let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
 let g:ctrlp_clear_cache_on_exit = 0
@@ -263,23 +254,13 @@ let g:ctrlp_user_command = {
 \ 'fallback': 'find %s -type f'
 \ }
 
-let g:ctrlp_extensions = [
-    \'mixed',
-\ ]
-    " \'tag',
-    " \'bookmarkdir'
-    " \'changes',
-    " \'line',
-    " \'mixed',
-    " \'rtscript',
-
-" autoignore
+let g:ctrlp_extensions = ['mixed', 'line']
 let g:ctrlp_custom_ignore = {
     \ 'dir':  '\v[\/]\.(git|hg|svn)$',
     \ 'file': '\v\.(exe|so|dll)$',
     \ 'link': 'some_bad_symbolic_links',
 \ }
-" buffer tag
+
 let g:ctrlp_buftag_types = {
 \ 'python': '--fields+=l --language-force=pyton --python-kinds=-iv',
 \ 'erlang': '--language-force=erlang --erlang-types=drmf',
@@ -288,6 +269,25 @@ let g:ctrlp_buftag_types = {
   \ 'args': '-f -',
   \ },
 \ }
+
+" Do not clear filenames cache, to improve CtrlP startup
+let g:ctrlp_clear_cache_on_exit = 0
+
+" Set no file limit, we are building a big project
+let g:ctrlp_max_files = 0
+
+" If ag is available use it as filename list generator instead of 'find'
+if executable("ag")
+    set grepprg=ag\ --nogroup\ --nocolor
+    let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --ignore ''.git'' --ignore ''.DS_Store'' --ignore ''node_modules'' --hidden -g ""'
+endif
+
+" PyMatcher extension
+if !has('python')
+    echo 'In order to use pymatcher plugin, you need +python compiled vim'
+else
+    let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+endif
 
 " braceless
 autocmd FileType python,haml,yaml,coffee BracelessEnable +indent +fold +highlight
