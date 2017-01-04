@@ -33,8 +33,11 @@ Plug 'tpope/vim-surround'
 Plug 'tsaleh/vim-tmux'
 Plug 'chrisbra/csv.vim', {'for': 'csv'}
 Plug 'nanotech/jellybeans.vim'
-Plug 'tweekmonster/braceless.vim'
+Plug 'tgoodlet/braceless.vim'
 Plug 'FelikZ/ctrlp-py-matcher'
+Plug 'airblade/vim-gitgutter'
+Plug 'jaxbot/semantic-highlight.vim'
+Plug 'Valloric/ListToggle'
 
 " Initialize plugin system
 call plug#end()
@@ -150,14 +153,11 @@ nnoremap k gk
 map Y y$
 
 " shortcut to update diff
-nnoremap <silent> <leader>q :call toggle#ToggleList("Quickfix List", 'c')<CR>
-nnoremap <silent> <leader>l :call toggle#ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <leader>d :diffupdate<CR>
 nnoremap <silent> <leader>h :nohl<CR>
 nnoremap <silent> <leader>b :ls<CR>:b<space>
 nnoremap <silent> <leader>s :setl spell!<CR>
 nnoremap <silent> <leader>w :call spaces#StripTrailing()<CR>
-" nnoremap <silent> <leader>p :!sprunge "%"<CR>
 
 " window movements
 nmap <silent> <C-H> :winc h<CR>
