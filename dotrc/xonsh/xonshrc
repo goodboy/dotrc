@@ -1,10 +1,10 @@
 # vim: ft=python
-import sys
+# import sys
 
 # add home bin to the path
 $PATH.append($HOME + 'etc/bin/')
 
-# xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
+xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
 
 # alias to quit AwesomeWM from the terminal
 # def _quit_awesome(args, stdin=None):
@@ -29,7 +29,7 @@ aliases.update({
 aliases.pop('ipynb')
 
 # some customization options
-$MULTILINE_PROMPT = '`·.,¸,.·*¯`·.,¸,.·*¯'
+$MULTILINE_PROMPT = '{GREEN}...:'  # copy ipython
 $XONSH_SHOW_TRACEBACK = True
 $XONSH_STORE_STDOUT = True
 $VI_MODE = True
@@ -37,10 +37,21 @@ $SHELL_TYPE = 'prompt_toolkit'
 $AUTO_PUSHD = True
 $XONSH_COLOR_STYLE = 'monokai'
 
+# Coloured man page support
+# using 'less' env vars (format is '\E[<brightness>;<colour>m')
+$LESS_TERMCAP_mb = "\033[01;31m"     # begin blinking
+$LESS_TERMCAP_md = "\033[01;31m"     # begin bold
+$LESS_TERMCAP_me = "\033[0m"         # end mode
+$LESS_TERMCAP_so = "\033[01;44;36m"  # begin standout-mode (bottom of screen)
+$LESS_TERMCAP_se = "\033[0m"         # end standout-mode
+$LESS_TERMCAP_us = "\033[00;36m"     # begin underline
+$LESS_TERMCAP_ue = "\033[0m"         # end underline
+
 # prompt
 # $PROMPT = '\nxonsh {GREEN}>>>{NO_COLOR} '
 # $PROMPT = '\n \N{SPIRAL SHELL}{GREEN}>>>{NO_COLOR} '
 $PROMPT = '\n {GREEN}>>>{NO_COLOR} '
+$PROMPT = '{vte_new_tab_cwd}' + $PROMPT
 
 # rprompt
 cwdpart = '{GREEN}({NO_COLOR}{cwd}{GREEN}){NO_COLOR}'
