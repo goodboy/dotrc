@@ -35,7 +35,6 @@ Plug 'chrisbra/csv.vim', {'for': 'csv'}
 Plug 'nanotech/jellybeans.vim'
 Plug 'tgoodlet/braceless.vim'
 Plug 'FelikZ/ctrlp-py-matcher'
-Plug 'airblade/vim-gitgutter'
 Plug 'jaxbot/semantic-highlight.vim'
 Plug 'Valloric/ListToggle'
 
