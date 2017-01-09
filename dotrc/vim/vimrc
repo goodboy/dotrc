@@ -289,4 +289,4 @@ else
 endif
 
 " braceless
-autocmd FileType python,haml,yaml,coffee BracelessEnable +indent +fold +highlight
+autocmd FileType python,lua,haml,yaml,coffee BracelessEnable +indent +fold +highlight
