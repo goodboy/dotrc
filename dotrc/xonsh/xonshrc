@@ -1,10 +1,11 @@
 # vim: ft=python
-# import sys
+from xonsh.prompt.vc import git_dirty_working_directory, current_branch
+
+# xontribs
+xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
 
 # add home bin to the path
 $PATH.append($HOME + 'etc/bin/')
-
-xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
 
 # alias to quit AwesomeWM from the terminal
 # def _quit_awesome(args, stdin=None):
@@ -12,9 +13,6 @@ xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
 #     pids = [l.split()[1] for l in lines]
 #     for pid in pids:
 #         lill @(pid)
-
-# if sys.getfilesystemencoding() == 'utf-8':
-#     $TITLE = '\N{SPIRAL SHELL} {current_job:{}:}{cwd}'
 
 aliases.update({
     'ls': "ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first",
@@ -48,20 +46,20 @@ $LESS_TERMCAP_us = "\033[00;36m"     # begin underline
 $LESS_TERMCAP_ue = "\033[0m"         # end underline
 
 # prompt
-# $PROMPT = '\nxonsh {GREEN}>>>{NO_COLOR} '
-# $PROMPT = '\n \N{SPIRAL SHELL}{GREEN}>>>{NO_COLOR} '
 $PROMPT = '\n {GREEN}>>>{NO_COLOR} '
-$PROMPT = '{vte_new_tab_cwd}' + $PROMPT
 
 # rprompt
-cwdpart = '{GREEN}({NO_COLOR}{cwd}{GREEN}){NO_COLOR}'
-vcspart = '{curr_branch: {{GREEN}}[{{}}{{}}{{GREEN}}]}'
-# vcspart = '{curr_branch: - [{{}}]}'
-$RIGHT_PROMPT = '\n' + cwdpart + vcspart
+def rprompt():
+    cwdpart = '{GREEN}({CYAN}{cwd}{GREEN}){NO_COLOR}'
+    vcspart = '-{GREEN}[{branch_color}{curr_branch}{GREEN}]' if \
+        current_branch() else ''
+    return '\n' + cwdpart + vcspart
 
-# $RIGHT_PROMPT = '\n{GREEN}({NO_COLOR}{cwd}{GREEN}){NO_COLOR}{curr_branch:-{GREEN}[{branch_color}{}{GREEN}]}'
+$RIGHT_PROMPT = rprompt
 
-# XONSH_COLOR_STYLE
+$PROMPT_FIELDS['branch_color'] = lambda: (
+    '{RED}' if git_dirty_working_directory() else '{NO_COLOR}'
+)
 
 # namespace bookkeeping
 _new = set()
