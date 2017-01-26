@@ -37,6 +37,9 @@ Plug 'tgoodlet/braceless.vim'
 Plug 'FelikZ/ctrlp-py-matcher'
 Plug 'jaxbot/semantic-highlight.vim'
 Plug 'Valloric/ListToggle'
+Plug 'szw/vim-tags'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'saltstack/salt-vim'
 
 " Initialize plugin system
 call plug#end()
@@ -181,6 +184,10 @@ nnoremap <S-F6> :!./"%"<CR>
 map <f12> :!ctags -R .<cr>
 " https://www.fusionbox.com/blog/detail/navigating-your-django-project-with-vim-and-ctags/590/
 map <f10> :!ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags ./ $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")<cr>
+
+" sudo write
+cmap w!! w !sudo tee > /dev/null %
+
 
 " PLUGINS CONFIG {{{1
 " ----------------------------
