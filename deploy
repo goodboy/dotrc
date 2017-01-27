@@ -57,7 +57,7 @@ dotfiles_xonsh()        { link xonsh/xonshrc;                   }
 #dotfiles_ncmpcpp()     { link ncmpcpp;                         }
 #dotfiles_mutt()        { link mutt;                            }
 #dotfiles_nethack()     { link nethack/nethackrc;               }
-dotfiles_pam()         { link pam/pam_environment;             }
+dotfiles_pam()          { link pam/pam_environment;             }
 #dotfiles_pentadactyl() { link pentadactyl/pentadactylrc;       }
 dotfiles_tmux()         { link tmux/tmux.conf;                  }
 #dotfiles_weechat()     { link weechat;                         }
@@ -67,6 +67,7 @@ dotfiles_matplotlib()   { link matplotlib ~/.config/matplotlib; }
 dotfiles_inputrc()      { link inputrc;                         }
 dotfiles_i3()           { link i3;                              }
 dotfiles_termite()      { link termite .config/termite;         }
+dotfiles_ranger()       { link ranger .config/ranger;           }
 
 dotfiles_task() {
     link task/task
