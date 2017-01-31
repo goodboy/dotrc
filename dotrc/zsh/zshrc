@@ -103,6 +103,7 @@ alias ls='ls -FNh --tabsize=0 --color=auto --show-control-chars --group-director
 alias la='ls -a'
 alias ll='ls -l'
 alias lla='ll -a'
+alias ip='ip -c'
 alias grep='grep -n --color=auto'
 alias less='less -R'
 alias cower='cower --color=auto'
