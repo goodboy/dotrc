@@ -78,6 +78,7 @@ dotfiles_vim() {
     link vim
     link vim/vimrc
     link vim/gvimrc
+    link nvim .config/nvim
 }
 
 dotfiles_X() {
