@@ -20,11 +20,11 @@ Plug 'VundleVim/Vundle.vim'
 Plug 'bling/vim-airline'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'dag/vim2hs'
-Plug 'ervandew/supertab'
+" Plug 'ervandew/supertab'
 Plug 'godlygeek/tabular'
 Plug 'inside/vim-grep-operator'
 Plug 'plasticboy/vim-markdown'
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/syntastic'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
@@ -33,13 +33,16 @@ Plug 'tpope/vim-surround'
 Plug 'tsaleh/vim-tmux'
 Plug 'chrisbra/csv.vim', {'for': 'csv'}
 Plug 'nanotech/jellybeans.vim'
-Plug 'tgoodlet/braceless.vim'
+Plug 'tweekmonster/braceless.vim'
 Plug 'FelikZ/ctrlp-py-matcher'
 Plug 'jaxbot/semantic-highlight.vim'
 Plug 'Valloric/ListToggle'
-Plug 'szw/vim-tags'
+" Plug 'szw/vim-tags'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'saltstack/salt-vim'
+Plug 'fatih/vim-go'
+Plug 'tshirtman/vim-cython'
+Plug 'rust-lang/rust.vim'
 
 " Initialize plugin system
 call plug#end()
@@ -61,6 +64,9 @@ set nowrap
 set textwidth=72
 set wrapmargin=0
 set formatoptions=qn1
+" Don't insert comment leader when using 'o' or 'O'
+autocmd BufNewFile,BufRead * setlocal formatoptions-=o
+
 
 " searching
 set hlsearch
@@ -123,6 +129,7 @@ set path=.,,/usr/include,/usr/lib
 
 " shell
 set shell=/bin/bash
+
 
 " AUTOCMDS  {{{1
 " ----------------------------
@@ -209,6 +216,7 @@ let g:NERDTreeSortOrder     = ['^__\.py$', '\/$', '*', '\~$']
 let g:NERDTreeShowBookmarks = 1
 let g:NERDTreeMinimalUI     = 1
 nnoremap <silent> <leader>t :NERDTreeToggle<CR>
+nnoremap <silent> <leader>f :NERDTreeFind<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
 " SuperTab
@@ -276,6 +284,9 @@ let g:ctrlp_buftag_types = {
   \ },
 \ }
 
+" cython
+let tlist_pyrex_settings='python;c:classe;m:memder;f:function'
+
 " Do not clear filenames cache, to improve CtrlP startup
 let g:ctrlp_clear_cache_on_exit = 0
 
@@ -283,7 +294,7 @@ let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_max_files = 0
 
 " PyMatcher extension
-if !has('python')
+if !has('python') && !has('nvim')
     echo 'In order to use pymatcher plugin, you need +python compiled vim'
 else
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
