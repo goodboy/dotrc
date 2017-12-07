@@ -123,6 +123,13 @@ bindsym Mod4+j move workspace to output down
 bindsym Mod4+h move workspace to output left
 bindsym Mod4+l move workspace to output right
 
+# Multimedia Keys
+# increase volume
+bindsym XF86AudioRaiseVolume exec amixer -q set Master 5%+ unmute
+# decrease volume
+bindsym XF86AudioLowerVolume exec amixer -q set Master 5%- unmute
+# mute volume
+bindsym XF86AudioMute exec amixer -q set Master mute
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
