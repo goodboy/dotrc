@@ -4,7 +4,7 @@
 
 # activate custom kbd mappings
 if [ -s ~/.Xmodmap ]; then
-    xmodmap ~/.Xmodmap
+    setxkbmap -option caps:ctrl_modifier
 fi
 
 # launch with wm of choice
