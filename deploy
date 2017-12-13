@@ -66,8 +66,11 @@ dotfiles_ghci()         { link ghci/ghci;                       }
 dotfiles_matplotlib()   { link matplotlib ~/.config/matplotlib; }
 dotfiles_inputrc()      { link inputrc;                         }
 dotfiles_i3()           { link i3;                              }
+dotfiles_sway()         { link i3 .config/sway;                              }
 dotfiles_termite()      { link termite .config/termite;         }
 dotfiles_ranger()       { link ranger .config/ranger;           }
+dotfiles_compton()      { link compton/compton.conf;            }
+dotfiles_dunst()        { link dunst .config/dunst;             }
 
 dotfiles_task() {
     link task/task
