@@ -2,10 +2,12 @@
 #
 # Executed by startx (run your window manager from here)
 
-# activate custom kbd mappings
-if [ -s ~/.Xmodmap ]; then
-    setxkbmap -option caps:ctrl_modifier
-fi
+# activate custom kbd mapping
+setxkbmap -option caps:ctrl_modifier
+
+# use xonsh as desktop env shell
+xonsh="$(which xonsh)"
+export SHELL="${xonsh:-SHELL}"
 
 # launch with wm of choice
 cd
@@ -14,6 +16,6 @@ case "$2" in
         exec gnome-session;;
     *)
         systemctl --user import-environment DISPLAY XAUTHORITY
-        dbus-update-activation-environment --all
+        dcus-update-activation-environment --all
         exec ${2:-i3};;
 esac
