@@ -71,6 +71,7 @@ dotfiles_termite()      { link termite .config/termite;         }
 dotfiles_ranger()       { link ranger .config/ranger;           }
 dotfiles_compton()      { link compton/compton.conf;            }
 dotfiles_dunst()        { link dunst .config/dunst;             }
+dotfiles_redshift()     { link redshift .config/redshift;       }
 
 dotfiles_task() {
     link task/task
