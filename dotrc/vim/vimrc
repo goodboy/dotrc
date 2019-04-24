@@ -33,7 +33,7 @@ Plug 'tpope/vim-surround'
 Plug 'tsaleh/vim-tmux'
 Plug 'chrisbra/csv.vim', {'for': 'csv'}
 Plug 'nanotech/jellybeans.vim'
-Plug 'tweekmonster/braceless.vim'
+" Plug 'tweekmonster/braceless.vim'
 Plug 'FelikZ/ctrlp-py-matcher'
 Plug 'jaxbot/semantic-highlight.vim'
 Plug 'Valloric/ListToggle'
@@ -43,11 +43,20 @@ Plug 'saltstack/salt-vim'
 Plug 'fatih/vim-go'
 Plug 'tshirtman/vim-cython'
 Plug 'rust-lang/rust.vim'
+Plug 'zchee/deoplete-jedi'
+Plug 'jaxbot/semantic-highlight.vim'
+Plug 'neomake/neomake'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'cespare/vim-toml'
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 
 " Initialize plugin system
 call plug#end()
 
-colorscheme diablo3
+colorscheme jellybeans
 
 " GENERAL {{{1
 " -----------------------------
@@ -301,4 +310,31 @@ else
 endif
 
 " braceless
-autocmd FileType python,lua,haml,yaml,coffee,sls BracelessEnable +indent +fold +highlight
+" autocmd FileType python,lua,haml,yaml,coffee,sls BracelessEnable +indent +fold +highlight
+
+" deoplete
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#max_list = 10
+set completeopt-=preview " suppress annoying 'help'
+let g:python3_host_prog = '/usr/bin/python3'
+inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+
+" language server mappings thanks to @dtkerr
+" TODO:
+" - server won't start if buffer is empty / file dne
+" - how do selection based auto-format like F2 below?
+" set signcolumn=yes
+" let g:LanguageClient_serverCommands = {
+"   \ 'python': ['pyls'],
+"   \ }
+  " \ 'rust': ['rustup', 'run', 'stable', 'rls'],
+  " \ 'python': ['~/.local/virtualenvs/python-language-server-3m3qmq0i/bin/pyls'],
+  " \ 'javascript': ['~/.local/npm/bin/javascript-typescript-stdio'],
+  " \ 'json': ['~/.local/npm/bin/json-languageserver', '--stdio'],
+  " \ 'html': ['~/.local/npm/bin/html-languageserver', '--stdio'],
+  " \ 'css': ['~/.local/npm/bin/css-languageserver', '--stdio'],
+nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
+nnoremap <silent> <F2> :call LanguageClient#textDocument_formatting()<CR>
+nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
+nnoremap <silent> gr :call LanguageClient_textDocument_references()<CR>:lopen<CR>
+" let g:LanguageClient_loggingLevel = 'DEBUG' " Use highest logging level
