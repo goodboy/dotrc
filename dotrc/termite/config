@@ -3,12 +3,14 @@ resize_grip         = false
 scroll_on_output    = false
 scroll_on_keystroke = true
 audible_bell        = false
-visible_bell        = false
-mouse_autohide      = false
+visible_bell        = true
+mouse_autohide      = true
 dynamic_title       = true
 urgent_on_bell      = true
 clickable_url       = true
-#font               = Envy Code R 9
+#font                = Monospace 10
+#font                = Envy Code R 10
+#font                = Hack 9
 scrollback_lines    = 5000
 icon_name           = terminal
 #transparency       = 0.5
@@ -16,7 +18,6 @@ cursor_blink        = off
 cursor_shape        = block
 
 [hints]
-#font        = Envy Code R 7
 background   = #bf0040
 padding      = 1
 border_width = 2.5
