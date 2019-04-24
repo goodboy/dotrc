@@ -5,9 +5,14 @@
 # activate custom kbd mapping
 setxkbmap -option caps:ctrl_modifier
 
-# use xonsh as desktop env shell
-xonsh="$(which xonsh)"
+# set and alt-shell for the desktop env
+_shell="zsh"
+xonsh="$(which $_shell)"
 export SHELL="${xonsh:-SHELL}"
+export vim="nvim"
+
+# ib-tws hack for i3
+export _JAVA_AWT_WM_NONREPARENTING=1
 
 # launch with wm of choice
 cd
