@@ -99,6 +99,7 @@ unsetopt beep
 
 # Alias {{{
 #alias ls='ls --classify --tabsize=0 --literal --color=auto --show-control-chars --human-readable --group-directories-first'
+alias vim='nvim'
 alias ls='ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first'
 alias la='ls -a'
 alias ll='ls -l'
@@ -366,7 +367,6 @@ bindkey -M vicmd 'l' forward-char
 bindkey -M vicmd '^R' redo
 bindkey -M vicmd 'u' undo
 bindkey -M vicmd 'ga' what-cursor-position
-bindkey -M vicmd 'v' edit-command-line
 
 # fancy <C-z>
 bindkey '^Z' fancy-ctrl-z
