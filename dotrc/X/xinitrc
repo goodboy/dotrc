@@ -7,9 +7,10 @@ setxkbmap -option caps:ctrl_modifier
 
 # set and alt-shell for the desktop env
 _shell="zsh"
-xonsh="$(which $_shell)"
-export SHELL="${xonsh:-SHELL}"
-export vim="nvim"
+_xonsh="$(which $_shell)"
+export SHELL="${_xonsh:-SHELL}"
+# use neovim system wide
+export EDITOR="nvim"
 
 # ib-tws hack for i3
 export _JAVA_AWT_WM_NONREPARENTING=1
