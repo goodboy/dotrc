@@ -1,5 +1,11 @@
 # vim: ft=python
-from xonsh.prompt.vc import git_dirty_working_directory, current_branch
+from os import path
+import builtins
+from xonsh.prompt import vc
+from xonsh.events import events
+# from prompt_toolkit.key_binding import vi_state
+# from prompt_toolkit.keys import Keys
+from prompt_toolkit import filters
 
 # xontribs
 xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
@@ -15,12 +21,13 @@ $PATH.append($HOME + 'etc/bin/')
 #         lill @(pid)
 
 aliases.update({
-    'ls': "ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first",
-    'll': "ls -l",
-    'la': "ls -a",
-    'lla': "ls -la",
     'grep': 'grep -n --color=auto',
+    'ip': 'ip -c',
+    'la': "ls -a",
     'less': 'less -R',
+    'll': "ls -l",
+    'lla': "ls -la",
+    'ls': "ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first",
     'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
 })
 # faster completion to "ipy<tab>thon"
@@ -34,6 +41,7 @@ $VI_MODE = True
 $SHELL_TYPE = 'prompt_toolkit'
 $AUTO_PUSHD = True
 $XONSH_COLOR_STYLE = 'monokai'
+# $UPDATE_PROMPT_ON_KEYPRESS = True
 
 # Coloured man page support
 # using 'less' env vars (format is '\E[<brightness>;<colour>m')
@@ -45,21 +53,52 @@ $LESS_TERMCAP_se = "\033[0m"         # end standout-mode
 $LESS_TERMCAP_us = "\033[00;36m"     # begin underline
 $LESS_TERMCAP_ue = "\033[0m"         # end underline
 
-# prompt
-$PROMPT = '\n {GREEN}>>>{NO_COLOR} '
+
+# def prompt():
+#     """Auto update the prompt and cursor colour.
+#     """
+#     # import pdb; pdb.set_trace()
+#     cli = builtins.__xonsh_shell__.shell.prompter.cli
+#     if cli:
+#         mode = cli.vi_state.input_mode
+#         # print("MODE {}".format(mode))
+#         if mode == vi_state.InputMode.INSERT:
+#             print('\033]12;gray\007')
+#             # print("INSERTING")
+#             # printf '\033]12;gray\007'
+#         else:
+#             print('\033]12;red\007')
+#             # print("NOT INSERT")
+#             # printf '\033]12;red\007'
+
+#     return '\n' + '{env_name:{}}' + ' {GREEN}>>> '
+
+
+# $PROMPT = prompt
+$PROMPT = '\n' + '{env_name:{}}' + ' {GREEN}>>> '
+# $PROMPT = '{env_name:{}}' + ' {GREEN}>>> '
+
+# gray cursor
+# print('\033]12;gray\007')
 
 # rprompt
 def rprompt():
-    cwdpart = '{GREEN}({CYAN}{cwd}{GREEN}){NO_COLOR}'
-    vcspart = '-{GREEN}[{branch_color}{curr_branch}{GREEN}]' if \
-        current_branch() else ''
-    return '\n' + cwdpart + vcspart
+    if not vc.current_branch():
+        return ''  # XXX bug if this returns None
 
-$RIGHT_PROMPT = rprompt
+    # cwdpart = '{GREEN}({CYAN}{cwd}{GREEN}){NO_COLOR}'
+    vcspart = '{GREEN}[{branch_color}{curr_branch}{GREEN}]' if \
+        vc.current_branch() else ''
+    # return '\n' + cwdpart + vcspart
+    return '\n' + vcspart
+
+# $RIGHT_PROMPT = rprompt
+# $BOTTOM_TOOLBAR = '{GREEN}({CYAN}{cwd}{GREEN}){NO_COLOR} {branch_color}{curr_branch}'
 
 $PROMPT_FIELDS['branch_color'] = lambda: (
-    '{RED}' if git_dirty_working_directory() else '{NO_COLOR}'
+    '{RED}' if vc.git_dirty_working_directory() else '{NO_COLOR}'
 )
+
 
 # namespace bookkeeping
 _new = set()
@@ -87,3 +126,61 @@ def clear(args, stdin=None):
 aliases['ns'] = diff_context
 aliases['cns'] = clear
 _startctx  = __xonsh_ctx__.copy()
+
+
+# @events.on_ptk_create
+# def custom_keybindings(bindings, prompter, history, completer, **kw):
+#     # handler = bindings.add
+#     handler = bindings.registry.add_binding
+#     # import pdb; pdb.set_trace()
+
+#     @handler(Keys.ControlSpace)
+#     def fill_suggestion(event):
+#         """Allow ctl-space to trigger auto-suggestion like -> or c-f would.
+#         """
+#         suggestion = event.current_buffer.suggestion
+#         if suggestion:
+#             event.current_buffer.insert_text(suggestion.text)
+
+
+# @events.on_ptk_create
+    # # @handler(Keys.Escape, filter=filters.app.vi_insert_mode)
+    # @handler(Keys.Escape, filter=filters.ViInsertMode())
+    # # @handler(Keys.Any, filter=filters.Vi())
+    # def duhh(event):
+    #     """Allow ctl-space to trigger auto-suggestion like -> would.
+    #     """
+    #     event.cli.output.write_raw('\x1b]12;{}\x07'.format('red'))
+    #     event.cli.output.write_raw('\x1b]12;{}\x07'.format('red'))
+
+    #     # mode = event.cli.vi_state.input_mode
+    #     # buffer = event.cli.current_buffer
+    #     # import pdb; pdb.set_trace()
+    #     # # print("MODE {}".format(mode))
+    #     # if mode == vi_state.InputMode.INSERT:
+    #     #     # print("INSERTING")
+    #     #     print('\033]12;gray\007')
+    #     #     # printf '\033]12;gray\007'
+    #     # else:
+    #     # elif mode == vi_state.InputMode.EDIT:
+    #     # print('\033]12;red\007')
+    #         # print("NOT INSERT")
+    #         # printf '\033]12;red\007'
+
+    #     # event.cli.renderer.erase()
+
+    #     # print("event")
+    #     # print('\033]12;red\007')
+    #     # print('\033]12;gray\007')
+    #     # event.cli.editting_mode == 
+    #     # if suggestion:
+    #     # event.current_buffer.insert_text('\033]12;red\007')
+
+    # @handler('a', 'i', filter=filters.ViNavigationMode())
+    # # @handler(Keys.Any, filter=filters.Vi())
+    # def yup(event):
+    #     """Allow ctl-space to trigger auto-suggestion like -> would.
+    #     """
+    #     event.cli.output.write_raw('\x1b]12;{}\x07'.format('grey'))
+
+    # # import pdb; pdb.set_trace()
