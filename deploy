@@ -26,28 +26,28 @@ parentdir="dotrc"  # the sub-dir of config files/dirs
 
 link() {
     local symlink="$2"
-    [[ -z $2 ]] && symlink=".${1##*/}"  # if $2 is null then use .<filename>
+    # if $2 is null then use .<filename> (which comes from $1)
+    [[ -z $2 ]] && symlink=".${1##*/}"
 
+    # if symlink exists then skip and report
     if [[ -e "$symlink" && ! -h "$symlink" ]]; then
         warn "$symlink already exists in filesystem, skipping..."
         return
     fi
 
     local sl_target=$(readlink -f $symlink)
-    # if dir already exists then skip to next so we don't make a link to itself
+    # if symlink points to existing dir then skip to next so we don't make a link to itself
     if [[ -d $sl_target ]]; then
         warn "$HOME/$symlink already links to dir '$sl_target', skipping..."
         return
     fi
 
     local target="$root/${parentdir}/${1}"
-    ln -fs "$target" "$symlink"
     msg "linking $symlink -> $target"
+    ln -fs "$target" "$symlink"
 }
 
 # deploy scriptlets {{{1
-dotfiles_bin()          { link bin bin;                         }
-dotfiles_cower()        { link cower .config/cower;             }
 dotfiles_dircolors()    { link dircolors/dircolors;             }
 dotfiles_git()          { link git/gitconfig;                   }
 dotfiles_gtk2()         { link gtk-2.0/gtkrc-2.0;               }
@@ -96,25 +96,30 @@ dotfiles_zsh() {
     link zsh/zshrc
     link zsh/zprofile
 }
+
+dotfiles_bin() {
+    # put scripts dir (bin) in $HOME (zsh adds this to the path)
+    ln -fs "${root}/bin" bin
+}
 # }}}
 
 usage() {
-  cat << HERE
+    cat << HERE
 Automated deploy function for dotfile syncronization.
 
 SUPPORTED:
 HERE
 
-for fun in $(compgen -A function dotfiles_); do
-    echo "  ${fun#dotfiles_}"
-done
-exit ${1:-0}
+    for fun in $(compgen -A function dotfiles_); do
+        echo "  ${fun#dotfiles_}"
+    done
+    exit ${1:-0}
 }
 
 deploy() {
-    # go to $HOME and create links for each tool
     msg "deploying dotfiles for user '$(whoami)'"
-    cd && msg "entered $PWD"
+    # go to $HOME and create links for each tool
+    cd ${HOME} && msg "entered $PWD"
 
     while (( $# )); do
         dotfiles_${1#dotfiles_}
