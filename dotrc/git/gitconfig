@@ -1,8 +1,8 @@
 [user]
 	name = Tyler Goodlet
-	email = tgoodlet@gmail.com
+	email = jgbt@protonmail.com
 [github]
-	user = tgoodlet
+	user = goodboy
 	token = e2e771ddfcb20f4c28d8035549c424e3
 [merge]
 	tool = vimdiff
