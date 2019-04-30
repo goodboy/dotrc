@@ -23,6 +23,7 @@ msg() {
 
 root=$PWD  # must be the repo root dir
 parentdir="dotrc"  # the sub-dir of config files/dirs
+mkdir -p "$HOME/.config"
 
 link() {
     local symlink="$2"
