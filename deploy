@@ -103,6 +103,10 @@ dotfiles_alacritty() {
     link alacritty/alacritty.yml
 }
 
+dotfiles_desktopentries() {
+    link desktop_entries/ranger.desktop .local/share/applications/ranger.desktop
+}
+
 dotfiles_bin() {
     # put scripts dir (bin) in $HOME (zsh adds this to the path)
     ln -fs "${root}/bin" bin
