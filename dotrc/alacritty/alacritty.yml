@@ -109,7 +109,7 @@ font:
     #   - (macOS) Menlo
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
-    family: Source Code #Pro # 9
+    family: Source Code Pro
     # family: Hack
 
     # The `style` can be specified to pick a specific face.
@@ -149,7 +149,7 @@ font:
     #style: Bold Italic
 
   # Point size
-  size: 6.0
+  size: 10
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -182,6 +182,35 @@ font:
 
 # If `true`, bold text is drawn using the bright color variants.
 #draw_bold_text_with_bright_colors: true
+
+# Colors (Darkside)
+colors:
+  primary:
+    background: '#222324'
+    # background: '#0A0E14'  # svag's
+    foreground: '#BABABA'
+
+  # Normal colors
+  normal:
+    black:    '#000000'
+    red:      '#E8341C'
+    green:    '#68C256'
+    yellow:   '#F2D42C'
+    blue:     '#1C98E8'
+    magenta:  '#8E69C9'
+    cyan:     '#1C98E8'
+    white:    '#BABABA'
+
+  # Bright colors
+  bright:
+    black:    '#666666'
+    red:      '#E05A4F'
+    green:    '#77B869'
+    yellow:   '#EFD64B'
+    blue:     '#387CD3'
+    magenta:  '#957BBE'
+    cyan:     '#3D97E2'
+    white:    '#BABABA'
 
 # Colors (Tomorrow Night Bright)
 #colors:
