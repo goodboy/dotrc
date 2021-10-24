@@ -43,15 +43,18 @@ Plug 'saltstack/salt-vim'
 Plug 'fatih/vim-go'
 Plug 'tshirtman/vim-cython'
 Plug 'rust-lang/rust.vim'
-Plug 'zchee/deoplete-jedi'
+" Plug 'zchee/deoplete-jedi'
 Plug 'jaxbot/semantic-highlight.vim'
 Plug 'neomake/neomake'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'cespare/vim-toml'
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
     \ }
+Plug 'jbmorgado/vim-pine-script'
+Plug 'tpope/vim-jdaddy'
+Plug 'LnL7/vim-nix'
 
 " Initialize plugin system
 call plug#end()
@@ -300,7 +303,7 @@ let tlist_pyrex_settings='python;c:classe;m:memder;f:function'
 let g:ctrlp_clear_cache_on_exit = 0
 
 " Set no file limit, we are building a big project
-let g:ctrlp_max_files = 0
+" let g:ctrlp_max_files = 0
 
 " PyMatcher extension
 if !has('python') && !has('nvim')
@@ -310,11 +313,11 @@ else
 endif
 
 " braceless
-" autocmd FileType python,lua,haml,yaml,coffee,sls BracelessEnable +indent +fold +highlight
+" autocmd FileType python,lua,haml,yaml,coffee,sls BracelessEnable +indent +highlight
 
 " deoplete
 let g:deoplete#enable_at_startup = 1
-let g:deoplete#max_list = 10
+" let g:deoplete#max_list = 10
 set completeopt-=preview " suppress annoying 'help'
 let g:python3_host_prog = '/usr/bin/python3'
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
