@@ -29,6 +29,7 @@ aliases.update({
     'lla': "ls -la",
     'ls': "ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first",
     'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
+    'vim': 'nvim',
 })
 # faster completion to "ipy<tab>thon"
 aliases.pop('ipynb')
@@ -90,9 +91,11 @@ def rprompt():
     vcspart = '{GREEN}[{branch_color}{curr_branch}{GREEN}]' if \
         vc.current_branch() else ''
     # return '\n' + cwdpart + vcspart
-    return '\n' + vcspart
+    # return '\n' + vcspart
+    return vcspart
 
-# $RIGHT_PROMPT = rprompt
+
+$RIGHT_PROMPT = rprompt
 # $BOTTOM_TOOLBAR = '{GREEN}({CYAN}{cwd}{GREEN}){NO_COLOR} {branch_color}{curr_branch}'
 
 $PROMPT_FIELDS['branch_color'] = lambda: (
@@ -110,7 +113,11 @@ def ctxdiff(now, start, remove):
 
 
 def diff_context(args, stdin=None):
-    diff = ctxdiff(__xonsh_ctx__, __xonsh_ctx__['_startctx'], {'_startctx', '__name__'})
+    diff = ctxdiff(
+        __xonsh__.ctx,
+        __xonsh__.ctx['_startctx'],
+        {'_startctx', '__name__'},
+    )
     _new.update(diff.keys())
     for k, v in diff.items():
         print('{} {}: {}'.format(type(v), k, v))
@@ -125,7 +132,7 @@ def clear(args, stdin=None):
 
 aliases['ns'] = diff_context
 aliases['cns'] = clear
-_startctx  = __xonsh_ctx__.copy()
+_startctx  = __xonsh__.ctx.copy()
 
 
 # @events.on_ptk_create
