@@ -3,6 +3,7 @@ from os import path
 import builtins
 from xonsh.prompt import vc
 from xonsh.events import events
+# from xonsh.prompt.gitstatus import GitStatus, get_gitstatus_info
 # from prompt_toolkit.key_binding import vi_state
 # from prompt_toolkit.keys import Keys
 from prompt_toolkit import filters
@@ -41,7 +42,7 @@ $XONSH_STORE_STDOUT = True
 $VI_MODE = True
 $SHELL_TYPE = 'prompt_toolkit'
 $AUTO_PUSHD = True
-$XONSH_COLOR_STYLE = 'monokai'
+$XONSH_COLOR_STYLE = 'default'
 # $UPDATE_PROMPT_ON_KEYPRESS = True
 
 # Coloured man page support
@@ -76,31 +77,40 @@ $LESS_TERMCAP_ue = "\033[0m"         # end underline
 
 
 # $PROMPT = prompt
-$PROMPT = '\n' + '{env_name:{}}' + ' {GREEN}>>> '
+$PROMPT = '\n' + '{env_name:{}}' + ' {GREEN}>>>{DEFAULT} '
 # $PROMPT = '{env_name:{}}' + ' {GREEN}>>> '
 
 # gray cursor
 # print('\033]12;gray\007')
 
-# rprompt
-def rprompt():
-    if not vc.current_branch():
-        return ''  # XXX bug if this returns None
+def maybe_show_vc() -> str:
+    '''
+    Version control display helper that only shows the branch
+    when a vcs is detected.
 
-    # cwdpart = '{GREEN}({CYAN}{cwd}{GREEN}){NO_COLOR}'
-    vcspart = '{GREEN}[{branch_color}{curr_branch}{GREEN}]' if \
-        vc.current_branch() else ''
-    # return '\n' + cwdpart + vcspart
-    # return '\n' + vcspart
-    return vcspart
+    '''
+    branch = vc.current_branch()
+    if not branch:
+        return ''
 
+    dirty = vc.git_dirty_working_directory()
+    # ops = gitstatus.get_operations()
+    $PROMPT_FIELDS
 
-$RIGHT_PROMPT = rprompt
-# $BOTTOM_TOOLBAR = '{GREEN}({CYAN}{cwd}{GREEN}){NO_COLOR} {branch_color}{curr_branch}'
+    return f'git:[{branch}]'
+
 
 $PROMPT_FIELDS['branch_color'] = lambda: (
-    '{RED}' if vc.git_dirty_working_directory() else '{NO_COLOR}'
+    '{RED}' if vc.git_dirty_working_directory() else '{RESET}'
 )
+$PROMPT_FIELDS['maybe_show_vc'] = maybe_show_vc
+
+$TITLE = '{current_job:{} | }{user}@{hostname}: {cwd} {maybe_show_vc}'
+
+
+# $RIGHT_PROMPT = rprompt
+# $BOTTOM_TOOLBAR = rprompt
+
 
 
 # namespace bookkeeping
@@ -112,7 +122,6 @@ def ctxdiff(now, start, remove):
     return {k: now[k] for k in new}
 
 
-def diff_context(args, stdin=None):
     diff = ctxdiff(
         __xonsh__.ctx,
         __xonsh__.ctx['_startctx'],
@@ -130,7 +139,7 @@ def clear(args, stdin=None):
     _new = set()
 
 
-aliases['ns'] = diff_context
+aliases['ns'] = ctxdiff
 aliases['cns'] = clear
 _startctx  = __xonsh__.ctx.copy()
 
