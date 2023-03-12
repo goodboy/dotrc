@@ -1,25 +1,71 @@
 # vim: ft=python
+import json
 from os import path
 import builtins
+
 from xonsh.prompt import vc
 from xonsh.events import events
+from prompt_toolkit.keys import Keys
+from prompt_toolkit.filters import (
+    Condition,
+    # EmacsInsertMode,
+    ViInsertMode,
+)
 # from xonsh.prompt.gitstatus import GitStatus, get_gitstatus_info
 # from prompt_toolkit.key_binding import vi_state
 # from prompt_toolkit.keys import Keys
 from prompt_toolkit import filters
 
 # xontribs
-xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
+# TODO: figure out how to install these correctly..
+# xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
+xontrib load vox
 
 # add home bin to the path
-$PATH.append($HOME + 'etc/bin/')
+$PATH.append(path.join(
+    $HOME,
+    'etc',
+    'bin',
+))
 
-# alias to quit AwesomeWM from the terminal
-# def _quit_awesome(args, stdin=None):
-#     lines = $(ps ux | grep "gnome-session --session=awesome").splitlines()
-#     pids = [l.split()[1] for l in lines]
-#     for pid in pids:
-#         lill @(pid)
+
+def _gh_edit_issue_body(
+    args: list[str],
+    std: str,
+
+) -> None:
+    '''
+    Edit the issue body pulled from gh given the number is the `args[1]`
+    value, open it in nvim for editing, then write the file on exit
+    and push the final body contents back to github.
+
+    Originally written to proces ``gh issue view <#> --json body`` calls
+    and write back to github something like,
+
+    ```xonsh
+        get_body($(gh issue view 461 --json body)) '$arg1.md'
+        && nvim --cmd ':set ft=markdown' '$arg1.md' &&
+        gh issue edit $arg1 --body-file $arg1.md
+    ```
+
+    '''
+    issue_num: str = args[0]
+
+    resp_str: str = $(gh issue view @(issue_num) --json body)
+    body = json.loads(resp_str)['body']
+    fn = f'{issue_num}.md'
+
+    # write body contents to local file with issue number for name.
+    with open(fn, 'w') as mdfile:
+        mdfile.write(body)
+
+    # open issue body conents, now written to a file with
+    # a name of the number of the issue, with editor.
+    nvim --cmd ':set ft=markdown' @(fn)
+
+    # push file contents back to github.
+    gh issue edit @(issue_num) --body-file @(fn)
+
 
 aliases.update({
     'grep': 'grep -n --color=auto',
@@ -31,6 +77,9 @@ aliases.update({
     'ls': "ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first",
     'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
     'vim': 'nvim',
+    'smbz': "espeak-ng 'meh lahh pelaas'",
+    'ghie': _gh_edit_issue_body,
+
 })
 # faster completion to "ipy<tab>thon"
 aliases.pop('ipynb')
@@ -41,19 +90,20 @@ $XONSH_SHOW_TRACEBACK = True
 $XONSH_STORE_STDOUT = True
 $VI_MODE = True
 $SHELL_TYPE = 'prompt_toolkit'
+$SHELL = 'xonsh'
 $AUTO_PUSHD = True
 $XONSH_COLOR_STYLE = 'default'
-# $UPDATE_PROMPT_ON_KEYPRESS = True
+$UPDATE_PROMPT_ON_KEYPRESS = False
 
 # Coloured man page support
 # using 'less' env vars (format is '\E[<brightness>;<colour>m')
-$LESS_TERMCAP_mb = "\033[01;31m"     # begin blinking
-$LESS_TERMCAP_md = "\033[01;31m"     # begin bold
-$LESS_TERMCAP_me = "\033[0m"         # end mode
-$LESS_TERMCAP_so = "\033[01;44;36m"  # begin standout-mode (bottom of screen)
-$LESS_TERMCAP_se = "\033[0m"         # end standout-mode
-$LESS_TERMCAP_us = "\033[00;36m"     # begin underline
-$LESS_TERMCAP_ue = "\033[0m"         # end underline
+# $LESS_TERMCAP_mb = "\033[01;31m"     # begin blinking
+# $LESS_TERMCAP_md = "\033[01;31m"     # begin bold
+# $LESS_TERMCAP_me = "\033[0m"         # end mode
+# $LESS_TERMCAP_so = "\033[01;44;36m"  # begin standout-mode (bottom of screen)
+# $LESS_TERMCAP_se = "\033[0m"         # end standout-mode
+# $LESS_TERMCAP_us = "\033[00;36m"     # begin underline
+# $LESS_TERMCAP_ue = "\033[0m"         # end underline
 
 
 # def prompt():
@@ -93,34 +143,35 @@ def maybe_show_vc() -> str:
     if not branch:
         return ''
 
-    dirty = vc.git_dirty_working_directory()
+    # dirty = vc.git_dirty_working_directory()
     # ops = gitstatus.get_operations()
-    $PROMPT_FIELDS
+    # $PROMPT_FIELDS
 
-    return f'git:[{branch}]'
+    return f'git:{branch}'
 
 
-$PROMPT_FIELDS['branch_color'] = lambda: (
-    '{RED}' if vc.git_dirty_working_directory() else '{RESET}'
-)
 $PROMPT_FIELDS['maybe_show_vc'] = maybe_show_vc
+# $PROMPT_FIELDS['branch_color'] = lambda: (
+#     '{RED}' if vc.git_dirty_working_directory() else '{RESET}'
+# )
 
 $TITLE = '{current_job:{} | }{user}@{hostname}: {cwd} {maybe_show_vc}'
 
-
 # $RIGHT_PROMPT = rprompt
 # $BOTTOM_TOOLBAR = rprompt
-
-
 
 # namespace bookkeeping
 _new = set()
 
 
-def ctxdiff(now, start, remove):
-    new = now.keys() - start.keys() - remove
-    return {k: now[k] for k in new}
+def ctxdiff(
+    now,
+    start,
+    remove,
 
+) -> None:
+    new = now - start - remove
+    return {k: now[k] for k in new}
 
     diff = ctxdiff(
         __xonsh__.ctx,
@@ -144,19 +195,23 @@ aliases['cns'] = clear
 _startctx  = __xonsh__.ctx.copy()
 
 
-# @events.on_ptk_create
-# def custom_keybindings(bindings, prompter, history, completer, **kw):
-#     # handler = bindings.add
-#     handler = bindings.registry.add_binding
-#     # import pdb; pdb.set_trace()
+@events.on_ptk_create
+def custom_keybindings(
+    bindings,
+    **kw
+):
+    @bindings.add(Keys.ControlSpace)
+    def fill_suggestion(event):
+        '''
+        Allow ctl-space to trigger auto-suggestion like
+        c-e and c-f does; except easier to type quick when
+        already typing commands with spaces.
 
-#     @handler(Keys.ControlSpace)
-#     def fill_suggestion(event):
-#         """Allow ctl-space to trigger auto-suggestion like -> or c-f would.
-#         """
-#         suggestion = event.current_buffer.suggestion
-#         if suggestion:
-#             event.current_buffer.insert_text(suggestion.text)
+
+        '''
+        suggestion = event.current_buffer.suggestion
+        if suggestion:
+            event.current_buffer.insert_text(suggestion.text)
 
 
 # @events.on_ptk_create
