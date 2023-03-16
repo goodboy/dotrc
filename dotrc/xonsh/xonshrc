@@ -1,8 +1,11 @@
 # vim: ft=python
+import builtins
 import json
 from os import path
-import builtins
+from pathlib import Path
+from pprint import pprint
 
+# import pdbpp
 from xonsh.prompt import vc
 from xonsh.events import events
 from prompt_toolkit.keys import Keys
@@ -18,8 +21,25 @@ from prompt_toolkit import filters
 
 # xontribs
 # TODO: figure out how to install these correctly..
-# xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
+# - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
+# - xontrib load xxh
 xontrib load vox
+
+# UX + style customizations
+$MULTILINE_PROMPT = '{GREEN}...:'  # copy ipython
+$XONSH_SHOW_TRACEBACK = True
+$XONSH_STORE_STDOUT = True
+$XONSH_COLOR_STYLE = 'default'
+
+# REPL conf
+$VI_MODE = True
+$SHELL_TYPE = 'prompt_toolkit'
+$SHELL = 'xonsh'
+$AUTO_PUSHD = True
+$UPDATE_PROMPT_ON_KEYPRESS = False
+
+$SYSTEMD_EDITOR='nvim'
+
 
 # add home bin to the path
 $PATH.append(path.join(
@@ -49,22 +69,94 @@ def _gh_edit_issue_body(
     ```
 
     '''
+    provider: str = 'Github'
     issue_num: str = args[0]
+    try:
+        int(issue_num)
+    except ValueError:
 
-    resp_str: str = $(gh issue view @(issue_num) --json body)
-    body = json.loads(resp_str)['body']
-    fn = f'{issue_num}.md'
+        # presume user wants to create a new issue if no int
+        # value was passed to edit.
+        # TODO: obvs we need to considering non-int issues on other
+        # platforms eventually, etc..etc.
+        # title: str = str(issue_num)
+        gh issue create
+        return
+
+    try:
+        resp_str: str = $(gh issue view @(issue_num) --json body)
+        body = json.loads(resp_str)['body']
+    except json.decoder.JSONDecodeError:
+        print(f'No issue for {issue_num} exists!')
+        return
+
+    fn = f'{issue_num}.markdown'
+
+    # create sub-dir in any detected repo and org files there.
+    if vc.current_branch():
+        local_issue_dir = Path('.gh/')
+        local_issue_dir.mkdir(exist_ok=True)
+    else:
+        local_issue_dir = Path('./')
+
+    # TODO: do diff with any existing (local cached) file
+    # and only push changes if any measured.
 
     # write body contents to local file with issue number for name.
-    with open(fn, 'w') as mdfile:
+    local_file = local_issue_dir / fn
+    fn_str = f'{str(local_file)}'
+
+    if not local_file.exists():
+        with local_file.open(mode='w') as mdfile:
+            mdfile.write(body)
+
+    # check if local matches GH
+    with local_file.open(mode='r') as mdfile:
+        orig = mdfile.read()
+        if body != orig:
+            print(f'local file {fn_str} and GH version are diff!')
+            orig = body
+
+    with local_file.open(mode='w') as mdfile:
         mdfile.write(body)
 
     # open issue body conents, now written to a file with
     # a name of the number of the issue, with editor.
-    nvim --cmd ':set ft=markdown' @(fn)
+    nvim --cmd ':set ft=markdown' @(fn_str)
+
+    with local_file.open(mode='r') as mdfile:
+        new = mdfile.read()
+        if new == body:
+            print(
+                f'Nothing changed in {fn_str}\n'
+                f' => skipping remote server sync @ {provider}!'
+            )
+            return
 
     # push file contents back to github.
+    print(f'Syncing update for {issue_num} with GH')
     gh issue edit @(issue_num) --body-file @(fn)
+
+
+def _urls_to_lj(
+    args: list[str],
+    std: str,
+
+) -> None:
+    '''
+    Take the copied urls from the ``xclip -selection clipboard -o``
+    buffer, parse them to entries and dump into TOML format for storage
+    in a linkjournal file.
+
+    '''
+    urls_str: str = $(xclip -selection 'clipboard' -o)
+    urls: list[str] = urls_str.split()
+    pprint(urls)
+
+    # TODO: write a sane tomli-like writer that renders human readable
+    # arrays of tables, since we need it here as well as in
+    # piker.accounting..
+    # breakpoint()
 
 
 aliases.update({
@@ -78,22 +170,15 @@ aliases.update({
     'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
     'vim': 'nvim',
     'smbz': "espeak-ng 'meh lahh pelaas'",
-    'ghie': _gh_edit_issue_body,
+
+    # custom ad-hoc thingers..
+    'gish': _gh_edit_issue_body,
+    'pikerup': 'cd $HOME/repos/piker; vox activate piker310',
+    'urldump': _urls_to_lj,
 
 })
 # faster completion to "ipy<tab>thon"
 aliases.pop('ipynb')
-
-# some customization options
-$MULTILINE_PROMPT = '{GREEN}...:'  # copy ipython
-$XONSH_SHOW_TRACEBACK = True
-$XONSH_STORE_STDOUT = True
-$VI_MODE = True
-$SHELL_TYPE = 'prompt_toolkit'
-$SHELL = 'xonsh'
-$AUTO_PUSHD = True
-$XONSH_COLOR_STYLE = 'default'
-$UPDATE_PROMPT_ON_KEYPRESS = False
 
 # Coloured man page support
 # using 'less' env vars (format is '\E[<brightness>;<colour>m')
@@ -195,6 +280,7 @@ aliases['cns'] = clear
 _startctx  = __xonsh__.ctx.copy()
 
 
+# UX related custom key bindings
 @events.on_ptk_create
 def custom_keybindings(
     bindings,
