@@ -70,11 +70,14 @@ def _gh_edit_issue_body(
 
     '''
     provider: str = 'Github'
-    issue_num: str = args[0]
-    try:
-        int(issue_num)
-    except ValueError:
 
+    try:
+        issue_num: str = args[0]
+        int(issue_num)
+    except (
+        IndexError,  # no args, user wants to create
+        ValueError,  # invalid int issue #
+    ):
         # presume user wants to create a new issue if no int
         # value was passed to edit.
         # TODO: obvs we need to considering non-int issues on other
@@ -94,7 +97,8 @@ def _gh_edit_issue_body(
 
     # create sub-dir in any detected repo and org files there.
     if vc.current_branch():
-        local_issue_dir = Path('.gh/')
+        print('ADDING TO gh/')
+        local_issue_dir = Path('gh/')
         local_issue_dir.mkdir(exist_ok=True)
     else:
         local_issue_dir = Path('./')
@@ -134,8 +138,8 @@ def _gh_edit_issue_body(
             return
 
     # push file contents back to github.
-    print(f'Syncing update for {issue_num} with GH')
-    gh issue edit @(issue_num) --body-file @(fn)
+    print(f'Pushing ish update for {issue_num} with GH..')
+    gh issue edit @(issue_num) --body-file @(fn_str)
 
 
 def _urls_to_lj(
