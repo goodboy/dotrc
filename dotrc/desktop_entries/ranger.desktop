@@ -7,4 +7,3 @@ Terminal=true
 Exec= alacritty -e ranger
 Categories=ConsoleOnly;System;FileTools;FileManager
 MimeType=inode/directory;
-
