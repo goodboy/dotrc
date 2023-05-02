@@ -5,6 +5,7 @@ from os import path
 from pathlib import Path
 from pprint import pprint
 
+import pdbp
 import toml
 import tomlkit
 import msgspec
@@ -29,13 +30,16 @@ from prompt_toolkit import filters
 xontrib load vox
 
 # import from external xontribs likely ones i maintain B)
-xontrib load gish cornerboi
+# xontrib load -f cornerboi.lnstore
+xontrib load -v gish lnstore
 
 # UX + style customizations
 $MULTILINE_PROMPT = '{GREEN}...:'  # copy ipython
 $XONSH_SHOW_TRACEBACK = True
 $XONSH_STORE_STDOUT = True
 $XONSH_COLOR_STYLE = 'default'
+$XONSH_DEBUG = 0
+$XONSH_SHOW_TRACEBACK = True
 
 # REPL conf
 $VI_MODE = True
@@ -44,7 +48,10 @@ $SHELL = 'xonsh'
 $AUTO_PUSHD = True
 $UPDATE_PROMPT_ON_KEYPRESS = False
 
+$EDITOR='nvim'
+$BROWSER='firefox'
 $SYSTEMD_EDITOR='nvim'
+$PAGER='less'
 
 
 # add custom home/etc and .local/bin/ to path
@@ -52,166 +59,6 @@ $PATH.extend([
     str($HOME / Path('etc/bin')),  # personal dotfiles scripts
     str($HOME / Path('.local/bin')),  # for rustup
 ])
-
-
-# def _gh_edit_issue_body(
-#     args: list[str],
-#     std: str,
-
-# ) -> None:
-#     '''
-#     Edit the issue body pulled from gh given the number is the `args[1]`
-#     value, open it in nvim for editing, then write the file on exit
-#     and push the final body contents back to github.
-
-#     Originally written to proces ``gh issue view <#> --json body`` calls
-#     and write back to github something like,
-
-#     ```xonsh
-#         get_body($(gh issue view 461 --json body)) '$arg1.md'
-#         && nvim --cmd ':set ft=markdown' '$arg1.md' &&
-#         gh issue edit $arg1 --body-file $arg1.md
-#     ```
-
-#     Refs:
-#         - https://cli.github.com/manual/gh_issue_view
-
-#     '''
-#     provider: str = 'Github'
-
-#     try:
-#         issue_num: str = args[0]
-#         int(issue_num)
-#     except (
-#         IndexError,  # no args, user wants to create
-#         ValueError,  # invalid int issue #
-#     ):
-#         # presume user wants to create a new issue if no int
-#         # value was passed to edit.
-#         # TODO: obvs we need to considering non-int issues on other
-#         # platforms eventually, etc..etc.
-#         # title: str = str(issue_num)
-#         gh issue create
-#         return
-
-#     try:
-#         resp_str: str = $(gh issue view @(issue_num) --json body)
-#         body = json.loads(resp_str)['body']
-#     except json.decoder.JSONDecodeError:
-#         print(f'No issue for {issue_num} exists!')
-#         return
-
-#     fn = f'{issue_num}.markdown'
-
-#     # create sub-dir in any detected repo and org files there.
-#     if vc.current_branch():
-#         print('ADDING TO gh/')
-#         local_issue_dir = Path('gh/')
-#         local_issue_dir.mkdir(exist_ok=True)
-#     else:
-#         local_issue_dir = Path('./')
-
-#     # TODO: do diff with any existing (local cached) file
-#     # and only push changes if any measured.
-
-#     # write body contents to local file with issue number for name.
-#     local_file = local_issue_dir / fn
-#     fn_str = f'{str(local_file)}'
-
-#     if not local_file.exists():
-#         with local_file.open(mode='w') as mdfile:
-#             mdfile.write(body)
-
-#     # check if local matches GH
-#     with local_file.open(mode='r') as mdfile:
-#         orig = mdfile.read()
-#         if body != orig:
-#             print(f'local file {fn_str} and GH version are diff!')
-#             orig = body
-
-#     with local_file.open(mode='w') as mdfile:
-#         mdfile.write(body)
-
-#     # open issue body conents, now written to a file with
-#     # a name of the number of the issue, with editor.
-#     nvim --cmd ':set ft=markdown' @(fn_str)
-
-#     with local_file.open(mode='r') as mdfile:
-#         new = mdfile.read()
-#         if new == body:
-#             print(
-#                 f'Nothing changed in {fn_str}\n'
-#                 f' => skipping remote server sync @ {provider}!'
-#             )
-#             return
-
-#     # push file contents back to github.
-#     print(f'Pushing ish update for {issue_num} with GH..')
-#     gh issue edit @(issue_num) --body-file @(fn_str)
-
-
-def _urls_to_lj(
-    args: list[str],
-    std: str,
-
-) -> None:
-    '''
-    Take the copied urls from the ``xclip -selection clipboard -o``
-    buffer, parse them to entries and dump into TOML format for storage
-    in a linkjournal file.
-
-    '''
-    urls_str: str = $(xclip -selection 'clipboard' -o)
-    urls: list[str] = urls_str.split()
-
-    # ljdir = Path.home() / 'repos/linkjournal/'
-    ljdir = $HOME / Path('repos/linkjournal/')
-    assert ljdir.is_dir()
-
-    # enter lj dir
-    cd @(str(ljdir))
-
-    try:
-        wsname: str = args[0]
-    except (
-        IndexError,  # no args, user wants to create
-    ):
-        wsname: str = input(
-            'No `workspace/<name>.toml` provided,\n'
-            'enter one now: '
-        )
-
-    wsfile = ljdir / 'workspaces' / f'{wsname}.toml'
-
-    if not wsfile.is_file():
-        with wsfile.open(mode='w') as wstoml:
-            toml.dump(
-                {wsname: urls},
-                wstoml,
-            )
-
-    else:
-        with wsfile.open(mode='a') as wstoml:
-            tomlkit.dump(
-                {wsname: urls},
-                wstoml,
-            )
-
-    # TODO: make the toml content graceful..
-    # - dump each url to a line like "- '<url>'"
-    # - what about dumping in comments from something in the browser?
-    #   - like bookmarks somehow do?
-    # - what's the file-map vs. inside-file-map supposed to look like?
-
-    # open in editor for user adjustement
-    nvim --cmd ':set ft=toml' @(str(wsfile))
-
-    pprint(urls)
-
-    # TODO: write a sane tomli-like writer that renders human readable
-    # arrays of tables, since we need it here as well as in
-    # piker.accounting..
-    # breakpoint()
 
 
 aliases.update({
@@ -229,7 +76,7 @@ aliases.update({
     # custom ad-hoc thingers..
     # 'gish': _gh_edit_issue_body,
     'pikerup': 'cd $HOME/repos/piker; vox activate piker310',
-    'urldump': _urls_to_lj,
+    # 'urldump': _urls_to_lj,
     'gomuks': 'cd $HOME/repos/gomuks; ./gomuks',
     'wm-spawn': 'i3-msg exec "alacritty -e $1"',
 
