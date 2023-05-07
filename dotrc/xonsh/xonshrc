@@ -5,12 +5,11 @@ from os import path
 from pathlib import Path
 from pprint import pprint
 
-import pdbp
-import toml
-import tomlkit
-import msgspec
+# import pdbp
+# import toml
+# import tomlkit
+# import msgspec
 
-# import pdbpp
 from xonsh.prompt import vc
 from xonsh.events import events
 from prompt_toolkit.keys import Keys
@@ -22,16 +21,6 @@ from prompt_toolkit.filters import (
 # from prompt_toolkit.key_binding import vi_state
 # from prompt_toolkit.keys import Keys
 from prompt_toolkit import filters
-
-# xontribs
-# TODO: figure out how to install these correctly..
-# - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
-# - xontrib load xxh
-xontrib load vox
-
-# import from external xontribs likely ones i maintain B)
-# xontrib load -f cornerboi.lnstore
-xontrib load -v gish lnstore
 
 # UX + style customizations
 $MULTILINE_PROMPT = '{GREEN}...:'  # copy ipython
@@ -54,9 +43,8 @@ $BROWSER='firefox'
 $SYSTEMD_EDITOR='nvim'
 $PAGER='less'
 
-
 # hackery for setting up a user-local xonsh env under `.local/
-nixprof:str = f"{$HOME}/.nix-profile"
+nixprof: str = f"{$HOME}/.nix-profile"
 if (
     path.exists(nixprof)
     and not __xonsh__.env.get("NIX_PATH")
@@ -77,7 +65,7 @@ if path.exists(nixprof):
         if p not in sys.path:
             sys.path.append(p)
 
-     $PYTHONPATH = "$HOME/.local/lib/python3.10/site-packages"
+    $PYTHONPATH = "$HOME/.local/lib/python3.10/site-packages"
 
 
 # add custom home/etc and .local/bin/ to path
@@ -85,6 +73,17 @@ $PATH.extend([
     str($HOME / Path('etc/bin')),  # personal dotfiles scripts
     str($HOME / Path('.local/bin')),  # for rustup
 ])
+
+
+# xontribs
+# TODO: figure out how to install these correctly..
+# - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
+# - xontrib load xxh
+xontrib load vox
+
+# import from external xontribs likely ones i maintain B)
+# xontrib load -f cornerboi.lnstore
+xontrib load -v gish lnstore
 
 
 aliases.update({
