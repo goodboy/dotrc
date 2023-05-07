@@ -49,9 +49,35 @@ $AUTO_PUSHD = True
 $UPDATE_PROMPT_ON_KEYPRESS = False
 
 $EDITOR='nvim'
+$VISUAL='nvim'
 $BROWSER='firefox'
 $SYSTEMD_EDITOR='nvim'
 $PAGER='less'
+
+
+# hackery for setting up a user-local xonsh env under `.local/
+nixprof:str = f"{$HOME}/.nix-profile"
+if (
+    path.exists(nixprof)
+    and not __xonsh__.env.get("NIX_PATH")
+):
+    $NIX_REMOTE="daemon"
+    $NIX_USER_PROFILE_DIR="/nix/var/nix/profiles/per-user/" + $USER
+    $NIX_PROFILES="/nix/var/nix/profiles/default " + $HOME + "/.nix-profile"
+    $NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
+    $NIX_PATH="nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixpkgs:/nix/var/nix/profiles/per-user/root/channels"
+    $PATH += [f"{$HOME}/.nix-profile/bin", "/nix/var/nix/profiles/default/bin"]
+
+
+if path.exists(nixprof):
+    for p in map(
+        lambda s: str(s.resolve()),
+        p"~/.local/lib/".glob("python*/site-packages")
+    ):
+        if p not in sys.path:
+            sys.path.append(p)
+
+     $PYTHONPATH = "$HOME/.local/lib/python3.10/site-packages"
 
 
 # add custom home/etc and .local/bin/ to path
