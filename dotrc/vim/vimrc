@@ -17,7 +17,7 @@ call plug#begin('~/.vim/bundle')
 " Plugin List
 Plug 'AndrewRadev/linediff.vim'
 Plug 'VundleVim/Vundle.vim'
-Plug 'bling/vim-airline'
+" Plug 'bling/vim-airline'
 
 " UX
 Plug 'scrooloose/nerdtree'
@@ -56,14 +56,14 @@ Plug 'tsaleh/vim-tmux'
 Plug 'meatballs/vim-xonsh'
 
 " lint and git
-Plug 'scrooloose/syntastic'
+" Plug 'scrooloose/syntastic'
 Plug 'tpope/vim-fugitive'
 
 " Plug 'szw/vim-tags'
 Plug 'editorconfig/editorconfig-vim'
 
 " Plug 'zchee/deoplete-jedi'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
@@ -289,33 +289,34 @@ let g:haskell_autotags = 0
 au Filetype cabal nnoremap <buffer> <silent> <Leader>t: :Tabularize colon<CR>
 
 " ctrl-p
-nmap <C-@> :CtrlPLine<cr>
+" nmap <C-@> :CtrlPLine<cr>
 let g:ctrlp_cmd = 'CtrlPMixed'
+" let g:ctrlp_working_path_mode = 'c'
 let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
 let g:ctrlp_clear_cache_on_exit = 0
-let g:ctrlp_user_command = {
-\ 'types': {
-    \ 1: ['.git', 'cd %s && git ls-files -co --exclude-standard'],
-    \ 2: ['.hg', 'hg --cwd %s locate -I .'],
-    \ },
-\ 'fallback': 'find %s -type f'
-\ }
+" let g:ctrlp_user_command = {
+" \ 'types': {
+"     \ 1: ['.git', 'cd %s && git ls-files -co --exclude-standard'],
+"     \ 2: ['.hg', 'hg --cwd %s locate -I .'],
+"     \ },
+" \ 'fallback': 'find %s -type f'
+" \ }
 
 let g:ctrlp_extensions = ['mixed', 'line']
 let g:ctrlp_custom_ignore = {
-    \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+    \ 'dir':  '\v[\/]\.(git|hg|svn)$ | \vphoto_rec.*$',
     \ 'file': '\v\.(exe|so|dll)$',
     \ 'link': 'some_bad_symbolic_links',
 \ }
 
-let g:ctrlp_buftag_types = {
-\ 'python': '--fields+=l --language-force=pyton --python-kinds=-iv',
-\ 'erlang': '--language-force=erlang --erlang-types=drmf',
-\ 'javascript' : {
-  \ 'bin': 'jsctags',
-  \ 'args': '-f -',
-  \ },
-\ }
+" let g:ctrlp_buftag_types = {
+" \ 'python': '--fields+=l --language-force=pyton --python-kinds=-iv',
+" \ 'erlang': '--language-force=erlang --erlang-types=drmf',
+" \ 'javascript' : {
+"   \ 'bin': 'jsctags',
+"   \ 'args': '-f -',
+"   \ },
+" \ }
 
 " vim-markdown (mode)
 " https://github.com/preservim/vim-markdown#options
@@ -341,11 +342,11 @@ let g:ctrlp_clear_cache_on_exit = 0
 " let g:ctrlp_max_files = 0
 
 " PyMatcher extension
-if !has('python') && !has('nvim')
-    echo 'In order to use pymatcher plugin, you need +python compiled vim'
-else
-    let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
-endif
+" if !has('python') && !has('nvim')
+"     echo 'In order to use pymatcher plugin, you need +python compiled vim'
+" else
+"     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+" endif
 
 " braceless
 " autocmd FileType python,lua,haml,yaml,coffee,sls BracelessEnable +indent +highlight
