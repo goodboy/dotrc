@@ -47,6 +47,7 @@ $TERMINAL='alacritty'
 
 # hackery for setting up a user-local xonsh env under `.local/
 nixprof: str = f"{$HOME}/.nix-profile"
+nixprofpath: Path = Path(nixprof)
 if (
     path.exists(nixprof)
     and not __xonsh__.env.get("NIX_PATH")
@@ -69,6 +70,10 @@ if path.exists(nixprof):
 
     $PYTHONPATH = "$HOME/.local/lib/python3.10/site-packages"
 
+    # bash completions path:
+    # https://xon.sh/envvars.html#bash-completions
+    # on nix this needs to be looked up in the user profile paths
+    $BASH_COMPLETIONS=str(nixprofpath / 'share/bash-completion/bash_completion')
 
 # add custom home/etc and .local/bin/ to path
 $PATH.extend([
