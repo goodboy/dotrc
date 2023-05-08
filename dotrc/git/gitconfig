@@ -16,6 +16,7 @@
 	last = log -1 HEAD
 	glog = log --graph
 	logtree = log --graph --oneline --decorate --all
+	lt = logtree
 [push]
 	default = simple
 [diff]
