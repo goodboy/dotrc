@@ -53,6 +53,7 @@ dotfiles_dircolors()    { link dircolors/dircolors;}
 dotfiles_git()          { link git/gitconfig;}
 dotfiles_gtk2()         { link gtk-2.0/gtkrc-2.0;}
 dotfiles_xonsh()        { link xonsh/xonshrc;}
+dotfiles_xonsh()        { link xonsh .config/xonsh;}
 #dotfiles_htop()        { link htop/htoprc;}
 #dotfiles_lxdm()        { link lxdm/dmrc;}
 #dotfiles_ncmpcpp()     { link ncmpcpp;}
@@ -75,6 +76,7 @@ dotfiles_compton()      { link compton/compton.conf;}
 dotfiles_dunst()        { link dunst .config/dunst;}
 dotfiles_redshift()     { link redshift .config/redshift;}
 dotfiles_piker()        { link piker .config/piker;}
+dotfiles_piker()        { link direnv .config/direnv;}
 
 dotfiles_task() {
     link task/task
