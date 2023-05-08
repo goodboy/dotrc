@@ -8,7 +8,7 @@
 	tool = vimdiff
 	log = true
 [core]
-	editor = vim
+	editor = nvim
 	excludesfile = ~/.cvsignore
 [color]
 	ui = true
