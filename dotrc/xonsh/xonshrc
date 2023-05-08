@@ -1,6 +1,7 @@
 # vim: ft=python
 import builtins
 import json
+import sys
 from os import path
 from pathlib import Path
 from pprint import pprint
@@ -42,6 +43,7 @@ $VISUAL='nvim'
 $BROWSER='firefox'
 $SYSTEMD_EDITOR='nvim'
 $PAGER='less'
+$TERMINAL='alacritty'
 
 # hackery for setting up a user-local xonsh env under `.local/
 nixprof: str = f"{$HOME}/.nix-profile"
@@ -74,7 +76,6 @@ $PATH.extend([
     str($HOME / Path('.local/bin')),  # for rustup
 ])
 
-
 # xontribs
 # TODO: figure out how to install these correctly..
 # - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
@@ -82,11 +83,17 @@ $PATH.extend([
 xontrib load vox
 
 # import from external xontribs likely ones i maintain B)
-# xontrib load -f cornerboi.lnstore
 xontrib load -v gish lnstore
 
+# XXX: i don't luve this direnv + nix interop..
+# https://github.com/74th/xonsh-direnv
+# xontrib load -v direnv
 
+# faster completion to "ipy<tab>thon"
+aliases.pop('ipynb')
 aliases.update({
+
+    # name remaps
     'grep': 'grep -n --color=auto',
     'ip': 'ip -c',
     'la': "ls -a",
@@ -94,23 +101,26 @@ aliases.update({
     'll': "ls -l",
     'lla': "ls -la",
     'ls': "ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first",
-    'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
     'vim': 'nvim',
-    'smbz': "espeak-ng 'meh lahh pelaas'",
 
-    # custom ad-hoc thingers..
-    # 'gish': _gh_edit_issue_body,
-    'pikerup': 'cd $HOME/repos/piker; vox activate piker310',
-    # 'urldump': _urls_to_lj,
+    # utils with deps
+    'smbz': "espeak-ng 'meh lahh pelaas'",
+    'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
+
+    # custom nix dev envs:
+    'pikerup': 'cd $HOME/repos/piker; nix-shell develop.nix --command "python -m xonsh"',
+
+    # any
     'gomuks': 'cd $HOME/repos/gomuks; ./gomuks',
+
+    # i3-program-launching
     'wm-spawn': 'i3-msg exec "alacritty -e $1"',
 
     # ext mouse, bump up that speeeed
-    'fast_mouse': 'xinput --set-prop 10 "libinput Accel Speed" 1',
+    # 'fast_mouse': 'xinput --set-prop 10 "libinput Accel Speed" 1',
+    'fast_mouse': 'xinput --set-prop 10 --type=float --format=32 "libinput Accel Speed" 1',
 
 })
-# faster completion to "ipy<tab>thon"
-aliases.pop('ipynb')
 
 # Coloured man page support
 # using 'less' env vars (format is '\E[<brightness>;<colour>m')
