@@ -1,6 +1,7 @@
 # vim: ft=python
 import builtins
 import json
+import site
 import sys
 from os import path
 from pathlib import Path
@@ -61,14 +62,16 @@ if (
 
 
 if path.exists(nixprof):
+    $PYTHONPATH = "$HOME/.local/lib/python3.10/site-packages"
+
     for p in map(
         lambda s: str(s.resolve()),
         p"~/.local/lib/".glob("python*/site-packages")
     ):
         if p not in sys.path:
-            sys.path.append(p)
+            print(f'adding {p} to path!')
+            site.addsitedir(p)
 
-    $PYTHONPATH = "$HOME/.local/lib/python3.10/site-packages"
 
     # bash completions path:
     # https://xon.sh/envvars.html#bash-completions
