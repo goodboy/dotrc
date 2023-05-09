@@ -62,9 +62,6 @@ if (
 
 
 if path.exists(nixprof):
-    # use the config from this dotrc repo B)
-    $NIXOS_CONFIG = f'{$HOME}/repos/dotrc/dotrc/nixos/configuration.nix'
-
     for p in map(
         lambda s: str(s.resolve()),
         p"~/.local/lib/".glob("python*/site-packages")
@@ -98,6 +95,10 @@ xontrib load -v gish lnstore
 # https://github.com/74th/xonsh-direnv
 # xontrib load -v direnv
 
+# use the config from this dotrc repo B)
+$NIXOS_CONFIG = f'{$HOME}/repos/dotrc/dotrc/nixos/configuration.nix'
+print(f'NIXOS_CONFIG: {$NIXOS_CONFIG}')
+
 # faster completion to "ipy<tab>thon"
 aliases.pop('ipynb')
 aliases.update({
@@ -129,6 +130,9 @@ aliases.update({
     # ext mouse, bump up that speeeed
     # 'fast_mouse': 'xinput --set-prop 10 "libinput Accel Speed" 1',
     'fast_mouse': 'xinput --set-prop 10 --type=float --format=32 "libinput Accel Speed" 1',
+
+    # nixos helpers
+    'nixup': 'nixos-rebuild --use-remote-sudo --upgrade switch',
 
 })
 
