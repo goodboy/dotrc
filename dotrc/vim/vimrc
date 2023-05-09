@@ -56,7 +56,7 @@ Plug 'tsaleh/vim-tmux'
 Plug 'meatballs/vim-xonsh'
 
 " lint and git
-" Plug 'scrooloose/syntastic'
+Plug 'scrooloose/syntastic'
 Plug 'tpope/vim-fugitive'
 
 " Plug 'szw/vim-tags'
@@ -271,6 +271,7 @@ vmap <leader><leader>g <Plug>GrepOperatorWithFilenamePrompt
 
 " syntastic
 let g:syntastic_mode_map = {'mode': 'passive'} ",
+let g:syntastic_shell = "xonsh"
 nnoremap <silent> <leader>e :Errors<CR>
 nnoremap <silent> <leader>c :SyntasticCheck<CR>
 
