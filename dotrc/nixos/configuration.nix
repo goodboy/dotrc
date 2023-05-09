@@ -25,6 +25,11 @@
   # Set your time zone.
   time.timeZone = "America/Toronto";
 
+  virtualisation.docker.rootless = {
+    enable = true;
+    setSocketVariable = true;
+  };
+
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
@@ -93,8 +98,6 @@
   (self: super: { nix-direnv = super.nix-direnv.override { enableFlakes = true; }; } )
   ];
 
-
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.lord_fomo = {
     isNormalUser = true;
@@ -156,6 +159,7 @@
   # started in user sessions.
   programs.mtr.enable = true;
   programs.xonsh.enable = true;
+  programs.bash.enableCompletion = true;
   programs.dconf.enable = true;
 
   # programs.gnupg.agent = {
