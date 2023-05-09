@@ -62,7 +62,8 @@ if (
 
 
 if path.exists(nixprof):
-    $PYTHONPATH = "$HOME/.local/lib/python3.10/site-packages"
+    # use the config from this dotrc repo B)
+    $NIXOS_CONFIG = f'{$HOME}/repos/dotrc/dotrc/nixos/configuration.nix'
 
     for p in map(
         lambda s: str(s.resolve()),
@@ -109,6 +110,7 @@ aliases.update({
     'll': "ls -l",
     'lla': "ls -la",
     'ls': "ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first",
+    'vi': 'nvim',
     'vim': 'nvim',
 
     # utils with deps
