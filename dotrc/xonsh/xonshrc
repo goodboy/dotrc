@@ -46,12 +46,15 @@ $SYSTEMD_EDITOR='nvim'
 $PAGER='less'
 $TERMINAL='alacritty'
 
+
+_xenv = __xonsh__.env
+
 # hackery for setting up a user-local xonsh env under `.local/
 nixprof: str = f"{$HOME}/.nix-profile"
 nixprofpath: Path = Path(nixprof)
 if (
     path.exists(nixprof)
-    and not __xonsh__.env.get("NIX_PATH")
+    and not _xenv.get("NIX_PATH")
 ):
     $NIX_REMOTE="daemon"
     $NIX_USER_PROFILE_DIR="/nix/var/nix/profiles/per-user/" + $USER
@@ -61,32 +64,43 @@ if (
     $PATH += [f"{$HOME}/.nix-profile/bin", "/nix/var/nix/profiles/default/bin"]
 
 
-if path.exists(nixprof):
+def add_site_path(
+    args: tuple,
+    path: str = p"~/.local/"
+) -> None:
+
+    if args:
+        path: str = args[0]
+
+    path = Path(path)
+    if 'lib' not in str(path):
+        path = path / 'lib'
+
+    paths: list[str] = []
     for p in map(
         lambda s: str(s.resolve()),
-        p"~/.local/lib/".glob("python*/site-packages")
+        path.glob("python*/site-packages")
     ):
         if p not in sys.path:
-            print(f'adding {p} to path!')
+            paths.append(p)
             site.addsitedir(p)
 
-
-    # bash completions path:
-    # https://xon.sh/envvars.html#bash-completions
-    # on nix this needs to be looked up in the user profile paths
-    $BASH_COMPLETIONS=str(nixprofpath / 'share/bash-completion/bash_completion')
-
-# add custom home/etc and .local/bin/ to path
-$PATH.extend([
-    str($HOME / Path('etc/bin')),  # personal dotfiles scripts
-    str($HOME / Path('.local/bin')),  # for rustup
-])
+    print(f'Hacking in to $PYTHONPATH:\n{paths}\n')
 
 # xontribs
 # TODO: figure out how to install these correctly..
 # - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
 # - xontrib load xxh
 xontrib load vox
+
+# XXX: immediately enter cornerboi env and hack in site path :surfer:
+# (particularly handy on nix-os when wanting to have a default
+# non-system xonsh python env).
+_default_venv = 'cornerboi'
+if _default_venv:
+    vox enter @(_default_venv)
+    add_site_path([], path=_xenv.get('VIRTUAL_ENV'))
+
 
 # import from external xontribs likely ones i maintain B)
 xontrib load -v gish lnstore
@@ -95,13 +109,30 @@ xontrib load -v gish lnstore
 # https://github.com/74th/xonsh-direnv
 # xontrib load -v direnv
 
-# use the config from this dotrc repo B)
-$NIXOS_CONFIG = f'{$HOME}/repos/dotrc/dotrc/nixos/configuration.nix'
-print(f'NIXOS_CONFIG: {$NIXOS_CONFIG}')
+
+if path.exists(nixprof):
+
+    # bash completions path:
+    # https://xon.sh/envvars.html#bash-completions
+    # on nix this needs to be looked up in the user profile paths
+    $BASH_COMPLETIONS=str(nixprofpath / 'share/bash-completion/bash_completion')
+
+    # TODO: look up this path dynamically..
+    # use the config from this dotrc repo B)
+    $NIXOS_CONFIG = f'{$HOME}/repos/dotrc/dotrc/nixos/configuration.nix'
+
+
+# add custom home/etc and .local/bin/ to path
+$PATH.extend([
+    str($HOME / Path('etc/bin')),  # personal dotfiles scripts
+    str($HOME / Path('.local/bin')),  # for rustup
+])
 
 # faster completion to "ipy<tab>thon"
 aliases.pop('ipynb')
 aliases.update({
+
+    'addpath': add_site_path,
 
     # name remaps
     'grep': 'grep -n --color=auto',
