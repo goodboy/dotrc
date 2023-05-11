@@ -22,6 +22,16 @@
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
+  # rtkit is optional but recommended
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # jack.enable = true;
+  };
+
   # Set your time zone.
   time.timeZone = "America/Toronto";
 
@@ -44,14 +54,14 @@
 
   # Enable the X11 windowing system.
   services.xserver = {
-  	enable = true;
-	windowManager.i3.enable = true;
-	autorun = true;
+    enable = true;
+    windowManager.i3.enable = true;
+    autorun = true;
 
-	# TODO: figure out how to just use login + startx
-	displayManager.lightdm.enable = true;
-	#displayManager.startx.enable = true;
-	#displayManager.defaultSession = "i3";
+    # TODO: figure out how to just use login + startx
+    displayManager.lightdm.enable = true;
+    #displayManager.startx.enable = true;
+    #displayManager.defaultSession = "i3";
   };
 
   # Configure keymap in X11
@@ -65,7 +75,7 @@
 
   # Enable sound.
   sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.enable = false;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -111,6 +121,7 @@
       maim  # screenshotz
       obs-studio  # media-recording
       quodlibet  # audio player
+      pavucontrol
 
       # matrix
       # gomuks  
@@ -133,6 +144,7 @@
       mtr
       ncdu
       tree
+      mlocate
 
       # utils + docs
       man-pages
