@@ -161,7 +161,7 @@ set undodir=~/.vim/undo
 set path=.,,/usr/include,/usr/lib
 
 " shell
-set shell=/bin/bash
+set shell=bash
 
 
 " AUTOCMDS  {{{1
@@ -290,11 +290,13 @@ let g:haskell_autotags = 0
 au Filetype cabal nnoremap <buffer> <silent> <Leader>t: :Tabularize colon<CR>
 
 " ctrl-p
-" nmap <C-@> :CtrlPLine<cr>
-let g:ctrlp_cmd = 'CtrlPMixed'
-" let g:ctrlp_working_path_mode = 'c'
 let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
 let g:ctrlp_clear_cache_on_exit = 0
+" let g:ctrlp_working_path_mode = 'c'
+
+" TODO: can't you pass a string to this?!
+nnoremap <leader><Space> :CtrlPTag<cr>
+let g:ctrlp_cmd = 'CtrlPMixed'
 " let g:ctrlp_user_command = {
 " \ 'types': {
 "     \ 1: ['.git', 'cd %s && git ls-files -co --exclude-standard'],
@@ -303,7 +305,7 @@ let g:ctrlp_clear_cache_on_exit = 0
 " \ 'fallback': 'find %s -type f'
 " \ }
 
-let g:ctrlp_extensions = ['mixed', 'line']
+let g:ctrlp_extensions = ['mixed', 'line', 'tag']
 let g:ctrlp_custom_ignore = {
     \ 'dir':  '\v[\/]\.(git|hg|svn)$ | \vphoto_rec.*$',
     \ 'file': '\v\.(exe|so|dll)$',
