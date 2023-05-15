@@ -8,12 +8,9 @@ from pathlib import Path
 from pprint import pprint
 
 # import pdbp
-# import toml
-# import tomlkit
-# import msgspec
-
 from xonsh.prompt import vc
 from xonsh.events import events
+from xonsh import xontribs
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.filters import (
     Condition,
@@ -120,10 +117,16 @@ def pyup(
     vox enter @(dst_env)
     add_site_path(path=_xenv.get('VIRTUAL_ENV'))
 
-    # TODO: how to make these autoload in a more clever way?
-    if dst_env == 'cornerboi':
-        # import from external xontribs likely ones i maintain B)
-        xontrib load -v gish lnstore
+    # TODO: autoload any environment detected xontribs B)
+    # see the vox-api xontrib and xonsh hooks:
+    # - https://github.com/xonsh/xontrib-vox#voxapi
+    # - https://github.com/xonsh/xonsh/blob/ae6b34ba2f62266ca68536484f64cc9a37cf9d1b/xonsh/base_shell.py#L379
+    # - https://xon.sh/python_virtual_environments.html#automatically-switching-environments
+
+    # NOTE: currently solution is that they're autoloaded as per using
+    # a setuptools entrypoint:
+    # - https://xon.sh/tutorial_xontrib.html#loading-xontribs
+    xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
 
 
 # xontribs
