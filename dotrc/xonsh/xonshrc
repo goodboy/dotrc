@@ -82,6 +82,10 @@ def add_site_path(
 
 def pyup(
     args: tuple,
+    std: str,
+
+    *,
+    cd_to_repo: bool = True,
 
 ) -> None:
     '''
@@ -127,6 +131,16 @@ def pyup(
     # a setuptools entrypoint:
     # - https://xon.sh/tutorial_xontrib.html#loading-xontribs
     xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
+
+    # change to ~/repos/<dst_env>/ if exists
+    repo_dir: Path = Path.home()/'repos'/dst_env
+    if (
+        cd_to_repo
+        and repo_dir.is_dir()
+    ):
+        rd: str = str(repo_dir)
+        print(f'Entering repo dir: {rd}')
+        cd @(rd)
 
 
 # xontribs
