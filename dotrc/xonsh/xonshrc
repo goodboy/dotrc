@@ -30,7 +30,6 @@ $XONSH_SHOW_TRACEBACK = True
 $XONSH_STORE_STDOUT = True
 $XONSH_COLOR_STYLE = 'default'
 $XONSH_DEBUG = 0
-$XONSH_SHOW_TRACEBACK = True
 
 # REPL conf
 $VI_MODE = True
@@ -65,12 +64,8 @@ if (
 
 
 def add_site_path(
-    args: tuple,
     path: str = p"~/.local/"
 ) -> None:
-
-    if args:
-        path: str = args[0]
 
     path = Path(path)
     if 'lib' not in str(path):
@@ -87,23 +82,55 @@ def add_site_path(
 
     print(f'Hacking in to $PYTHONPATH:\n{paths}\n')
 
+
+def pyup(
+    args: tuple,
+
+) -> None:
+    '''
+    Bring up a ``vox`` based python virtual env B)
+
+    Special heed is made to hack the python path (which is particularly
+    handy on nixos where normally each user profile is already totally
+    isolated and libraries linked per flake.nix).
+
+    '''
+    dst_env: str = args[0]
+
+    src_env_path_str: str | None = _xenv.get('VIRTUAL_ENV')
+    if src_env_path_str:
+        src_path: Path = Path(src_env_path_str)
+        src_env: str = src_path.parts[-1]
+
+        # noop if this env is already activated
+        if src_env == dst_env:
+            print(f'{dst_env} is already active!?')
+            return
+
+        if (
+            src_path
+            and src_env != dst_env
+        ):
+            # TODO: use api for this:
+            # https://xon.sh/python_virtual_environments.html
+            vox deactivate
+
+    # exit any currently activated vox env then enter the desired vox
+    # env and hack the path..
+    vox enter @(dst_env)
+    add_site_path(path=_xenv.get('VIRTUAL_ENV'))
+
+    # TODO: how to make these autoload in a more clever way?
+    if dst_env == 'cornerboi':
+        # import from external xontribs likely ones i maintain B)
+        xontrib load -v gish lnstore
+
+
 # xontribs
 # TODO: figure out how to install these correctly..
 # - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
 # - xontrib load xxh
 xontrib load vox
-
-# XXX: immediately enter cornerboi env and hack in site path :surfer:
-# (particularly handy on nix-os when wanting to have a default
-# non-system xonsh python env).
-_default_venv = 'cornerboi'
-if _default_venv:
-    vox enter @(_default_venv)
-    add_site_path([], path=_xenv.get('VIRTUAL_ENV'))
-
-
-# import from external xontribs likely ones i maintain B)
-xontrib load -v gish lnstore
 
 # XXX: i don't luve this direnv + nix interop..
 # https://github.com/74th/xonsh-direnv
@@ -132,7 +159,8 @@ $PATH.extend([
 aliases.pop('ipynb')
 aliases.update({
 
-    'addpath': add_site_path,
+    # python path hacking (mostly for nixos)
+    'pyup': pyup,
 
     # name remaps
     'grep': 'grep -n --color=auto',
@@ -150,7 +178,12 @@ aliases.update({
     'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
 
     # custom nix dev envs:
-    'pikerup': 'cd $HOME/repos/piker; nix-shell develop.nix --command "python -m xonsh"',
+    'pikerup': (
+        'cd $HOME/repos/piker; '
+        # 'nix-shell develop.nix --command "python -m xonsh"; '
+        # 'vox deactivate; '
+        'nix-shell develop.nix --command "xonsh"'
+    ),
 
     # any
     'gomuks': 'cd $HOME/repos/gomuks; ./gomuks',
@@ -233,38 +266,38 @@ $TITLE = '{current_job:{} | }{user}@{hostname}: {cwd} {maybe_show_vc}'
 # $BOTTOM_TOOLBAR = rprompt
 
 # namespace bookkeeping
-_new = set()
+# _new = set()
 
 
-def ctxdiff(
-    now,
-    start,
-    remove,
+# def ctxdiff(
+#     now,
+#     start,
+#     remove,
 
-) -> None:
-    new = now - start - remove
-    return {k: now[k] for k in new}
+# ) -> None:
+#     new = now - start - remove
+#     return {k: now[k] for k in new}
 
-    diff = ctxdiff(
-        __xonsh__.ctx,
-        __xonsh__.ctx['_startctx'],
-        {'_startctx', '__name__'},
-    )
-    _new.update(diff.keys())
-    for k, v in diff.items():
-        print('{} {}: {}'.format(type(v), k, v))
-
-
-def clear(args, stdin=None):
-    global _new
-    for k in _new:
-        __xonsh_ctx__.pop(k)
-    _new = set()
+#     diff = ctxdiff(
+#         __xonsh__.ctx,
+#         __xonsh__.ctx['_startctx'],
+#         {'_startctx', '__name__'},
+#     )
+#     _new.update(diff.keys())
+#     for k, v in diff.items():
+#         print('{} {}: {}'.format(type(v), k, v))
 
 
-aliases['ns'] = ctxdiff
-aliases['cns'] = clear
-_startctx  = __xonsh__.ctx.copy()
+# def clear(args, stdin=None):
+#     global _new
+#     for k in _new:
+#         __xonsh_ctx__.pop(k)
+#     _new = set()
+
+
+# aliases['ns'] = ctxdiff
+# aliases['cns'] = clear
+# _startctx  = __xonsh__.ctx.copy()
 
 
 # UX related custom key bindings
@@ -285,46 +318,3 @@ def custom_keybindings(
         suggestion = event.current_buffer.suggestion
         if suggestion:
             event.current_buffer.insert_text(suggestion.text)
-
-
-# @events.on_ptk_create
-    # # @handler(Keys.Escape, filter=filters.app.vi_insert_mode)
-    # @handler(Keys.Escape, filter=filters.ViInsertMode())
-    # # @handler(Keys.Any, filter=filters.Vi())
-    # def duhh(event):
-    #     """Allow ctl-space to trigger auto-suggestion like -> would.
-    #     """
-    #     event.cli.output.write_raw('\x1b]12;{}\x07'.format('red'))
-    #     event.cli.output.write_raw('\x1b]12;{}\x07'.format('red'))
-
-    #     # mode = event.cli.vi_state.input_mode
-    #     # buffer = event.cli.current_buffer
-    #     # import pdb; pdb.set_trace()
-    #     # # print("MODE {}".format(mode))
-    #     # if mode == vi_state.InputMode.INSERT:
-    #     #     # print("INSERTING")
-    #     #     print('\033]12;gray\007')
-    #     #     # printf '\033]12;gray\007'
-    #     # else:
-    #     # elif mode == vi_state.InputMode.EDIT:
-    #     # print('\033]12;red\007')
-    #         # print("NOT INSERT")
-    #         # printf '\033]12;red\007'
-
-    #     # event.cli.renderer.erase()
-
-    #     # print("event")
-    #     # print('\033]12;red\007')
-    #     # print('\033]12;gray\007')
-    #     # event.cli.editting_mode == 
-    #     # if suggestion:
-    #     # event.current_buffer.insert_text('\033]12;red\007')
-
-    # @handler('a', 'i', filter=filters.ViNavigationMode())
-    # # @handler(Keys.Any, filter=filters.Vi())
-    # def yup(event):
-    #     """Allow ctl-space to trigger auto-suggestion like -> would.
-    #     """
-    #     event.cli.output.write_raw('\x1b]12;{}\x07'.format('grey'))
-
-    # # import pdb; pdb.set_trace()
