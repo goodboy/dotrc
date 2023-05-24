@@ -56,13 +56,13 @@ Plug 'tsaleh/vim-tmux'
 Plug 'meatballs/vim-xonsh'
 
 " lint and git
-Plug 'scrooloose/syntastic'
+Plug 'dense-analysis/ale'
 Plug 'tpope/vim-fugitive'
 
 " Plug 'szw/vim-tags'
 Plug 'editorconfig/editorconfig-vim'
 
-" Plug 'zchee/deoplete-jedi'
+Plug 'zchee/deoplete-jedi'
 " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
@@ -71,7 +71,7 @@ Plug 'autozimu/LanguageClient-neovim', {
 Plug 'tpope/vim-jdaddy'
 
 " web-browser extension!?
-Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+" Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 
 
 " Initialize plugin system
@@ -269,11 +269,25 @@ vmap <leader>g <Plug>GrepOperatorOnCurrentDirectory
 nmap <leader><leader>g <Plug>GrepOperatorWithFilenamePrompt
 vmap <leader><leader>g <Plug>GrepOperatorWithFilenamePrompt
 
-" syntastic
-let g:syntastic_mode_map = {'mode': 'passive'} ",
-let g:syntastic_shell = "xonsh"
-nnoremap <silent> <leader>e :Errors<CR>
-nnoremap <silent> <leader>c :SyntasticCheck<CR>
+
+" ALE: https://github.com/dense-analysis/ale
+let g:ale_linters = {'python': ['ruff']}
+let g:ale_shell = 'bash'
+let g:ale_set_quickfix = 1
+let g:ale_set_loclist = 1
+
+let g:ale_python_auto_poetry = 0
+let g:ale_python_auto_poetry = 1
+let g:ale_python_ruff_use_global = 1
+let g:ale_python_ruff_auto_poetry = 1
+nnoremap <silent> <leader>c :ALELint<CR>
+nnoremap <silent> <leader>e :ALEPopulateQuickfix<CR>
+
+let g:ale_lint_on_text_changed = 0
+let g:ale_lint_on_insert_leave = 1
+let g:ale_lint_on_enter = 1
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_filetype_changed = 0
 
 " tabular config
 nnoremap <silent> <leader>== :Tabular /=<CR>
