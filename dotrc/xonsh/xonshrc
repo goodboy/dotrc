@@ -184,6 +184,32 @@ $PATH.extend([
     str($HOME / Path('.local/bin')),  # for rustup
 ])
 
+
+def _find_mouse(
+    *,
+    patt: str = 'Logitech',
+) -> int:
+    '''
+    Find the first active mouse based on naming (default logitech)
+    and try to set the accelleration to max.
+
+    '''
+    names: list[str] = $(xinput --list --name-only).split('\n')
+    ids: list[int] = $(xinput --list --id-only).split('\n')
+
+    # cmd: str = '"libinput Accel Speed" 1'
+    cmd: str = "libinput Accel Speed"
+
+    for name, did in zip(names, ids):
+        # print(f'name: {name}, {type(name)}')
+        if (
+            name
+            and patt in name
+        ):
+            print(f'Setting `{cmd}` for device {name}@{did}')
+            xinput --set-prop @(did) --type=float --format=32 @(cmd) 1
+
+
 # faster completion to "ipy<tab>thon"
 aliases.pop('ipynb')
 aliases.update({
@@ -215,7 +241,7 @@ aliases.update({
 
     # ext mouse, bump up that speeeed
     # id 14 is from xinput, but WTF is SINO WEALTH Gaming KB?
-    'fast_mouse': 'xinput --set-prop 14 --type=float --format=32 "libinput Accel Speed" 1',
+    'fast_mouse': _find_mouse,
 
     # nixos helpers
     # XXX: this doesn't do a channel update..
