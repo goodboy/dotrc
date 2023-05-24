@@ -73,6 +73,7 @@ def add_site_path(
         lambda s: str(s.resolve()),
         path.glob("python*/site-packages")
     ):
+        print(f'- scanning path: {p}')
         if p not in sys.path:
             paths.append(p)
             site.addsitedir(p)
@@ -85,7 +86,7 @@ def pyup(
     std: str,
 
     *,
-    cd_to_repo: bool = True,
+    cd_to_repo: bool = False,
 
 ) -> None:
     '''
@@ -143,6 +144,17 @@ def pyup(
         cd @(rd)
 
 
+def _pikerup() -> None:
+    venv_path: str = _xenv.get('VIRTUAL_ENV')
+    if venv_path:
+        vox exit
+
+    cd $HOME/repos/piker
+
+    # presume embedded venv/ hack for now..
+    nix-shell develop.nix --command 'python -m xonsh'
+
+
 # xontribs
 # TODO: figure out how to install these correctly..
 # - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
@@ -178,6 +190,7 @@ aliases.update({
 
     # python path hacking (mostly for nixos)
     'pyup': pyup,
+    'pikerup': _pikerup,
 
     # name remaps
     'grep': 'grep -n --color=auto',
@@ -194,14 +207,6 @@ aliases.update({
     'smbz': "espeak-ng 'meh lahh pelaas'",
     'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
 
-    # custom nix dev envs:
-    'pikerup': (
-        'cd $HOME/repos/piker; '
-        # 'nix-shell develop.nix --command "python -m xonsh"; '
-        # 'vox deactivate; '
-        'nix-shell develop.nix --command "xonsh"'
-    ),
-
     # any
     'gomuks': 'cd $HOME/repos/gomuks; ./gomuks',
 
@@ -209,11 +214,13 @@ aliases.update({
     'wm-spawn': 'i3-msg exec "alacritty -e $1"',
 
     # ext mouse, bump up that speeeed
-    # 'fast_mouse': 'xinput --set-prop 10 "libinput Accel Speed" 1',
-    'fast_mouse': 'xinput --set-prop 10 --type=float --format=32 "libinput Accel Speed" 1',
+    # id 14 is from xinput, but WTF is SINO WEALTH Gaming KB?
+    'fast_mouse': 'xinput --set-prop 14 --type=float --format=32 "libinput Accel Speed" 1',
 
     # nixos helpers
-    'nixup': 'nixos-rebuild --use-remote-sudo --upgrade switch',
+    # XXX: this doesn't do a channel update..
+    # 'nixup': 'nixos-rebuild --use-remote-sudo --upgrade switch',
+    'nixup': 'sudo nixos-rebuild -I nixos-config=$HOME/repos/dotrc/dotrc/nixos/configuration.nix --upgrade switch',
 
 })
 
