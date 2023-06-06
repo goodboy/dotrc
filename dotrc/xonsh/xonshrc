@@ -209,6 +209,19 @@ def _find_mouse(
             print(f'Setting `{cmd}` for device {name}@{did}')
             xinput --set-prop @(did) --type=float --format=32 @(cmd) 1
 
+def pydoc(
+    args: tuple,
+    std: str,
+):
+    '''
+    Hack around nixos pydoc override to instead use the current python
+    environment's version.
+
+    '''
+    import pydoc
+    sys.argv[1:] = args
+    pydoc.cli()
+
 
 # faster completion to "ipy<tab>thon"
 aliases.pop('ipynb')
@@ -217,6 +230,7 @@ aliases.update({
     # python path hacking (mostly for nixos)
     'pyup': pyup,
     'pikerup': _pikerup,
+    'pydoc': pydoc,
 
     # name remaps
     'grep': 'grep -n --color=auto',
