@@ -11,6 +11,7 @@ from pprint import pprint
 from xonsh.prompt import vc
 from xonsh.events import events
 from xonsh import xontribs
+from xonsh.procs.pipelines import CommandPipeline
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.filters import (
     Condition,
@@ -46,24 +47,50 @@ $TERMINAL='alacritty'
 _xenv = __xonsh__.env
 
 # hackery for setting up a user-local xonsh env under `.local/
+# https://xon.sh/xonshrc.html?highlight=nix#use-the-nix-package-manager-with-xonsh
 nixprof: str = f"{$HOME}/.nix-profile"
 nixprofpath: Path = Path(nixprof)
 if (
     path.exists(nixprof)
-    and not _xenv.get("NIX_PATH")
+    # and not _xenv.get("NIX_PATH")
 ):
-    $NIX_REMOTE="daemon"
-    $NIX_USER_PROFILE_DIR="/nix/var/nix/profiles/per-user/" + $USER
-    $NIX_PROFILES="/nix/var/nix/profiles/default " + $HOME + "/.nix-profile"
-    $NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
-    $NIX_PATH="nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixpkgs:/nix/var/nix/profiles/per-user/root/channels"
-    $PATH += [f"{$HOME}/.nix-profile/bin", "/nix/var/nix/profiles/default/bin"]
+    # $NIX_REMOTE="daemon"
+    # $NIX_USER_PROFILE_DIR="/nix/var/nix/profiles/per-user/" + $USER
+    # $NIX_PROFILES="/nix/var/nix/profiles/default " + $HOME + "/.nix-profile"
+    # $NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
+    # $NIX_PATH="nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixpkgs:/nix/var/nix/profiles/per-user/root/channels"
+    # $PATH += [f"{$HOME}/.nix-profile/bin", "/nix/var/nix/profiles/default/bin"]
+    print('This is prolly a nix install B)')
+# if path.exists(nixprof):
+
+    # bash completions path:
+    # https://xon.sh/envvars.html#bash-completions
+    # on nix this needs to be looked up in the user profile paths
+    $BASH_COMPLETIONS=str(nixprofpath / 'share/bash-completion/bash_completion')
+
+    # TODO: look up this path dynamically..
+    # use the config from this dotrc repo B)
+    $NIXOS_CONFIG = f'{$HOME}/repos/dotrc/dotrc/nixos/configuration.nix'
 
 
-def add_site_path(
-    path: str = p"~/.local/"
-) -> None:
 
+
+# try to load xontribs
+# TODO: figure out how to install these correctly..
+# - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
+# - xontrib load xxh
+res: CommandPipeline = !(xontrib load vox)
+if res.returncode == 0:
+    xontrib load gish lnstore
+    xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
+
+
+def add_site_path(path: str = p"~/.local/") -> None:
+    '''
+    Hack from xonsh docs for nix:
+    https://xon.sh/xonshrc.html?highlight=nix#use-the-nix-package-manager-with-xonsh
+
+    '''
     path = Path(path)
     if 'lib' not in str(path):
         path = path / 'lib'
@@ -90,7 +117,11 @@ def pyup(
 
 ) -> None:
     '''
-    Bring up a ``vox`` based python virtual env B)
+    Bring up an embedded virtual env using one of:
+      - std ``vox`` (since you're on a classic distro) or,
+      - ``nix develop`` from flake.nix using `poetry2nix`
+        and an embedded ``poetry`` virtual env
+        that runs an embedded ``xonsh`` in that env.
 
     Special heed is made to hack the python path (which is particularly
     handy on nixos where normally each user profile is already totally
@@ -117,10 +148,20 @@ def pyup(
             # https://xon.sh/python_virtual_environments.html
             vox deactivate
 
+    elif nixprofpath.is_dir():
+        repo_dir: Path = Path.home()/'repos'/dst_env
+        cd @(str(repo_dir))
+
+        devfile: Path = repo_dir / '.p2nixdev'
+        if devfile.is_file():
+            nix develop @(str(devfile))
+        else:
+            nix develop --profile '.p2nixdev'
+
     # exit any currently activated vox env then enter the desired vox
     # env and hack the path..
-    vox enter @(dst_env)
-    add_site_path(path=_xenv.get('VIRTUAL_ENV'))
+    # vox enter @(dst_env)
+    # add_site_path(path=_xenv.get('VIRTUAL_ENV'))
 
     # TODO: autoload any environment detected xontribs B)
     # see the vox-api xontrib and xonsh hooks:
@@ -131,17 +172,18 @@ def pyup(
     # NOTE: currently solution is that they're autoloaded as per using
     # a setuptools entrypoint:
     # - https://xon.sh/tutorial_xontrib.html#loading-xontribs
+    # TODO: expose this via pyproject.toml?
     xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
 
     # change to ~/repos/<dst_env>/ if exists
-    repo_dir: Path = Path.home()/'repos'/dst_env
-    if (
-        cd_to_repo
-        and repo_dir.is_dir()
-    ):
-        rd: str = str(repo_dir)
-        print(f'Entering repo dir: {rd}')
-        cd @(rd)
+    # repo_dir: Path = Path.home()/'repos'/dst_env
+    # if (
+    #     cd_to_repo
+    #     and repo_dir.is_dir()
+    # ):
+    #     rd: str = str(repo_dir)
+    #     print(f'Entering repo dir: {rd}')
+    #     cd @(rd)
 
 
 def _pikerup() -> None:
@@ -155,28 +197,9 @@ def _pikerup() -> None:
     nix-shell develop.nix --command 'python -m xonsh'
 
 
-# xontribs
-# TODO: figure out how to install these correctly..
-# - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
-# - xontrib load xxh
-xontrib load vox
-
-# XXX: i don't luve this direnv + nix interop..
+# XXX: i don't luv this direnv + nix interop..
 # https://github.com/74th/xonsh-direnv
 # xontrib load -v direnv
-
-
-if path.exists(nixprof):
-
-    # bash completions path:
-    # https://xon.sh/envvars.html#bash-completions
-    # on nix this needs to be looked up in the user profile paths
-    $BASH_COMPLETIONS=str(nixprofpath / 'share/bash-completion/bash_completion')
-
-    # TODO: look up this path dynamically..
-    # use the config from this dotrc repo B)
-    $NIXOS_CONFIG = f'{$HOME}/repos/dotrc/dotrc/nixos/configuration.nix'
-
 
 # add custom home/etc and .local/bin/ to path
 $PATH.extend([
@@ -239,12 +262,21 @@ aliases.update({
     'less': 'less -R',
     'll': "ls -l",
     'lla': "ls -la",
-    'ls': "ls -FNh --tabsize=0 --color=auto --show-control-chars --group-directories-first",
+    'ls': (
+        'ls -FNh --tabsize=0 --color=auto '
+        '--show-control-chars --group-directories-first'
+    ),
     'vi': 'nvim',
     'vim': 'nvim',
 
-    # utils with deps
+    # translator
+    'esp': 'trans -brief en:es $1',
+    'trans': 'trans -brief',
+
+    # speach-synth
     'smbz': "espeak-ng 'meh lahh pelaas'",
+
+    # get pub ipaddr
     'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
 
     # any
@@ -260,7 +292,11 @@ aliases.update({
     # nixos helpers
     # XXX: this doesn't do a channel update..
     # 'nixup': 'nixos-rebuild --use-remote-sudo --upgrade switch',
-    'nixup': 'sudo nixos-rebuild -I nixos-config=$HOME/repos/dotrc/dotrc/nixos/configuration.nix --upgrade switch',
+    'nixup': (
+        'sudo nixos-rebuild '
+        '-I nixos-config=$HOME/repos/dotrc/dotrc/nixos/configuration.nix '
+        '--upgrade switch'
+    ),
 
 })
 
