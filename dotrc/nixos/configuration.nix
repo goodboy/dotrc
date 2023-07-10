@@ -15,15 +15,41 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # use latest kernel release
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   networking = {
     hostName = "TinasMacbookAir"; # Define your hostname.
     networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+    # wireless.enable = true;
   };
   # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # networking  # Enables wireless support via wpa_supplicant.
+
+  # Enable the OpenSSH daemon.
+  services.openssh = {
+    enable = true;
+    # require public key authentication for better security
+    passwordAuthentication = false;
+    kbdInteractiveAuthentication = false;
+    ports = [ 616 ];
+    #PermitRootLogin = "yes";
+  };
+
+  # Open ports in the firewall: {sshd, etc.}
+  networking.firewall.allowedTCPPorts = [ 6116 ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
 
   # rtkit is optional but recommended
   security.rtkit.enable = true;
+
+  # Enable sound.
+  sound.enable = true;
+  hardware.pulseaudio.enable = false;
+
+  # use pipewire instead of pulse B)
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -32,11 +58,20 @@
     # jack.enable = true;
   };
 
+  xdg.portal.enable = true;
+  xdg.portal.lxqt.enable = true;
+  # xdg.portal.xdgOpenUsePortal = true;
+  # xdg.portal.extraPortals = with pkgs; [
+    # xdg-desktop-portal-wlr
+    # lxqt.xdg-desktop-portal-lxqt
+    # xdg-desktop-portal-gtk
+  # ];
+
   # Set your time zone.
   time.timeZone = "America/Toronto";
 
   virtualisation.docker.rootless = {
-    enable = true;
+    enable = false;
     setSocketVariable = true;
   };
 
@@ -48,44 +83,41 @@
   # i18n.defaultLocale = "en_US.UTF-8";
   console = {
     #font = "Lat2-Terminus16";
-    #keyMap = "us";
+    # keyMap = "us";  # already defined in root profile?
     useXkbConfig = true; # use xkbOptions in tty.
   };
 
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
-    windowManager.i3.enable = true;
     autorun = true;
+    windowManager.i3.enable = true;
 
     # TODO: figure out how to just use login + startx
     displayManager.lightdm.enable = true;
     #displayManager.startx.enable = true;
     #displayManager.defaultSession = "i3";
+
+    # Configure keymap in X11
+    layout = "us";
+    xkbOptions = "caps:ctrl_modifier, ctrl:nocaps";  # map caps to ctl.
+    upscaleDefaultCursor = true;
+    dpi = 200;
   };
 
-  # Configure keymap in X11
-  services.xserver.layout = "us";
-  services.xserver.xkbOptions = "caps:ctrl_modifier, ctrl:nocaps";  # map caps to ctl.
-  services.xserver.upscaleDefaultCursor = true;
-  services.xserver.dpi = 200;
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
-
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
   # sys-wide config
-  users.defaultUserShell = pkgs.xonsh;
+  users.defaultUserShell = pkgs.bash;
   environment = {
 
     # use xonsh as sys-wide shell B)
-    shells = with pkgs; [ xonsh ];
+    shells = with pkgs; [ bash ];
 
     # https://github.com/nix-community/nix-direnv#via-configurationnix-in-nixos
     pathsToLink = [ "/share-nix-direnv" ];
@@ -94,42 +126,80 @@
       VISUAL = "neovim";
       PAGER = "less";
       TERMINAL = "alacritty";
+      # GTK_USER_PORTAL = "1";
     };
 
     # packages installed in system profile.
-      systemPackages = with pkgs; [
+    systemPackages = with pkgs; [
+      xonsh
+
+      # one-vi-to-rule-them-all
+      neovim
+
+      # utils
+      wget
+
+      # need root for managing network
+      # nm-tray
+      networkmanagerapplet  # the OG applet in GTK
+
+      # xdg-desktop-portal
+      # lxqt.xdg-desktop-portal-lxqt
+      # xdg-desktop-portal-wlr
+      # xdg-desktop-portal-gtk
+
+      # development on nixos
       direnv
       nix-direnv
-      neovim
-      wget
+
     ];
   };
   nixpkgs.overlays = [
-  (self: super: { nix-direnv = super.nix-direnv.override { enableFlakes = true; }; } )
+    (self: super: { nix-direnv = super.nix-direnv.override { enableFlakes = true; }; } )
   ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.lord_fomo = {
+
+    # https://nixos.wiki/wiki/SSH_public_key_authentication
+    # content of authorized_keys file
+    # note: ssh-copy-id will add user@clientmachine after the public key
+    # but we can remove the "@clientmachine" part
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP98WAal3hMzZnIHGDoksEXW+WHWHkrd1JKFyPYg8dEZ lord_fomo" # goodboy@TinasMacbookAir"
+    ];
+
+
     isNormalUser = true;
     extraGroups = [ "wheel" ];  # Enable ‘sudo’ for the user.
     packages = with pkgs; [
 
-      # GUI shite
-      xclip  # X-copy/pasta
-      firefox  #  web-browser
+      # DE shite
       i3  # wm
+      xclip  # X-copy/pasta
+      arandr  # multi-mon config via GUI B)
+
+      # media
       maim  # screenshotz
-      obs-studio  # media-recording
       quodlibet  # audio player
       pavucontrol
+      obs-studio  # media-recording
+      mpv
+
+      firefox  #  web-browser
+      # xdg-desktop-portal
+      # lxqt.xdg-desktop-portal-lxqt
+      # xdg-desktop-portal-wlr
+      # xdg-desktop-portal-gtk
 
       # matrix
-      # gomuks  
-      # element-desktop
+      # gomuk  # hackin on this rite now tho..
+      element-desktop
 
       # terminal related
       alacritty
-      xonsh
+      # python310Packages.prompt-toolkit  # wenn
+      # xonsh
       neovim
       ranger
 
@@ -138,13 +208,16 @@
       github-cli
       glab
 
-
       # sh utils
       htop
-      mtr
       ncdu
       tree
       mlocate
+
+      # networkin toolz
+      httpie
+      mtr
+      nmap
 
       # utils + docs
       man-pages
@@ -152,17 +225,27 @@
 
       # style
       hack-font
+      hackgen-nf-font
 
       # langs & runtimes
-      #pip
+      # pip never again !? XD
       python310
+      # poetry  # borked rn?
+      ruff
+
       python311
+      python311Packages.pdftotext  # for pdfs in nvim
+      # python311Packages.xonsh  # wenn
+      # python311Packages.poetry-core
 
-      go
+      # go
 
-      # network
-      barrier
-      openssl
+      # network (mgmt) tools
+      # barrier
+      # openssl
+
+      # storage
+      borgbackup
 
     ];
   };
@@ -170,25 +253,16 @@
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;
-  programs.xonsh.enable = true;
+  # programs.bash.enable = true;
+  # programs.xonsh.enable = true;
+  # programs.zsh.enable = true;
   programs.bash.enableCompletion = true;
-  programs.dconf.enable = true;
+  # programs.dconf.enable = true;
 
   # programs.gnupg.agent = {
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ 24800 ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
