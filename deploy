@@ -76,7 +76,8 @@ dotfiles_compton()      { link compton/compton.conf;}
 dotfiles_dunst()        { link dunst .config/dunst;}
 dotfiles_redshift()     { link redshift .config/redshift;}
 dotfiles_piker()        { link piker .config/piker;}
-dotfiles_piker()        { link direnv .config/direnv;}
+dotfiles_direnv()       { link direnv .config/direnv;}
+dotfiles_helix()        { link helix .config/helix;}
 
 dotfiles_task() {
     link task/task
