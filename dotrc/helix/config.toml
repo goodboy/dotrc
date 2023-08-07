@@ -1,19 +1,46 @@
 theme = "rasmus"
 # theme = "everblush"
 
+# ------ - ------
+
+[editor]
+true-color = true
+color-modes = true
+# mouse = false
+
+[editor.statusline]
+left = ["mode", "file-name", "file-modification-indicator"]
+center = ["spinner"]
+right = [
+  "file-line-ending",
+  "separator",
+  "position",
+  "separator",
+  "spacer",
+  "position-percentage",
+]
+separator = "│"
+
+[editor.file-picker]
+hidden = false
+
 [editor.cursor-shape]
 # to that you can see wtf the implied selection is XD
 normal = "underline"
 insert = "bar"
 select = "underline"
 
+[editor.lsp]
+display-messages = true
+
+# ------ - ------
 
 # At most one section each of 'keys.normal', 'keys.insert' and 'keys.select'
 [keys.normal]
 C-c = ["collapse_selection", "normal_mode"]
 
 # config
-C-o = ":config-open"
+# C-o = ":config-open"
 C-r = ":config-reload"
 
 # vim-like-remaps
@@ -45,9 +72,12 @@ C-k = 'jump_view_up'
 # C-k = 'jump_view_up'
 # C-k = 'jump_view_up'
 
-# code nav
+# defs nav
+# 'C-]' = 'goto_definition'  # doesn't work?
 #"{" = ["goto_prev_paragraph", "collapse_selection"]
 #"}" = ["goto_next_paragraph", "collapse_selection"]
+# this makes w and b behave as they do Vim
+w = ["move_next_word_start", "move_char_right", "collapse_selection"]
 
 # editz
 V = ["select_mode", "extend_to_line_bounds"]
@@ -59,11 +89,6 @@ D = ["extend_to_line_end", "yank_main_selection_to_clipboard", "delete_selection
 # Escape the madness! No more fighting with the cursor! Or with multiple cursors!
 C-c = ["collapse_selection", "normal_mode"]
 
-# C-s = ":w" # Maps Ctrl-s to the typable command :w which is an alias for :write (save file)
-# C-o = ":open ~/.config/helix/config.toml" # Maps Ctrl-o to opening of the helix config file
-# a = "move_char_left" # Maps the 'a' key to the move_char_left command
-# w = "move_line_up" # Maps the 'w' key move_line_up
-# "C-S-esc" = "extend_line" # Maps Ctrl-Shift-Escape to extend_line
 #g = { a = "code_action" } # Maps `ga` to show possible code actions
 #"ret" = ["open_below", "normal_mode"] # Maps the enter key to open_below then re-enter normal mode
 #j = { k = "normal_mode" } # Maps `jk` to exit insert mode
@@ -73,18 +98,27 @@ C-c = ["collapse_selection", "normal_mode"]
 # selected so that it's just a keystroke away to delete
 [keys.normal.d]
 d = ["extend_to_line_bounds", "yank_main_selection_to_clipboard", "delete_selection"]
-w = ["move_next_word_start", "yank_main_selection_to_clipboard", "delete_selection"]
+# w = ["move_next_word_start", "yank_main_selection_to_clipboard", "delete_selection"]
 
 [keys.normal.y]
 y = ["extend_to_line_bounds", "yank_main_selection_to_clipboard", "normal_mode", "collapse_selection"]
 w = ["move_next_word_start", "yank_main_selection_to_clipboard", "delete_selection"]
 
 [keys.normal.g]
+# like C-i/o xcept stick with the whole 'g for go' type thing
+i = 'jump_forward'
+o = 'jump_backward'
+# comment toggle then move to normal mode
 c = [
   "select_mode",
   "extend_to_line_bounds",
   'toggle_comments',
+  'normal_mode'
 ]
+j = 'goto_definition'
+'/' = 'goto_reference'
+k = 'goto_reference'
+']' = 'goto_reference'
 #[keys.normal.{]
 #{ = 'goto_prev_function'
 
@@ -113,8 +147,8 @@ u = ["switch_to_lowercase", "collapse_selection", "normal_mode"]
 U = ["switch_to_uppercase", "collapse_selection", "normal_mode"]
 
 # Make selecting lines in visual mode behave sensibly
-k = ["extend_line_up", "extend_to_line_bounds"]
-j = ["extend_line_down", "extend_to_line_bounds"]
+# k = ["extend_line_up", "extend_to_line_bounds"]
+# j = ["extend_line_down", "extend_to_line_bounds"]
 
 # Clipboards over registers ye ye
 d = ["yank_main_selection_to_clipboard", "delete_selection"]
@@ -125,4 +159,4 @@ p = "replace_selections_with_clipboard" # No life without this
 P = "paste_clipboard_before"
 
 [keys.select.g]
-c = 'toggle_comments'
+c = ['toggle_comments', 'normal_mode']
