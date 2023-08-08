@@ -29,11 +29,14 @@
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
-    # require public key authentication for better security
-    passwordAuthentication = false;
-    kbdInteractiveAuthentication = false;
     ports = [ 616 ];
-    #PermitRootLogin = "yes";
+
+    # require public key authentication for better security
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      #PermitRootLogin = "yes";
+    };
   };
 
   # Open ports in the firewall: {sshd, etc.}
@@ -70,8 +73,9 @@
   # Set your time zone.
   time.timeZone = "America/Toronto";
 
-  virtualisation.docker.rootless = {
-    enable = false;
+  virtualisation.docker.enable = true;  # run daemon with systemd
+  virtualisation.docker.rootless = {  # no-root mode
+    enable = true;
     setSocketVariable = true;
   };
 
@@ -135,6 +139,7 @@
 
       # one-vi-to-rule-them-all
       neovim
+      helix
 
       # utils
       wget
@@ -198,6 +203,8 @@
 
       # terminal related
       alacritty
+      tmux
+
       # python310Packages.prompt-toolkit  # wenn
       # xonsh
       neovim
@@ -218,6 +225,7 @@
       httpie
       mtr
       nmap
+      vopono  # can't belieb they have this B)
 
       # utils + docs
       man-pages
@@ -232,9 +240,13 @@
       python310
       # poetry  # borked rn?
       ruff
+      # python310Packages.python-lsp-ruff
+      python310Packages.python-lsp-server
 
       python311
       python311Packages.pdftotext  # for pdfs in nvim
+      # python311Packages.python-lsp-ruff
+      python311Packages.python-lsp-server
       # python311Packages.xonsh  # wenn
       # python311Packages.poetry-core
 
