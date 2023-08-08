@@ -1,0 +1,35 @@
+[[language]]
+name = "python"
+scope = "source.python"
+
+# [[language]]
+# name = "python"
+# scope = "source.python"
+# injection-regex = "python"
+# file-types = ["py"]
+# shebangs = ["python"]
+# roots = ["pyproject.toml"]
+# comment-token = "#"
+# indent = { tab-width = 4, unit = "    " }
+# rulers = [ 67 ]
+# auto-format = true
+# language-server = { command = "ruff-lsp" }
+  # = []
+    # "ruff-lsp",
+    # "pyright-langserver",
+# ]
+# [[language]]
+# name = "python"
+# scope = "source.python"
+# language-server = { command = "ruff-lsp" }
+# config = { settings = { args = [] } }
+
+# injection-regex = "python"
+# file-types = ["py","pyi","py3","pyw","ptl",".pythonstartup",".pythonrc","SConstruct"]
+# shebangs = ["python"]
+# roots = ["setup.py", "setup.cfg", "pyproject.toml"]
+# comment-token = "#"
+# language-server = { command = "pyright-langserver", args = ["--stdio"] }
+# indent = { tab-width = 4, unit = "    " }
+# # will get "Async jobs timed out" errors if this empty config is not added
+# config = {}
