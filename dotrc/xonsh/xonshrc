@@ -55,8 +55,9 @@ _xenv = __xonsh__.env
 # https://xon.sh/xonshrc.html?highlight=nix#use-the-nix-package-manager-with-xonsh
 nixprof: str = f"{$HOME}/.nix-profile"
 nixprofpath: Path = Path(nixprof)
+is_prolly_nix: bool = path.exists(nixprof)
 if (
-    path.exists(nixprof)
+    is_prolly_nix
     # and not _xenv.get("NIX_PATH")
 ):
     # $NIX_REMOTE="daemon"
@@ -210,6 +211,12 @@ def _pikerup() -> None:
 
     # presume embedded venv/ hack for now..
     # nix-shell develop.nix --command 'python -m xonsh'
+    if is_prolly_nix:
+        # presume embedded venv/ hack for now..
+        nix-shell develop.nix --command 'python -m xonsh'
+    else:
+        # just jump into the poetry env's xonsh
+        poetry run xonsh
 
 
 # XXX: i don't luv this direnv + nix interop..
