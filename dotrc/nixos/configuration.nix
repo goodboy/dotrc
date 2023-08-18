@@ -192,6 +192,16 @@
       mpv
 
       firefox  #  web-browser
+      # TODO: once we get `vopono` working fully, muck around
+      # with some alt privacy/opsec focussed browsers?
+      # - apparently best soln is some arkenfox.js extension from
+      #   tor community?
+      #  - https://www.unixsheikh.com/articles/choose-your-browser-carefully.html#tweaking-firefox
+      #  - https://github.com/arkenfox/user.js
+      # - why librewolf isn't sufficient:
+      #   https://www.unixsheikh.com/articles/choose-your-browser-carefully.html#librewolf
+      # libre-wolf  # oh it's in the ol nixpkgs!
+
       # xdg-desktop-portal
       # lxqt.xdg-desktop-portal-lxqt
       # xdg-desktop-portal-wlr
@@ -238,7 +248,7 @@
       # langs & runtimes
       # pip never again !? XD
       python310
-      # poetry  # borked rn?
+      poetry  # borked rn?
       ruff
       # python310Packages.python-lsp-ruff
       python310Packages.python-lsp-server
