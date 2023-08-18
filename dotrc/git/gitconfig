@@ -1,3 +1,4 @@
+# vim: ft=config
 [user]
 	name = Tyler Goodlet
 	email = jgbt@protonmail.com
@@ -15,6 +16,7 @@
 [alias]
 	last = log -1 HEAD
 	glog = log --graph
+	# an ascii history tree (graph) B)
 	logtree = log --graph --oneline --decorate --all
 	lt = logtree
 [push]
