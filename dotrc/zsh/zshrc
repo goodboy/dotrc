@@ -9,11 +9,13 @@ autoload zsh/terminfo
 # environment
 export VISUAL='nvim'
 export EDITOR='nvim'
+export SYSTEMD_EDITOR='nvim'
+export TERMINAL='alacritty'
 export GREP_COLOR=$'4;1;31'
 # prettify the sudo prompt
-export SUDO_PROMPT=$'\e[31mSUDO\e[m password for \e[34m%p\e[m: '
+#export SUDO_PROMPT=$'\e[31mSUDO\e[m password for \e[34m%p\e[m: '
 # append static paths
-p=":${HOME}/.cabal/bin"
+p=":${HOME}/.cabal/bin:"
 # add script dirs
 p+=":$(echo $HOME/bin/**/ | sed 's/\s\+/:/g')"
 PATH+="$p"
@@ -28,10 +30,13 @@ export PATH
 export LESS_TERMCAP_mb=$'\E[01;31m'     # begin blinking
 export LESS_TERMCAP_md=$'\E[01;31m'     # begin bold
 export LESS_TERMCAP_me=$'\E[0m'         # end mode
-export LESS_TERMCAP_so=$'\E[01;44;36m'  # begin standout-mode (bottom of screen)
+# seems to not work with alacritty
+# export LESS_TERMCAP_so=$'\E[01;44;36m'  # begin standout-mode (bottom of screen)
 export LESS_TERMCAP_se=$'\E[0m'         # end standout-mode
 export LESS_TERMCAP_us=$'\E[00;36m'     # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'         # end underline
+
+# export PAGER=vimpager
 
 # history
 HISTFILE=$HOME/.zsh_history
@@ -115,6 +120,22 @@ alias console='cd ~/code/; tmux split-window -v; tmux resize-pane -D 10;'
 alias hoogle='hoogle --color'
 alias ssh='TERM=xterm ssh'
 alias wanip='dig +short myip.opendns.com @resolver1.opendns.com'
+alias buku='buku --suggest'
+alias bs='firefox $(buku -p -f 10 | fzy)'
+
+# real time process tree polling
+ptwatch() {
+
+    # TODO: multi parent/program support
+    # htop -tp $(pgrep -d "," $1)
+    # pids=$(pgrep -d ',' $1) | 
+
+    pids=$(pgrep -f "$1" | head -n 1)
+    watch -n 0.375 "pstree -astpn ${$(pgrep -f "$1" | head -n 1)}"
+
+    # TODO: one-shot option
+    # pstree -asdtpn "${pids}"
+}
 # }}}
 
 # Widgets and Hooks {{{
@@ -137,7 +158,7 @@ function fancy-ctrl-z {
 # Term repr {{{
 [[ $TERM == xterm ]] && export TERM=xterm-256color
 case $TERM in
-    termite|vte*|xterm*|rxvt*)
+    alacritty|termite*|vte*|xterm*|rxvt*)
 
         function precmd {
             # pre-prompt render hook
@@ -466,6 +487,9 @@ PROMPT="%{$fg[green]%} >>> %{$reset_color%}"
 # https://wiki.archlinux.org/index.php/zsh#Fish-like_syntax_highlighting
 flsh="/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 [[ -f $flsh ]] && source $flsh
+
+scriptsdir="$HOME/etc/bin"
+# [[ -d $scriptsdir ]] && source "$scriptsdir/xps_screen_fix.sh"
 
 # # Setup zsh-autosuggestions
 # source /home/tyler/.zsh-autosuggestions/autosuggestions.zsh
