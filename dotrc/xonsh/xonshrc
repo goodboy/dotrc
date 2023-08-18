@@ -1,4 +1,4 @@
-# vim: ft=python
+# vim: ft=xonsh
 import builtins
 import json
 import site
@@ -36,10 +36,15 @@ $SHELL = 'xonsh'
 $AUTO_PUSHD = True
 $UPDATE_PROMPT_ON_KEYPRESS = False
 
+# $EDITOR='hx'
+# $VISUAL='hx'
+# $SYSTEMD_EDITOR='hx'
+# ------ - ------
 $EDITOR='nvim'
 $VISUAL='nvim'
-$BROWSER='firefox'
 $SYSTEMD_EDITOR='nvim'
+# ------ - ------
+$BROWSER='firefox'
 $PAGER='less'
 $TERMINAL='alacritty'
 
@@ -193,8 +198,18 @@ def _pikerup() -> None:
 
     cd $HOME/repos/piker
 
+    # won't copy into subproc..
+    # $PATH.append(p'$PWD/venv/bin')
+
+    # expect a flake
+    (
+        nix develop \
+        --show-trace \
+        --command "poetry run 'python -m xonsh ./_nix_bootstrap.xsh'"
+    )
+
     # presume embedded venv/ hack for now..
-    nix-shell develop.nix --command 'python -m xonsh'
+    # nix-shell develop.nix --command 'python -m xonsh'
 
 
 # XXX: i don't luv this direnv + nix interop..
@@ -202,10 +217,10 @@ def _pikerup() -> None:
 # xontrib load -v direnv
 
 # add custom home/etc and .local/bin/ to path
-$PATH.extend([
-    str($HOME / Path('etc/bin')),  # personal dotfiles scripts
-    str($HOME / Path('.local/bin')),  # for rustup
-])
+# $PATH.extend([
+#     str($HOME / Path('etc/bin')),  # personal dotfiles scripts
+#     str($HOME / Path('.local/bin')),  # for rustup
+# ])
 
 
 def _find_mouse(
@@ -232,6 +247,7 @@ def _find_mouse(
             print(f'Setting `{cmd}` for device {name}@{did}')
             xinput --set-prop @(did) --type=float --format=32 @(cmd) 1
 
+
 def pydoc(
     args: tuple,
     std: str,
@@ -246,8 +262,7 @@ def pydoc(
     pydoc.cli()
 
 
-# faster completion to "ipy<tab>thon"
-aliases.pop('ipynb')
+aliases.pop('ipynb')  # faster completion to "ipy<tab>thon"
 aliases.update({
 
     # python path hacking (mostly for nixos)
@@ -268,6 +283,8 @@ aliases.update({
     ),
     'vi': 'nvim',
     'vim': 'nvim',
+    'he': 'hx',  # better helix key
+    'hh': 'hx',  # better helix key
 
     # translator
     'esp': 'trans -brief en:es $1',
