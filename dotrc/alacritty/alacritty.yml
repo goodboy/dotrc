@@ -78,7 +78,7 @@ window:
   # Set this to `None` to use the default theme variant.
   decorations_theme_variant: Dark
 
-#scrolling:
+scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
   #history: 10000
@@ -88,7 +88,7 @@ window:
   #multiplier: 3
 
   # Scroll to the bottom when new text is written to the terminal.
-  #auto_scroll: false
+  auto_scroll: false
 
 # Spaces per Tab (changes require restart)
 #
@@ -149,13 +149,13 @@ font:
     #style: Bold Italic
 
   # Point size
-  size: 7
+  size: 6
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
-  #offset:
-  #  x: 0
-  #  y: 0
+  offset:
+    x: 1
+    y: 0
 
   # Glyph offset determines the locations of the glyphs within their cells with
   # the default being at the bottom. Increasing `x` moves the glyph to the right,
@@ -345,7 +345,7 @@ cursor:
   #unfocused_hollow: true
 
 # Live config reload (changes require restart)
-#live_config_reload: true
+live_config_reload: true
 
 # Shell
 #
@@ -357,8 +357,8 @@ cursor:
 #   - (Linux/BSD) user login shell
 #   - (Windows) powershell
 shell:
+    program: xonsh
     # program: /bin/zsh
-    program: /bin/xonsh
 #  args:
 #    - --login
 
@@ -405,7 +405,7 @@ shell:
   # Record all characters and escape sequences as test data.
   #ref_test: false
 
-#mouse:
+mouse:
   # Click settings
   #
   # The `double_click` and `triple_click` settings control the time
@@ -415,7 +415,7 @@ shell:
   #triple_click: { threshold: 300 }
 
   # If this is `true`, the cursor is temporarily hidden when typing.
-  #hide_when_typing: false
+  hide_when_typing: true
 
   #url:
     # URL launcher
