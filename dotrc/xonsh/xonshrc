@@ -303,10 +303,11 @@ aliases.update({
     # get pub ipaddr
     'wanip': 'dig +short myip.opendns.com @resolver1.opendns.com',
 
-    # any
+    # matrix terminal client
     'gomuks': 'cd $HOME/repos/gomuks; ./gomuks',
 
     # i3-program-launching
+    # aka, how-to-spawn terminal app in new i3 window
     'wm-spawn': 'i3-msg exec "alacritty -e $1"',
 
     # ext mouse, bump up that speeeed
@@ -320,6 +321,34 @@ aliases.update({
         'sudo nixos-rebuild '
         '-I nixos-config=$HOME/repos/dotrc/dotrc/nixos/configuration.nix '
         '--upgrade switch'
+    ),
+
+    # TODO: parametrize the display names..
+    'ext_mon_off': 'xrandr --output eDP-1 --auto --output DP-1 --off',
+
+    # TODO: dynamically get
+    # ipaddr and expect src addr as input?
+    'vncshare': ('x11vnc '
+                # '-listen 192.168.1.68 '
+                '-listen localhost '
+                '-allow localhost,192.168.1.69,192.168.1.68,192.168.1.72,192.168.1.76 '
+                '-rfbport "3003" '
+                '-display :0 '
+                '-forever '
+                '-shared '
+                '-no6 '
+                '-noipv6 '
+                '-nowf '
+                '-noxdamage '
+                '-noxfixes '
+                '-id pick '),
+
+    'minissh': (
+        'ssh -p 616 lord_fomo@192.168.1.76 '
+        # 'ssh -p 616 lord_fomo@189.146.178.130 '
+        '-i /home/goodboy/.ssh/smbz_ed25519 '
+        # TODO: this just seems to hang?
+        # 'bash -c "xonsh"'
     ),
 
 })
