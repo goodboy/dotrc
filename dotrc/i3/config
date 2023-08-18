@@ -13,16 +13,19 @@ set $editor nvim
 # gaps inner $default_gaps_inner
 # gaps outer $default_gaps_outer
 
-font pango:Hack, FontAwesome 7
+# font pango:Hack, FontAwesome 6.16
+font pango:DejaVu Sans Mono 6.16
 # font pango:monospace 7
-# font pango:DejaVu Sans Mono 7
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
+# use common alacritty process
+# bindsym $mod+Return exec alacritty msg create-window -e 'xonsh'
 bindsym $mod+Return exec alacritty -e 'xonsh'
+# bindsym $mod+Return exec alacritty -e 'bash'
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -247,6 +250,10 @@ bindsym --release Shift Print exec --no-startup-id "maim -p 0 -c 0.96,0.5,0.09 $
 
 # requires (`network-manager-applet`)
 exec --no-startup-id nm-applet &
+
+# XXX nixos offers a diff little Qt app, well if wanted Bo
+# exec --no-startup-id nm-tray &
+
 # exec --no-startup-id redshift-gtk &
 exec --no-startup-id pasystray &
 
