@@ -23,3 +23,8 @@
 	default = simple
 [diff]
 	submodule = log
+
+[grep]
+	linenumber = true
+[init]
+	defaultBranch = main
