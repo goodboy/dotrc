@@ -29,6 +29,7 @@ Plug 'FelikZ/ctrlp-py-matcher'
 Plug 'nanotech/jellybeans.vim'
 Plug 'jaxbot/semantic-highlight.vim'
 Plug 'jaxbot/semantic-highlight.vim'
+Plug 'kvrohit/rasmus.nvim'  " https://github.com/kvrohit/rasmus.nvim
 " Plug 'tweekmonster/braceless.vim'
 
 " fancy edit
@@ -77,7 +78,8 @@ Plug 'tpope/vim-jdaddy'
 " Initialize plugin system
 call plug#end()
 
-colorscheme jellybeans
+" colorscheme jellybeans
+colorscheme rasmus
 
 " GENERAL {{{1
 " -----------------------------
@@ -91,7 +93,7 @@ set autoindent
 set linebreak
 set nolist
 set nowrap
-set textwidth=72
+set textwidth=67
 set wrapmargin=0
 set formatoptions=qn1
 " Don't insert comment leader when using 'o' or 'O'
@@ -187,9 +189,14 @@ command! Wqa wqa
 
 command! Ww w !wc -w
 
+" nicer jump/goto bindings using "g for go"
+nmap gj <C-]>
+noremap gk :tselect<CR>
+
+" TODO: remove this right?
 " sane j k actions
-nnoremap j gj
-nnoremap k gk
+" nnoremap j gj
+" nnoremap k gk
 
 " map Y to act like D and C; yank till end of line
 map Y y$
@@ -282,6 +289,8 @@ let g:ale_python_ruff_use_global = 1
 let g:ale_python_ruff_auto_poetry = 1
 nnoremap <silent> <leader>c :ALELint<CR>
 nnoremap <silent> <leader>e :ALEPopulateQuickfix<CR>
+nnoremap <silent> <leader>a :ALEFindReferences -quickfix<CR>
+
 
 let g:ale_lint_on_text_changed = 0
 let g:ale_lint_on_insert_leave = 1
@@ -335,8 +344,7 @@ let g:ctrlp_custom_ignore = {
 "   \ },
 " \ }
 
-" vim-markdown (mode)
-" https://github.com/preservim/vim-markdown#options
+" vim-markdown (mode): https://github.com/preservim/vim-markdown#options
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_folding_style_pythonic = 1
 let g:vim_markdown_math = 1
@@ -347,6 +355,8 @@ let g:vim_markdown_no_extensions_in_markdown = 1
 let g:vim_markdown_auto_extension_ext = 'md'
 let g:vim_markdown_auto_insert_bullets = 0
 let g:vim_markdown_new_list_item_indent = 0
+" no idea why this isn't the default in the plugin? amidoinsomethinwrong?
+autocmd BufNewFile,BufRead *.markdown,*.mdown,*.mkd,*.mkdn,*.mdwn,*.md set ft=markdown
 
 
 " cython
