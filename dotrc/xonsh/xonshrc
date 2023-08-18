@@ -51,7 +51,7 @@ $TERMINAL='alacritty'
 
 _xenv = __xonsh__.env
 
-# hackery for setting up a user-local xonsh env under `.local/
+# hackery for setting up a user-local xonsh env under `.local/`
 # https://xon.sh/xonshrc.html?highlight=nix#use-the-nix-package-manager-with-xonsh
 nixprof: str = f"{$HOME}/.nix-profile"
 nixprofpath: Path = Path(nixprof)
@@ -136,8 +136,7 @@ def pyup(
     '''
     dst_env: str = args[0]
 
-    src_env_path_str: str | None = _xenv.get('VIRTUAL_ENV')
-    if src_env_path_str:
+    if src_env_path_str := _xenv.get('VIRTUAL_ENV'):
         src_path: Path = Path(src_env_path_str)
         src_env: str = src_path.parts[-1]
 
@@ -164,6 +163,19 @@ def pyup(
         else:
             nix develop --profile '.p2nixdev'
 
+    repo_dir: Path = Path.home()/'repos'/dst_env
+    if (
+        repo_dir.is_dir()
+        and (repo_dir / 'pyproject.toml').is_file()
+    ):
+        cwd: Path = Path.cwd()
+        rd: str = str(repo_dir)
+        cd @(rd)
+        print(f'Activating xonsh in repo: {rd}')
+        poetry run xonsh
+        # return to previous location
+        cd @(str(cwd))
+
     # exit any currently activated vox env then enter the desired vox
     # env and hack the path..
     # vox enter @(dst_env)
@@ -182,14 +194,11 @@ def pyup(
     xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
 
     # change to ~/repos/<dst_env>/ if exists
-    # repo_dir: Path = Path.home()/'repos'/dst_env
     # if (
     #     cd_to_repo
     #     and repo_dir.is_dir()
     # ):
-    #     rd: str = str(repo_dir)
     #     print(f'Entering repo dir: {rd}')
-    #     cd @(rd)
 
 
 def _pikerup() -> None:
