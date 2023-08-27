@@ -53,7 +53,8 @@ dotfiles_dircolors()    { link dircolors/dircolors;}
 dotfiles_git()          { link git/gitconfig;}
 dotfiles_gtk2()         { link gtk-2.0/gtkrc-2.0;}
 dotfiles_xonsh()        { link xonsh/xonshrc;}
-dotfiles_xonsh()        { link xonsh .config/xonsh;}
+dotfiles_xonshdir()     { link xonsh .config/xonsh;}
+dotfiles_xrandrdir()    { link screenlayout/ .screenlayout;}
 #dotfiles_htop()        { link htop/htoprc;}
 #dotfiles_lxdm()        { link lxdm/dmrc;}
 #dotfiles_ncmpcpp()     { link ncmpcpp;}
