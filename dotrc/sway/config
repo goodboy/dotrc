@@ -55,12 +55,15 @@ bindsym $mod+Return exec alacritty
 # kill focused window
 bindsym $mod+Shift+q kill
 
+# LAUNCHERZ: see recos below
+# https://github.com/swaywm/sway/wiki/Useful-add-ons-for-sway#launchers
 # start dmenu (a program launcher)
-bindsym $mod+o exec dmenu_run
+# bindsym $mod+o exec dmenu_run
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed2
-# bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
+# bindsym $mod+o exec --no-startup-id i3-dmenu-desktop
+bindsym $mod+o exec --no-startup-id kickoff
 
 # lock screen on windows-0
 bindsym Mod4+0 exec --no-startup-id i3lock
@@ -194,12 +197,13 @@ bindsym XF86AudioMute exec amixer -q set Master mute
 bindsym XF86MonBrightnessUp exec --no-startup-id light -A 7
 bindsym XF86MonBrightnessDown exec --no-startup-id light -U 7
 
-# reload the config
-bindsym $mod+Shift+c reload
+# reload the config (u for "update")
+bindsym $mod+Shift+u reload
+# flip to (l for) "last" workspace
+bindsym $mod+y workspace back_and_forth
 
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
-bindsym $mod+b workspace back_and_forth
 
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
@@ -209,10 +213,10 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 # bindsym $mod+Ctrl+Shift+Up resize grow height 10 px or 10 ppt
 # bindsym $mod+Ctrl+Shift+Down resize shrink height 10 px or 10 ppt
 # bindsym $mod+Ctrl+Shift+Left resize grow width 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+k resize grow height 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+j resize shrink height 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+h resize shrink width 10 px or 10 ppt
-bindsym $mod+Ctrl+Shift+l resize grow width 10 px or 10 ppt
+bindsym $mod+Ctrl+Shift+k resize grow height 36 px or 36 ppt
+bindsym $mod+Ctrl+Shift+j resize shrink height 36 px or 36 ppt
+bindsym $mod+Ctrl+Shift+h resize shrink width 36 px or 36 ppt
+bindsym $mod+Ctrl+Shift+l resize grow width 36 px or 36 ppt
 
 
 # resize window (you can also use the mouse for that)
@@ -241,6 +245,7 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
         # tray_output primary  # uhh no?
+        # i3status-rs seems to have missing utf8 chars?
         status_command i3status
         position bottom
         workspace_buttons yes
@@ -261,8 +266,12 @@ bar {
 }
 
 # screenshot (requires `maim` and $HOME/images/)
-bindsym --release Print exec --no-startup-id "maim -s -p 0 -c 0.96,0.5,0.09 $HOME/images/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png"
-bindsym --release Shift Print exec --no-startup-id "maim -p 0 -c 0.96,0.5,0.09 $HOME/images/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png"
+# bindsym --release Print exec --no-startup-id "maim -s -p 0 -c 0.96,0.5,0.09 $HOME/images/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png"
+# bindsym --release Shift Print exec --no-startup-id "maim -p 0 -c 0.96,0.5,0.09 $HOME/images/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png"
+# bindsym --release Print exec --no-startup-id "grim 
+bindsym Mod4+p       exec grimshot save active
+bindsym Mod4+Shift+p exec grimshot save area
+bindsym Mod4+Ctrl+p  exec grimshot save window
 
 # AUTOSTART
 # exec --no-startup-id compton -b
