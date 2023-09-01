@@ -18,9 +18,23 @@
   # use latest kernel release
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # add i2c-dev module and rules for ddcutil, see answer:
+  # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/9
+  # https://github.com/NixOS/nixpkgs/blob/72f492e275fc29d44b3a4daf952fbeffc4aed5b8/nixos/modules/services/x11/desktop-managers/plasma5.nix#L258
+  # boot.extraModulePackages = [config.boot.kernelPackages.ddcci-driver];
+  boot.kernelModules = ["i2c-dev"];
+  # use `journalctl -f` to ensure no errors!
+  services.udev.extraRules = ''
+    KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+  '';
+
+  # always disable v6 on wifi by default
+  boot.kernel.sysctl."net.ipv6.conf.wlp2s0.disable_ipv6" = true;
+
   networking = {
-    hostName = "TinasMacbookAir"; # Define your hostname.
+    hostName = "TinasMacMini"; # Define your hostname.
     networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+    enableIPv6  = false;
     # wireless.enable = true;
   };
   # Pick only one of the below networking options.
@@ -40,7 +54,10 @@
   };
 
   # Open ports in the firewall: {sshd, etc.}
-  networking.firewall.allowedTCPPorts = [ 6116 ];
+  networking.firewall.allowedTCPPorts = [
+    6116 # piker
+    24800 # barrier
+  ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -62,7 +79,8 @@
   };
 
   xdg.portal.enable = true;
-  xdg.portal.lxqt.enable = true;
+  xdg.portal.wlr.enable = true;
+  # xdg.portal.lxqt.enable = true;
   # xdg.portal.xdgOpenUsePortal = true;
   # xdg.portal.extraPortals = with pkgs; [
     # xdg-desktop-portal-wlr
@@ -70,7 +88,6 @@
     # xdg-desktop-portal-gtk
   # ];
 
-  # Set your time zone.
   time.timeZone = "America/Toronto";
 
   virtualisation.docker.enable = true;  # run daemon with systemd
@@ -78,6 +95,9 @@
     enable = true;
     setSocketVariable = true;
   };
+
+  # https://nixos.wiki/wiki/WayDroid
+  virtualisation.waydroid.enable = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -88,17 +108,17 @@
   console = {
     #font = "Lat2-Terminus16";
     # keyMap = "us";  # already defined in root profile?
-    useXkbConfig = true; # use xkbOptions in tty.
+    useXkbConfig = true; # use xkbOptions in tty (only reason to use Xorg).
   };
 
   # Enable the X11 windowing system.
   services.xserver = {
-    enable = true;
-    autorun = true;
-    windowManager.i3.enable = true;
+    # autorun = true;
+    # enable = true;
+    # windowManager.i3.enable = true;
 
     # TODO: figure out how to just use login + startx
-    displayManager.lightdm.enable = true;
+    # displayManager.lightdm.enable = true;
     #displayManager.startx.enable = true;
     #displayManager.defaultSession = "i3";
 
@@ -107,14 +127,14 @@
     xkbOptions = "caps:ctrl_modifier, ctrl:nocaps";  # map caps to ctl.
     upscaleDefaultCursor = true;
     dpi = 200;
+
+    # Enable touchpad support (enabled default in most desktopManager).
+    # libinput.enable = true;
   };
 
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
 
   # sys-wide config
   users.defaultUserShell = pkgs.bash;
@@ -133,6 +153,27 @@
       # GTK_USER_PORTAL = "1";
     };
 
+     # This is using a rec (recursive) expression to set and access XDG_BIN_HOME within the expression
+  # For more on rec expressions see https://nix.dev/tutorials/first-steps/nix-language#recursive-attribute-set-rec
+    sessionVariables = rec {
+      XDG_CACHE_HOME  = "$HOME/.cache";
+      XDG_CONFIG_HOME = "$HOME/.config";
+      XDG_DATA_HOME   = "$HOME/.local/share";
+      XDG_STATE_HOME  = "$HOME/.local/state";
+
+      # used by `grimshot`
+      XDG_PICTURES_DIR = "$HOME/images/screenshots/";
+
+      # for bins, but location it NOT officially in the spec ;)
+      XDG_BIN_HOME = "$HOME/.local/bin";
+      PATH = [ 
+        "${XDG_BIN_HOME}"
+      ];
+
+      # tell element/electron that we're in wayland mode
+      NIXOS_OZONE_WL = "1";
+    };
+
     # packages installed in system profile.
     systemPackages = with pkgs; [
       xonsh
@@ -145,8 +186,9 @@
       wget
 
       # need root for managing network
-      # nm-tray
-      networkmanagerapplet  # the OG applet in GTK
+      nm-tray
+      # the OG applet in GTK (doesn't work w wayland otb)
+      networkmanagerapplet
 
       # xdg-desktop-portal
       # lxqt.xdg-desktop-portal-lxqt
@@ -176,16 +218,38 @@
 
 
     isNormalUser = true;
-    extraGroups = [ "wheel" ];  # Enable ‘sudo’ for the user.
+    extraGroups = [
+      "wheel"  # ‘sudo’ group
+      "video"  # `ddcutil` group(s)?
+      "i2c-dev"
+      "networkmanager"  # allow using sysctl?
+      "docker"  # using cmds without sudo
+    ];
     packages = with pkgs; [
 
       # DE shite
+      # X11
       i3  # wm
-      xclip  # X-copy/pasta
+      i3status  # status bar (sway too)
+      i3lock
+      maim  # screenshotz  (X only?)
+      # dmenu
+      # i3status-rust  # status bar (sway too)
+
+      # Wayland (+ sway)
+      # cooio wl launcher recos
+      # https://github.com/swaywm/sway/wiki/Useful-add-ons-for-sway#launchers
+      kickoff
+      sway-contrib.grimshot
+
+      xclip  # X11-copy/pasta
+      wl-clipboard  # wayland-copy-pasta (FYI: needs nvim config)
+
+      # display ctls
       arandr  # multi-mon config via GUI B)
+      ddcutil  # display ctl prot
 
       # media
-      maim  # screenshotz
       quodlibet  # audio player
       pavucontrol
       obs-studio  # media-recording
@@ -209,7 +273,12 @@
 
       # matrix
       # gomuk  # hackin on this rite now tho..
-      element-desktop
+      # element-desktop  # X11
+
+      # NOTE: should pass the following flags but doesn't seem to?
+      # --enable-features=UseOzonePlatform --ozone-platform=wayland
+      # https://github.com/NixOS/nixpkgs/pull/132776/files
+      element-desktop-wayland
 
       # terminal related
       alacritty
@@ -231,11 +300,18 @@
       tree
       mlocate
 
-      # networkin toolz
+      # networkin (mgmt) toolz
       httpie
       mtr
       nmap
       vopono  # can't belieb they have this B)
+      wireguard-tools
+
+      # NOTE: we have to setup a TLS key on both client and server:
+      # normally, ~/.local/share/barrier/SSL/
+      # TODO: automate this using flake deployment tech?
+      # https://stackoverflow.com/a/67343805
+      barrier
 
       # utils + docs
       man-pages
@@ -245,8 +321,7 @@
       hack-font
       hackgen-nf-font
 
-      # langs & runtimes
-      # pip never again !? XD
+      # langs + runtimes
       python310
       poetry  # borked rn?
       ruff
@@ -259,17 +334,24 @@
       python311Packages.python-lsp-server
       # python311Packages.xonsh  # wenn
       # python311Packages.poetry-core
+      # pip never again !? XD
 
-      # go
+      # opsec
+      age
 
-      # network (mgmt) tools
-      # barrier
-      # openssl
-
-      # storage
+      # storage/backups
       borgbackup
 
+      # mobile
+      waydroid
+
     ];
+  };
+
+  # enable sway window manager
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
   };
 
   # Some programs need SUID wrappers, can be configured further or are
