@@ -146,8 +146,8 @@
     # https://github.com/nix-community/nix-direnv#via-configurationnix-in-nixos
     pathsToLink = [ "/share-nix-direnv" ];
     variables = {
-      EDITOR = "neovim";
-      VISUAL = "neovim";
+      EDITOR = "nvim";
+      VISUAL = "nvim";
       PAGER = "less";
       TERMINAL = "alacritty";
       # GTK_USER_PORTAL = "1";
@@ -156,19 +156,20 @@
      # This is using a rec (recursive) expression to set and access XDG_BIN_HOME within the expression
   # For more on rec expressions see https://nix.dev/tutorials/first-steps/nix-language#recursive-attribute-set-rec
     sessionVariables = rec {
-      XDG_CACHE_HOME  = "$HOME/.cache";
-      XDG_CONFIG_HOME = "$HOME/.config";
-      XDG_DATA_HOME   = "$HOME/.local/share";
-      XDG_STATE_HOME  = "$HOME/.local/state";
+      # TODO: figure out which of these breaks xonsh?
+      # XDG_CACHE_HOME  = "$HOME/.cache";
+      # XDG_CONFIG_HOME = "$HOME/.config";
+      # XDG_DATA_HOME   = "$HOME/.local/share";
+      # XDG_STATE_HOME  = "$HOME/.local/state";
 
       # used by `grimshot`
       XDG_PICTURES_DIR = "$HOME/images/screenshots/";
 
       # for bins, but location it NOT officially in the spec ;)
-      XDG_BIN_HOME = "$HOME/.local/bin";
-      PATH = [ 
-        "${XDG_BIN_HOME}"
-      ];
+      # XDG_BIN_HOME = "$HOME/.local/bin";
+      # PATH = [ 
+      #   "${XDG_BIN_HOME}"
+      # ];
 
       # tell element/electron that we're in wayland mode
       NIXOS_OZONE_WL = "1";
@@ -220,10 +221,11 @@
     isNormalUser = true;
     extraGroups = [
       "wheel"  # ‘sudo’ group
-      "video"  # `ddcutil` group(s)?
+      # "video"  # `ddcutil` group(s)?
       "i2c-dev"
-      "networkmanager"  # allow using sysctl?
+      # "networkmanager"  # allow using sysctl?
       "docker"  # using cmds without sudo
+      "adbusers"  # android debug
     ];
     packages = with pkgs; [
 
@@ -271,6 +273,9 @@
       # xdg-desktop-portal-wlr
       # xdg-desktop-portal-gtk
 
+      # apps?
+      appimage-run
+
       # matrix
       # gomuk  # hackin on this rite now tho..
       # element-desktop  # X11
@@ -287,7 +292,9 @@
       # python310Packages.prompt-toolkit  # wenn
       # xonsh
       neovim
-      ranger
+      ranger  # deps on w3m for image view on X11
+      # feh  # wrap with ranger for images?
+      imv  # currently using shit ass ranger integ..
 
       # git + hosting service utils
       git
@@ -349,24 +356,28 @@
   };
 
   # enable sway window manager
-  programs.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
+  programs = {
+    sway = {
+      enable = true;
+      wrapperFeatures.gtk = true;
+    };
+
+    # Some programs need SUID wrappers, can be configured further or are
+    # started in user sessions.
+    mtr.enable = true;
+    # programs.bash.enable = true;
+    # programs.xonsh.enable = true;
+    # programs.zsh.enable = true;
+    bash.enableCompletion = true;
+    # programs.dconf.enable = true;
+
+    # gnupg.agent = {
+    #   enable = true;
+    #   enableSSHSupport = true;
+    # };
+
+    adb.enable = true;
   };
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  programs.mtr.enable = true;
-  # programs.bash.enable = true;
-  # programs.xonsh.enable = true;
-  # programs.zsh.enable = true;
-  programs.bash.enableCompletion = true;
-  # programs.dconf.enable = true;
-
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
