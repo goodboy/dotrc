@@ -50,7 +50,7 @@ floating_modifier $mod
 
 # start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Return exec alacritty
+bindsym $mod+Return exec 'alacritty -e xonsh'
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -273,12 +273,19 @@ bindsym Mod4+p       exec grimshot save active
 bindsym Mod4+Shift+p exec grimshot save area
 bindsym Mod4+Ctrl+p  exec grimshot save window
 
-# AUTOSTART
-# exec --no-startup-id compton -b
-# requires (`network-manager-applet`)
-exec --no-startup-id nm-applet &
+# ------ - ------
+
+# AUTOSTART apps (TODO: do all this with cornerboi)
+
+# NOTE: requires (`network-manager-applet`)
+# TODO: need to add the gtk workaround stuff for nixos + sway from
+# nixos wiki..
+# exec --no-startup-id nm-applet &
+exec --no-startup-id nm-tray &
+
 # exec --no-startup-id blueman-applet &
 exec --no-startup-id redshift-gtk &
+
 exec --no-startup-id pasystray &
 # exec --no-startup-id dunst -f "Hack 7" &
 # exec --no-startup-id twmnd &
@@ -286,7 +293,3 @@ exec --no-startup-id pasystray &
 # exec --no-startup-id cadence &
 # exec --no-startup-id quodlibet &
 # exec --no-startup-id udiskie --no-automount --tray --use-udisks2 &
-
-# set max mouse accel on external mouse (still needs parsing over
-# guessing dev 10)
-exec --no-startup-id xinput --set-prop 10 'libinput Accel Speed' 1
