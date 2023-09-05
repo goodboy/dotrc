@@ -66,7 +66,7 @@ bindsym $mod+Shift+q kill
 bindsym $mod+o exec --no-startup-id kickoff
 
 # lock screen on windows-0
-bindsym Mod4+0 exec --no-startup-id i3lock
+bindsym Mod4+0 exec --no-startup-id swaylock
 
 workspace_auto_back_and_forth yes
 force_display_urgency_hint 0 ms
