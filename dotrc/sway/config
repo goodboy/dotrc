@@ -9,7 +9,10 @@ set $editor nvim
 output eDP-1 scale 2
 # output DP-1 scale 1
 output DP-1 pos 0 0 res 3840x2160 scale 2
+
+# 2 diff outputs on mini
 output HDMI-A-1 pos 0 0 res 3840x2160 scale 2
+output HDMI-A-2 pos 0 0 res 3840x2160 scale 2
 
 # NOTE: for waydroid it seems to make the most sense
 # to use a set of dimensions on the 3830x2160 reso above.
@@ -26,9 +29,18 @@ input "type:keyboard" {
     xkb_options ctrl:nocaps
 }
 
+# see GH issue for tips:
+# https://github.com/swaywm/sway/issues/3174
 input "type:point" {
-    accel_profile "flat" # flat or adaptive
-    pointer_accel 1.0  # [-1.0, 1.0]
+
+    # flat or adaptive
+    accel_profile "flat"
+
+    # [-1.0, 1.0]
+    pointer_accel 1.0
+
+    # no idea XD
+    calibration_matrix 8 0 0 0 5 0
     # calibration_matrix 1 0 0 1 0 10
 }
 
@@ -205,8 +217,8 @@ bindsym $mod+y workspace back_and_forth
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+# exit sway dialog bar
+bindsym $mod+Shift+e exec "swaynag -t warning -m 'ARE YOU SURE !?! -> EXIT SWAY?' -b 'Yes, exit sway' 'swaymsg exit'"
 
 # quick resize by 10
 # bindsym $mod+Ctrl+Shift+Right resize shrink width 10 px or 10 ppt
