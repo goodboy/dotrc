@@ -4,7 +4,6 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -22,7 +21,10 @@
   # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/9
   # https://github.com/NixOS/nixpkgs/blob/72f492e275fc29d44b3a4daf952fbeffc4aed5b8/nixos/modules/services/x11/desktop-managers/plasma5.nix#L258
   # boot.extraModulePackages = [config.boot.kernelPackages.ddcci-driver];
-  boot.kernelModules = ["i2c-dev"];
+  boot.kernelModules = [
+    "i2c-dev"
+    "xt_state"
+  ];
   # use `journalctl -f` to ensure no errors!
   services.udev.extraRules = ''
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
@@ -58,7 +60,9 @@
     6116 # piker
     24800 # barrier
   ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedUDPPorts = [ 
+    51820 # wg
+  ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
@@ -90,14 +94,18 @@
 
   time.timeZone = "America/Toronto";
 
-  virtualisation.docker.enable = true;  # run daemon with systemd
-  virtualisation.docker.rootless = {  # no-root mode
-    enable = true;
-    setSocketVariable = true;
+  virtualisation = {
+    docker = {
+      enable = true;  # run daemon with systemd
+      rootless = {  # no-root mode
+        enable = true;
+        setSocketVariable = true;
+      };
+    };
+    # https://nixos.wiki/wiki/WayDroid
+    waydroid.enable = true;
   };
 
-  # https://nixos.wiki/wiki/WayDroid
-  virtualisation.waydroid.enable = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -153,17 +161,20 @@
       # GTK_USER_PORTAL = "1";
     };
 
-     # This is using a rec (recursive) expression to set and access XDG_BIN_HOME within the expression
-  # For more on rec expressions see https://nix.dev/tutorials/first-steps/nix-language#recursive-attribute-set-rec
+    # This is using a rec (recursive) expression to set and access XDG_BIN_HOME within the expression
+    # For more on rec expressions see https://nix.dev/tutorials/first-steps/nix-language#recursive-attribute-set-rec
     sessionVariables = rec {
+      # used by `grimshot`
+      XDG_PICTURES_DIR = "$HOME/images/screenshots/";
+
+      # tell element/electron that we're in wayland mode
+      NIXOS_OZONE_WL = "1";
+
       # TODO: figure out which of these breaks xonsh?
       # XDG_CACHE_HOME  = "$HOME/.cache";
       # XDG_CONFIG_HOME = "$HOME/.config";
       # XDG_DATA_HOME   = "$HOME/.local/share";
       # XDG_STATE_HOME  = "$HOME/.local/state";
-
-      # used by `grimshot`
-      XDG_PICTURES_DIR = "$HOME/images/screenshots/";
 
       # for bins, but location it NOT officially in the spec ;)
       # XDG_BIN_HOME = "$HOME/.local/bin";
@@ -171,25 +182,34 @@
       #   "${XDG_BIN_HOME}"
       # ];
 
-      # tell element/electron that we're in wayland mode
-      NIXOS_OZONE_WL = "1";
     };
 
     # packages installed in system profile.
     systemPackages = with pkgs; [
+      # nix toolz
+      nix-index
+
+      # preferred shell
       xonsh
 
       # one-vi-to-rule-them-all
       neovim
-      helix
+      helix  # rust, selection oriented
 
       # utils
       wget
+      nftables
 
       # need root for managing network
       nm-tray
-      # the OG applet in GTK (doesn't work w wayland otb)
+      # the OG applet in GTK (doesn't work w wayland ootb)
       networkmanagerapplet
+
+      # file xfer
+      magic-wormhole
+
+      # must have for wayland for link opening via xdg-open
+      xdg-utils
 
       # xdg-desktop-portal
       # lxqt.xdg-desktop-portal-lxqt
@@ -268,11 +288,6 @@
       #   https://www.unixsheikh.com/articles/choose-your-browser-carefully.html#librewolf
       # libre-wolf  # oh it's in the ol nixpkgs!
 
-      # xdg-desktop-portal
-      # lxqt.xdg-desktop-portal-lxqt
-      # xdg-desktop-portal-wlr
-      # xdg-desktop-portal-gtk
-
       # apps?
       appimage-run
 
@@ -318,7 +333,8 @@
       # normally, ~/.local/share/barrier/SSL/
       # TODO: automate this using flake deployment tech?
       # https://stackoverflow.com/a/67343805
-      barrier
+      # barrier
+      input-leap
 
       # utils + docs
       man-pages
