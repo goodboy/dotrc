@@ -1,4 +1,4 @@
-# vim: ft=xonsh
+# vim: ft=python
 import builtins
 import json
 import site
@@ -55,11 +55,12 @@ _xenv = __xonsh__.env
 # https://xon.sh/xonshrc.html?highlight=nix#use-the-nix-package-manager-with-xonsh
 nixprof: str = f"{$HOME}/.nix-profile"
 nixprofpath: Path = Path(nixprof)
-is_prolly_nix: bool = path.exists(nixprof)
-if (
-    is_prolly_nix
+is_prolly_nix: bool = (
+    path.exists(nixprof)
     # and not _xenv.get("NIX_PATH")
-):
+    # and path.exists(nixprof):
+)
+if is_prolly_nix:
     # $NIX_REMOTE="daemon"
     # $NIX_USER_PROFILE_DIR="/nix/var/nix/profiles/per-user/" + $USER
     # $NIX_PROFILES="/nix/var/nix/profiles/default " + $HOME + "/.nix-profile"
@@ -67,7 +68,6 @@ if (
     # $NIX_PATH="nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixpkgs:/nix/var/nix/profiles/per-user/root/channels"
     # $PATH += [f"{$HOME}/.nix-profile/bin", "/nix/var/nix/profiles/default/bin"]
     print('This is prolly a nix install B)')
-# if path.exists(nixprof):
 
     # bash completions path:
     # https://xon.sh/envvars.html#bash-completions
@@ -78,16 +78,28 @@ if (
     # use the config from this dotrc repo B)
     $NIXOS_CONFIG = f'{$HOME}/repos/dotrc/dotrc/nixos/configuration.nix'
 
+    # TODO? XXX: i don't luv this direnv + nix interop..
+    # https://github.com/74th/xonsh-direnv
+    # xontrib load -v direnv
 
+else:
+    # add custom home/etc and .local/bin/ to path
+    $PATH.extend([
+        str($HOME / Path('etc/bin')),  # personal dotfiles scripts
+        str($HOME / Path('.local/bin')),  # for rustup
+    ])
 
 
 # try to load xontribs
 # TODO: figure out how to install these correctly..
-# - xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
-# - xontrib load xxh
 res: CommandPipeline = !(xontrib load vox)
 if res.returncode == 0:
-    xontrib load gish lnstore
+    # xontrib load prompt_ret_code pacman_tabcomplete vox_tabcomplete vox
+    # xontrib load xxh
+    # xontrib load gish lnstore
+
+    # NOTE: this is the "TRICK" to both check if vox exists
+    # AND autoload it if it does..
     xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
 
 
@@ -126,15 +138,16 @@ def pyup(
     Bring up an embedded virtual env using one of:
       - std ``vox`` (since you're on a classic distro) or,
       - ``nix develop`` from flake.nix using `poetry2nix`
-        and an embedded ``poetry`` virtual env
-        that runs an embedded ``xonsh`` in that env.
+        and an embedded `nix develop` "environment" that runs an
+        embedded ``xonsh`` inside that profile / store.
 
-    Special heed is made to hack the python path (which is particularly
-    handy on nixos where normally each user profile is already totally
-    isolated and libraries linked per flake.nix).
+    Special heed is made to hack the python path (which is
+    particularly handy on nixos where normally each user profile is
+    already totally isolated and libraries linked per flake.nix).
 
     '''
     dst_env: str = args[0]
+    repo_dir: Path = Path.home()/'repos'/dst_env
 
     if src_env_path_str := _xenv.get('VIRTUAL_ENV'):
         src_path: Path = Path(src_env_path_str)
@@ -145,6 +158,7 @@ def pyup(
             print(f'{dst_env} is already active!?')
             return
 
+        # always deactivate any active vox env
         if (
             src_path
             and src_env != dst_env
@@ -154,7 +168,6 @@ def pyup(
             vox deactivate
 
     elif nixprofpath.is_dir():
-        repo_dir: Path = Path.home()/'repos'/dst_env
         cd @(str(repo_dir))
 
         devfile: Path = repo_dir / '.p2nixdev'
@@ -163,8 +176,9 @@ def pyup(
         else:
             nix develop --profile '.p2nixdev'
 
-    repo_dir: Path = Path.home()/'repos'/dst_env
-    if (
+    # check if destination env is probably using `poetry`
+    # AND we're not on nix
+    elif (
         repo_dir.is_dir()
         and (repo_dir / 'pyproject.toml').is_file()
     ):
@@ -172,9 +186,15 @@ def pyup(
         rd: str = str(repo_dir)
         cd @(rd)
         print(f'Activating xonsh in repo: {rd}')
-        poetry run xonsh
+        # XXX: doesn't seem to work?
+        # => why did we ever do it this way? only for nix right?
+        # poetry run xonsh
+        poetry shell
         # return to previous location
         cd @(str(cwd))
+
+        # enter xonsh so that contribs are loaded?
+        python -m xonsh
 
     # exit any currently activated vox env then enter the desired vox
     # env and hack the path..
@@ -186,12 +206,11 @@ def pyup(
     # - https://github.com/xonsh/xontrib-vox#voxapi
     # - https://github.com/xonsh/xonsh/blob/ae6b34ba2f62266ca68536484f64cc9a37cf9d1b/xonsh/base_shell.py#L379
     # - https://xon.sh/python_virtual_environments.html#automatically-switching-environments
-
     # NOTE: currently solution is that they're autoloaded as per using
     # a setuptools entrypoint:
     # - https://xon.sh/tutorial_xontrib.html#loading-xontribs
     # TODO: expose this via pyproject.toml?
-    xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
+    # xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
 
     # change to ~/repos/<dst_env>/ if exists
     # if (
@@ -211,32 +230,22 @@ def _pikerup() -> None:
     # won't copy into subproc..
     # $PATH.append(p'$PWD/venv/bin')
 
-    # expect a flake
-    (
-        nix develop \
-        --show-trace \
-        --command "poetry run 'python -m xonsh ./_nix_bootstrap.xsh'"
-    )
-
-    # presume embedded venv/ hack for now..
-    # nix-shell develop.nix --command 'python -m xonsh'
     if is_prolly_nix:
-        # presume embedded venv/ hack for now..
-        nix-shell develop.nix --command 'python -m xonsh'
+        # case: nix-shell + embedded venv/ hack..
+        # nix-shell develop.nix --command 'python -m xonsh'
+
+        # a flake + poetry2nix
+        (
+            nix develop \
+            --show-trace \
+            --command "poetry run 'python -m xonsh'"
+        )
+        # --command "poetry run 'python -m xonsh ./_nix_bootstrap.xsh'"
+
     else:
         # just jump into the poetry env's xonsh
         poetry run xonsh
 
-
-# XXX: i don't luv this direnv + nix interop..
-# https://github.com/74th/xonsh-direnv
-# xontrib load -v direnv
-
-# add custom home/etc and .local/bin/ to path
-# $PATH.extend([
-#     str($HOME / Path('etc/bin')),  # personal dotfiles scripts
-#     str($HOME / Path('.local/bin')),  # for rustup
-# ])
 
 
 def _find_mouse(
@@ -269,8 +278,8 @@ def pydoc(
     std: str,
 ):
     '''
-    Hack around nixos pydoc override to instead use the current python
-    environment's version.
+    Hack around nixos pydoc override to instead use the current
+    python environment's version.
 
     '''
     import pydoc
@@ -333,24 +342,32 @@ aliases.update({
     ),
 
     # TODO: parametrize the display names..
-    'ext_mon_off': 'xrandr --output eDP-1 --auto --output DP-1 --off',
+    'ext_mon_off': (
+        'xrandr '
+        '--output eDP-1'
+        '--auto '
+        '--output DP-1 '
+        '--off'
+    ),
 
     # TODO: dynamically get
     # ipaddr and expect src addr as input?
-    'vncshare': ('x11vnc '
-                # '-listen 192.168.1.68 '
-                '-listen localhost '
-                '-allow localhost,192.168.1.69,192.168.1.68,192.168.1.72,192.168.1.76 '
-                '-rfbport "3003" '
-                '-display :0 '
-                '-forever '
-                '-shared '
-                '-no6 '
-                '-noipv6 '
-                '-nowf '
-                '-noxdamage '
-                '-noxfixes '
-                '-id pick '),
+    'vncshare': (
+        'x11vnc '
+        # '-listen 192.168.1.68 '
+        '-listen localhost '
+        '-allow localhost,192.168.1.69,192.168.1.68,192.168.1.72,192.168.1.76 '
+        '-rfbport "3003" '
+        '-display :0 '
+        '-forever '
+        '-shared '
+        '-no6 '
+        '-noipv6 '
+        '-nowf '
+        '-noxdamage '
+        '-noxfixes '
+        '-id pick '
+    ),
 
     'minissh': (
         'ssh -p 616 lord_fomo@192.168.1.76 '
@@ -421,45 +438,9 @@ $PROMPT_FIELDS['maybe_show_vc'] = maybe_show_vc
 # $PROMPT_FIELDS['branch_color'] = lambda: (
 #     '{RED}' if vc.git_dirty_working_directory() else '{RESET}'
 # )
-
 $TITLE = '{current_job:{} | }{user}@{hostname}: {cwd} {maybe_show_vc}'
-
 # $RIGHT_PROMPT = rprompt
 # $BOTTOM_TOOLBAR = rprompt
-
-# namespace bookkeeping
-# _new = set()
-
-
-# def ctxdiff(
-#     now,
-#     start,
-#     remove,
-
-# ) -> None:
-#     new = now - start - remove
-#     return {k: now[k] for k in new}
-
-#     diff = ctxdiff(
-#         __xonsh__.ctx,
-#         __xonsh__.ctx['_startctx'],
-#         {'_startctx', '__name__'},
-#     )
-#     _new.update(diff.keys())
-#     for k, v in diff.items():
-#         print('{} {}: {}'.format(type(v), k, v))
-
-
-# def clear(args, stdin=None):
-#     global _new
-#     for k in _new:
-#         __xonsh_ctx__.pop(k)
-#     _new = set()
-
-
-# aliases['ns'] = ctxdiff
-# aliases['cns'] = clear
-# _startctx  = __xonsh__.ctx.copy()
 
 
 # UX related custom key bindings
@@ -480,3 +461,33 @@ def custom_keybindings(
         suggestion = event.current_buffer.suggestion
         if suggestion:
             event.current_buffer.insert_text(suggestion.text)
+
+# TODO: namespace bookkeeping?
+# _new = set()
+# def ctxdiff(
+#     now,
+#     start,
+#     remove,
+
+# ) -> None:
+#     new = now - start - remove
+#     return {k: now[k] for k in new}
+
+#     diff = ctxdiff(
+#         __xonsh__.ctx,
+#         __xonsh__.ctx['_startctx'],
+#         {'_startctx', '__name__'},
+#     )
+#     _new.update(diff.keys())
+#     for k, v in diff.items():
+#         print('{} {}: {}'.format(type(v), k, v))
+
+# def clear(args, stdin=None):
+#     global _new
+#     for k in _new:
+#         __xonsh_ctx__.pop(k)
+#     _new = set()
+
+# aliases['ns'] = ctxdiff
+# aliases['cns'] = clear
+# _startctx  = __xonsh__.ctx.copy()
