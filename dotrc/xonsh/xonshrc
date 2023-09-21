@@ -186,38 +186,28 @@ def pyup(
         rd: str = str(repo_dir)
         cd @(rd)
         print(f'Activating xonsh in repo: {rd}')
+
         # XXX: doesn't seem to work?
         # => why did we ever do it this way? only for nix right?
         # poetry run xonsh
+
+        # TODO: autoload any environment detected xontribs B)
+        # see the vox-api xontrib and xonsh hooks:
+        # - https://github.com/xonsh/xontrib-vox#voxapi
+        # - https://github.com/xonsh/xonsh/blob/ae6b34ba2f62266ca68536484f64cc9a37cf9d1b/xonsh/base_shell.py#L379
+        # - https://xon.sh/python_virtual_environments.html#automatically-switching-environments
+        # NOTE: currently solution is that they're autoloaded as per using
+        # a setuptools entrypoint:
+        # - https://xon.sh/tutorial_xontrib.html#loading-xontribs
+        # TODO: expose this via pyproject.toml?
+        # xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
+
+        # NOTE: on archlinux (afaik) this DOES the right thing and
+        # vox is used to activate the virtenv.
         poetry shell
+
         # return to previous location
         cd @(str(cwd))
-
-        # enter xonsh so that contribs are loaded?
-        python -m xonsh
-
-    # exit any currently activated vox env then enter the desired vox
-    # env and hack the path..
-    # vox enter @(dst_env)
-    # add_site_path(path=_xenv.get('VIRTUAL_ENV'))
-
-    # TODO: autoload any environment detected xontribs B)
-    # see the vox-api xontrib and xonsh hooks:
-    # - https://github.com/xonsh/xontrib-vox#voxapi
-    # - https://github.com/xonsh/xonsh/blob/ae6b34ba2f62266ca68536484f64cc9a37cf9d1b/xonsh/base_shell.py#L379
-    # - https://xon.sh/python_virtual_environments.html#automatically-switching-environments
-    # NOTE: currently solution is that they're autoloaded as per using
-    # a setuptools entrypoint:
-    # - https://xon.sh/tutorial_xontrib.html#loading-xontribs
-    # TODO: expose this via pyproject.toml?
-    # xontribs.auto_load_xontribs_from_entrypoints(verbose=True)
-
-    # change to ~/repos/<dst_env>/ if exists
-    # if (
-    #     cd_to_repo
-    #     and repo_dir.is_dir()
-    # ):
-    #     print(f'Entering repo dir: {rd}')
 
 
 def _pikerup() -> None:
