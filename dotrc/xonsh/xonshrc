@@ -360,11 +360,19 @@ aliases.update({
     ),
 
     'minissh': (
-        'ssh -p 616 lord_fomo@192.168.1.76 '
+        'ssh -p 616 lord_fomo@192.168.1.80 '
         # 'ssh -p 616 lord_fomo@189.146.178.130 '
         '-i /home/goodboy/.ssh/smbz_ed25519 '
         # TODO: this just seems to hang?
         # 'bash -c "xonsh"'
+    ),
+
+    'pinche_perro': (
+        'play -n synth 180 '
+        'sin 22050 '
+        'sin 25000 '
+        'sin 26000 '
+        'sin 28000 '
     ),
 
 })
