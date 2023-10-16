@@ -198,6 +198,10 @@ command! Ww w !wc -w
 nmap gj <C-]>
 noremap gk :tselect<CR>
 
+" set m-double-tap as the pair-match-jump hotkey
+" like it is in helix!
+nmap mm %
+
 " TODO: remove this right?
 " sane j k actions
 " nnoremap j gj
